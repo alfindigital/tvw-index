@@ -1,11 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, RefreshCw, Copy, Check } from "lucide-react";
+import { Plus, TrendingUp, Layers, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
+import { FloatingFormula } from "@/components/FloatingFormula";
 import {
   loadBasket,
   saveBasket,
@@ -13,6 +15,7 @@ import {
   type Stock,
 } from "@/lib/storage";
 import { formatIDR, formatPct, formatTime } from "@/lib/format";
+import { IDX_SHARES } from "@/data/idx-shares";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -21,13 +24,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Bikin basket saham IDX market-cap weighted. Harga close otomatis dari Yahoo Finance, hitung weight & formula TradingView dalam satu halaman.",
+          "Bikin basket saham IDX market-cap weighted. Database 957+ emiten built-in, harga otomatis Yahoo Finance, formula TradingView siap pakai.",
       },
       { property: "og:title", content: "Index Builder — Basket Saham IDX" },
       {
         property: "og:description",
         content:
-          "Kalkulator index saham IDX yang simpel: input ticker, harga otomatis, weight & formula TradingView langsung jadi.",
+          "Database shares IDX siap pakai. Ketik ticker → Enter → langsung dapat market cap, weight, dan formula TradingView.",
       },
     ],
   }),
@@ -41,11 +44,20 @@ type Quote = {
   error?: string;
 };
 
+function humanError(err: string | undefined): string {
+  if (!err) return "Gagal ambil harga";
+  const e = err.toLowerCase();
+  if (e.includes("404") || e.includes("not found")) return "Ticker tidak ditemukan";
+  if (e.includes("no price")) return "Tidak ada data harga";
+  if (e.includes("timeout") || e.includes("network") || e.includes("fetch"))
+    return "Koneksi gagal";
+  return "Gagal ambil harga";
+}
+
 function IndexPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
-  const [refreshing, setRefreshing] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
   const didInitialFetch = useRef(false);
 
@@ -100,142 +112,165 @@ function IndexPage() {
 
   function remove(id: string) {
     setStocks((prev) => prev.filter((s) => s.id !== id));
-  }
-
-  async function refreshPrices(silent = false) {
-    const tickers = stocks
-      .filter((s) => s.ticker.trim() && !s.manual)
-      .map((s) => s.ticker.trim().toUpperCase());
-    if (tickers.length === 0) {
-      if (!silent) toast.info("Tidak ada ticker auto untuk di-refresh.");
-      return;
-    }
-    setRefreshing(true);
-    try {
-      const res = await fetch(
-        `/api/quote?tickers=${encodeURIComponent(tickers.join(","))}`,
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data: { quotes: Quote[] } = await res.json();
-      const map = new Map<string, Quote>();
-      data.quotes.forEach((q) => {
-        const base = q.symbol.replace(/\.JK$/i, "");
-        map.set(base, q);
-      });
-      let okCount = 0;
-      let failCount = 0;
-      setStocks((prev) =>
-        prev.map((s) => {
-          if (s.manual || !s.ticker.trim()) return s;
-          const q = map.get(s.ticker.trim().toUpperCase());
-          if (!q) return s;
-          if (q.price != null) {
-            okCount++;
-            return { ...s, price: q.price, error: null };
-          }
-          failCount++;
-          return { ...s, error: q.error ?? "gagal" };
-        }),
-      );
-      setLastRefresh(Date.now());
-      if (!silent) {
-        if (failCount === 0) toast.success(`Harga ${okCount} saham diperbarui.`);
-        else toast.warning(`${okCount} berhasil, ${failCount} gagal.`);
-      }
-    } catch (err) {
-      if (!silent) {
-        toast.error(
-          `Gagal ambil harga: ${err instanceof Error ? err.message : "error"}`,
-        );
-      }
-    } finally {
-      setRefreshing(false);
-    }
-  }
-
-  // Auto-fetch once on mount if there are auto stocks
-  useEffect(() => {
-    if (!hydrated || didInitialFetch.current) return;
-    if (stocks.some((s) => s.ticker.trim() && !s.manual)) {
-      didInitialFetch.current = true;
-      refreshPrices(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hydrated]);
-
-  function copyFormula() {
-    if (!formula) return;
-    navigator.clipboard.writeText(formula).then(() => {
-      setCopied(true);
-      toast.success("Formula disalin.");
-      setTimeout(() => setCopied(false), 1500);
+    setLoadingIds((prev) => {
+      const n = new Set(prev);
+      n.delete(id);
+      return n;
     });
   }
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Toaster position="top-center" richColors />
-      <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:py-12">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Index Builder
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Basket saham IDX market-cap weighted. Simpel, mobile-first.
-          </p>
-        </header>
+  async function fetchTickerForRow(id: string, ticker: string) {
+    if (!ticker) return;
+    setLoadingIds((prev) => new Set(prev).add(id));
+    try {
+      const res = await fetch(
+        `/api/quote?tickers=${encodeURIComponent(ticker)}`,
+      );
+      if (!res.ok) {
+        update(id, { error: "Server error" });
+        return;
+      }
+      const data: { quotes: Quote[] } = await res.json();
+      const q = data.quotes[0];
+      if (!q) {
+        update(id, { error: "Tidak ada respons" });
+        return;
+      }
+      if (q.price != null) {
+        // Hanya update price kalau bukan manual price
+        const stock = stocks.find((s) => s.id === id);
+        if (stock?.manualPrice) {
+          update(id, { error: null });
+        } else {
+          update(id, { price: Number(q.price), error: null });
+        }
+        setLastRefresh(Date.now());
+      } else {
+        update(id, { error: humanError(q.error) });
+      }
+    } catch (err) {
+      update(id, {
+        error: humanError(err instanceof Error ? err.message : "fetch"),
+      });
+    } finally {
+      setLoadingIds((prev) => {
+        const n = new Set(prev);
+        n.delete(id);
+        return n;
+      });
+    }
+  }
 
-        {/* Stats */}
+  // Auto-fetch all on first mount
+  useEffect(() => {
+    if (!hydrated || didInitialFetch.current) return;
+    didInitialFetch.current = true;
+    const tickersToFetch = stocks
+      .filter((s) => s.ticker.trim() && !s.manualPrice)
+      .map((s) => ({ id: s.id, ticker: s.ticker.trim().toUpperCase() }));
+    if (tickersToFetch.length === 0) return;
+    // Fetch all in parallel
+    tickersToFetch.forEach(({ id, ticker }) => fetchTickerForRow(id, ticker));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
+  function refreshAll() {
+    const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
+    if (list.length === 0) {
+      toast.info("Tidak ada ticker untuk di-refresh.");
+      return;
+    }
+    list.forEach((s) =>
+      fetchTickerForRow(s.id, s.ticker.trim().toUpperCase()),
+    );
+  }
+
+  const dbCount = useMemo(() => Object.keys(IDX_SHARES).length, []);
+
+  return (
+    <div className="relative min-h-screen bg-background text-foreground">
+      <Toaster position="top-center" richColors />
+      <AppHeader />
+
+      <main className="mx-auto w-full max-w-5xl px-4 pb-32 pt-6 sm:pt-10">
+        {/* Stats grid: 1 hero + 2 compact */}
         <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <StatCard
-            label="Total Market Cap"
-            value={formatIDR(enriched.total)}
-          />
-          <StatCard
-            label="Largest Weight"
-            value={
-              enriched.largest.weight > 0
-                ? `${enriched.largest.ticker || "—"} · ${formatPct(enriched.largest.weight)}`
-                : "—"
-            }
-          />
-          <StatCard label="Jumlah Saham" value={String(stocks.length)} />
+          <div className="sm:col-span-2">
+            <StatCard
+              variant="hero"
+              label="Total Market Cap"
+              value={formatIDR(enriched.total)}
+              sub={`${stocks.length} saham · ${dbCount.toLocaleString("id-ID")} emiten di DB`}
+              icon={TrendingUp}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
+            <StatCard
+              label="Largest Weight"
+              icon={Crown}
+              value={
+                enriched.largest.weight > 0
+                  ? enriched.largest.ticker || "—"
+                  : "—"
+              }
+              sub={
+                enriched.largest.weight > 0
+                  ? formatPct(enriched.largest.weight)
+                  : "Belum ada data"
+              }
+            />
+            <StatCard
+              label="Komponen"
+              icon={Layers}
+              value={String(stocks.length)}
+              sub={
+                lastRefresh
+                  ? `Update ${formatTime(lastRefresh)}`
+                  : "Belum di-refresh"
+              }
+            />
+          </div>
         </section>
 
-        {/* List header */}
+        {/* List */}
         <section className="mt-8">
-          <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="mb-3 flex items-end justify-between gap-3">
             <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Daftar Saham
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">
+                Basket Saham
               </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">
-                Update terakhir: {formatTime(lastRefresh)}
+                Ketik ticker lalu tekan{" "}
+                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+                  Enter
+                </kbd>{" "}
+                untuk auto-fill shares & harga.
               </p>
             </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => refreshPrices()}
-              disabled={refreshing}
-              className="gap-2"
-            >
-              <RefreshCw
-                className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
-              />
-              <span className="hidden sm:inline">Refresh Harga</span>
-              <span className="sm:hidden">Refresh</span>
-            </Button>
+            {stocks.length > 0 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={refreshAll}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                Refresh semua
+              </Button>
+            ) : null}
           </div>
 
-          {/* Rows */}
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {enriched.rows.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border bg-card p-8 text-center">
-                <p className="text-sm text-muted-foreground">
-                  Belum ada saham. Klik <span className="font-medium text-foreground">Tambah Saham</span> untuk mulai.
+              <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <Plus className="h-5 w-5" />
+                </div>
+                <p className="mt-3 text-sm font-medium text-foreground">
+                  Belum ada saham
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Klik tombol di bawah untuk menambah saham pertama.
                 </p>
               </div>
             ) : (
@@ -245,7 +280,9 @@ function IndexPage() {
                   stock={r}
                   marketCap={r.marketCap}
                   weight={r.weight}
+                  loading={loadingIds.has(r.id)}
                   onChange={(patch) => update(r.id, patch)}
+                  onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
                   onRemove={() => remove(r.id)}
                 />
               ))
@@ -256,46 +293,20 @@ function IndexPage() {
             type="button"
             variant="outline"
             onClick={add}
-            className="mt-4 w-full gap-2 sm:w-auto"
+            className="mt-4 w-full gap-2 border-dashed sm:w-auto"
           >
             <Plus className="h-4 w-4" />
             Tambah Saham
           </Button>
         </section>
 
-        {/* Formula */}
-        <section className="mt-10">
-          <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-xs">
-                TradingView Formula
-              </h2>
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                onClick={copyFormula}
-                disabled={!formula}
-                className="gap-2"
-              >
-                {copied ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-                Copy
-              </Button>
-            </div>
-            <pre className="mt-3 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded-lg bg-secondary p-3 font-mono text-xs text-foreground">
-              {formula || "// Tambah saham & isi shares + harga untuk lihat formula."}
-            </pre>
-          </div>
-        </section>
-
-        <footer className="mt-12 text-center text-xs text-muted-foreground">
-          Data harga via Yahoo Finance · Tersimpan lokal di browser
+        <footer className="mt-12 text-center text-[11px] text-muted-foreground">
+          Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal di
+          browser
         </footer>
-      </div>
+      </main>
+
+      <FloatingFormula formula={formula} />
     </div>
   );
 }

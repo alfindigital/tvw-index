@@ -1,55 +1,114 @@
-# Saham Index Calculator — Minimalis
+## Ringkasan
 
-Aplikasi 1 halaman untuk bikin "basket saham" gaya market-cap weighted index. Kamu input ticker IDX + jumlah shares, harga close otomatis ditarik dari Yahoo Finance (bisa di-override manual), dan app langsung hitung market cap, weight, total basket, dan formula TradingView.
+Upgrade besar Index Builder: bundle data shares semua saham IDX dari file Excel ke dalam aplikasi (tersimpan permanen, tanpa cloud), auto-fetch harga saat ketik ticker + Enter, ticker error muncul di field-nya (bukan toast HTTP), formula TradingView jadi floating card mencolok, header sticky dengan toggle dark/light, dan rebrand jadi navy biru × putih premium.
 
-## Tampilan & UX
+## Yang akan dibangun
 
-- **Style**: light clean minimalis — background putih, teks slate-900, accent biru lembut, border tipis, rounded-xl, banyak whitespace. Font sans (Inter).
-- **Mobile-first**: di HP tiap saham jadi **card** vertikal (bukan baris tabel) — ticker besar di atas, field shares & price di bawah, market cap & weight di footer card. Di desktop berubah jadi tabel rapi.
-- **Header**: judul "Index Builder" + subtitle "IDX market-cap weighted basket".
-- **3 stat cards** di atas: Total Market Cap (IDR), Largest Weight (ticker · %), Jumlah Saham.
-- **List saham**: tiap item punya kolom Ticker, Shares (juta), Price (IDR, auto-filled, editable), Market Cap, Weight bar + %, tombol hapus (icon).
-- **Tombol "+ Tambah Saham"** di bawah list — buka inline row baru.
-- **Tombol "Refresh Harga"** di pojok atas list — fetch ulang semua harga dari Yahoo. Tampilkan timestamp "Update terakhir: HH:MM".
-- **Toggle per-row "Manual"**: kalau aktif, harga tidak ditimpa saat refresh. Indikator kecil "auto" / "manual" di sebelah price.
-- **TradingView Formula box** paling bawah: text monospace + tombol Copy.
+### 1. Database shares IDX (bundled, local-only)
+- Parse `Stock_List_-_20260424.xlsx` dengan Python di build time → generate `src/data/idx-shares.ts` berisi `Record<string, number>` (ticker → shares dalam juta).
+- Data ini di-bundle ke JS, tidak butuh DB cloud, tidak butuh fetch ke server. Tersimpan otomatis di setiap browser yang load app.
+- Saat user ketik ticker valid → shares auto-terisi dari database.
+- Tetap bisa override manual (untuk IPO baru) — input shares editable, ada flag `manualShares` agar tidak ditimpa.
 
-## Cara kerja harga
+### 2. Auto-refresh on Enter
+- Input ticker: tekan Enter → langsung fetch harga + auto-fill shares dari DB.
+- Hapus tombol "Refresh Harga" massal (atau jadikan opsional kecil di pojok). Workflow: ketik ticker → Enter → selesai.
+- Saat fetch sedang jalan: tampilkan spinner kecil di field ticker.
 
-- User ketik ticker (mis. `BBCA`). App otomatis tambahkan suffix `.JK` saat fetch ke Yahoo.
-- Sumber: endpoint Yahoo `query1.finance.yahoo.com/v8/finance/chart/{TICKER}.JK` — gratis, tidak perlu API key. Karena ada CORS, fetch dilakukan lewat **server function** TanStack Start (`/api/quote`) supaya aman dari browser.
-- Kalau Yahoo gagal (ticker salah / rate-limit), tampilkan badge merah "harga gagal" — user tetap bisa isi manual.
-- Refresh otomatis sekali saat halaman dibuka. Selain itu manual via tombol.
-- Field price selalu editable; begitu user edit → row otomatis ditandai "manual" dan tidak akan ditimpa.
+### 3. Error handling per-field (bukan toast)
+- Kalau ticker tidak ditemukan / Yahoo balas error / no price → tampilkan badge merah kecil di bawah field ticker: `"Ticker tidak ditemukan"` atau `"Tidak ada harga"`.
+- Tidak ada toast `HTTP 404` lagi. API route tetap balas 200 dengan `{error: "..."}` per quote.
 
-## Penyimpanan
+### 4. Floating TradingView Formula
+- Pindah dari section paling bawah → jadi **floating card** di kanan-bawah viewport (atau bottom sheet di mobile).
+- Bisa di-collapse/expand. Saat expand: formula besar, monospace, tombol Copy mencolok (warna primary navy).
+- Selalu visible saat scroll, jadi bisa langsung copy kapan saja.
 
-- Semua state (daftar saham, shares, harga, manual flag) disimpan di **localStorage** browser. Tidak perlu login, tidak perlu backend database.
-- App dimulai dengan **basket kosong** — user tambah saham sendiri.
+### 5. Stat cards modern
+- Ganti 3 kotak seragam → 1 hero card besar (Total Market Cap dengan angka besar + ikon) + 2 kartu pendamping yang lebih ringkas (Largest Weight dengan mini bar, Jumlah Saham).
+- Tambahkan gradient halus navy untuk hero card.
 
-## Perhitungan
+### 6. Sticky header + theme toggle
+- Header `sticky top-0 z-50` dengan backdrop blur, border bawah halus.
+- Kiri: logo/wordmark "Index Builder" (kecil, minimalis).
+- Kanan: tombol toggle Dark/Light (icon Sun/Moon, simpan preferensi di localStorage key `theme`).
+- Hapus subtitle panjang, header benar-benar minimalis.
 
-- `marketCap_i = shares_i (juta) × price_i × 1.000.000`
-- `totalMarketCap = Σ marketCap_i`
-- `weight_i = marketCap_i / totalMarketCap`
-- Format angka: `T` (triliun) / `M` (miliar) / `Jt` (juta) otomatis, locale id-ID.
-- Formula TradingView: `TICKER1*weight1 + TICKER2*weight2 + ...` (weight dibulatkan 4 desimal).
+### 7. Branding navy × putih premium
+Update `src/styles.css`:
+- **Light mode**: background putih bersih, primary navy `oklch(~0.30 0.10 260)` (deep navy), accent navy lebih terang. Tidak ada warna mencolok lain.
+- **Dark mode**: background navy sangat gelap `oklch(~0.15 0.04 260)`, foreground putih, primary navy lebih terang.
+- Hapus warna amber/red/blue ad-hoc di StockRow → pakai semantic colors (`destructive`, `muted`, `primary`).
+- Font tetap default, spacing lebih lega, border lebih halus.
 
-## Struktur teknis
+### 8. Mobile responsive polish
+- Stat cards: stack vertical di mobile, hero card full-width.
+- StockRow: layout sudah card-based, tinggal pastikan input ticker + Enter handler nyaman di mobile (autocomplete off, no zoom).
+- Floating formula card: di mobile jadi bottom sheet collapsible (sticky `bottom-0`), bukan floating kanan-bawah.
 
-- `src/routes/index.tsx` — halaman utama (komponen client untuk interaktivitas).
-- `src/routes/api/quote.ts` — server route TanStack Start. Terima query `?tickers=BBCA,TLKM`, fetch paralel ke Yahoo, return `{ symbol, price, currency }[]`.
-- `src/components/StockRow.tsx` — baris/card saham (responsive).
-- `src/components/StatCard.tsx` — kartu stat di atas.
-- `src/lib/format.ts` — helper format IDR & angka besar (T/M/Jt).
-- `src/lib/storage.ts` — load/save state ke localStorage dengan key `idx-basket-v1`.
-- Pakai shadcn `Button`, `Input`, `Card`, `Badge`, `Sonner` (toast feedback copy/refresh).
+## File yang akan diubah/dibuat
 
-## Yang **tidak** termasuk (biar simpel)
+**Baru:**
+- `scripts/generate-shares.mjs` — parse xlsx ke TS (run sekali di build mode).
+- `src/data/idx-shares.ts` — auto-generated database shares (`export const IDX_SHARES: Record<string, number>`).
+- `src/components/ThemeToggle.tsx` — toggle dark/light dengan localStorage.
+- `src/components/AppHeader.tsx` — sticky header.
+- `src/components/FloatingFormula.tsx` — floating formula card.
+- `src/hooks/use-theme.ts` — hook tema.
 
-- Tidak ada multi-basket / tab — hanya 1 basket.
-- Tidak ada auto-refresh tiap X menit (cukup saat buka halaman + tombol manual).
-- Tidak ada login, akun, sync antar device.
-- Tidak ada chart historis.
+**Diubah:**
+- `src/styles.css` — palet navy × putih.
+- `src/routes/__root.tsx` — apply class theme di `<html>`.
+- `src/routes/index.tsx` — rakit ulang layout (header sticky + stats baru + list + floating formula).
+- `src/components/StockRow.tsx` — Enter handler, error per-field, hilangkan badge auto/manual, auto-fill shares dari DB, badge `manual` cukup kecil untuk shares override.
+- `src/components/StatCard.tsx` — variant `hero` vs `compact`.
+- `src/lib/storage.ts` — tambah `manualShares: boolean` di `Stock`.
 
-Kalau nanti mau ditambah (multi-basket, sync cloud, auto-refresh tiap close 16:00 WIB), gampang ditambahkan di iterasi berikutnya.
+## Detail teknis
+
+**Generate shares DB (build mode):**
+```
+bun add -d xlsx
+node scripts/generate-shares.mjs  # baca xlsx, tulis src/data/idx-shares.ts
+```
+Format output:
+```ts
+// auto-generated, do not edit
+export const IDX_SHARES: Record<string, number> = {
+  BBCA: 123456.78,
+  BBRI: 151559.78,
+  // ...
+};
+```
+
+**Auto-fill shares saat ticker berubah:**
+```ts
+function onTickerChange(ticker: string) {
+  const upper = ticker.toUpperCase();
+  const patch: Partial<Stock> = { ticker: upper };
+  if (!stock.manualShares && IDX_SHARES[upper]) {
+    patch.shares = IDX_SHARES[upper];
+  }
+  onChange(patch);
+}
+```
+
+**Enter to refresh:**
+```tsx
+<Input
+  onKeyDown={(e) => { if (e.key === "Enter") refreshOne(stock.id); }}
+  ...
+/>
+```
+`refreshOne` panggil `/api/quote?tickers=XXX` untuk satu ticker, set `loading` state lokal, set `error` di stock kalau gagal.
+
+**Theme:** simpan di `localStorage["theme"]` = `"light" | "dark"`. Apply via `document.documentElement.classList.toggle("dark")`. Default ikut `prefers-color-scheme`.
+
+**Floating formula:** `position: fixed; bottom: 1rem; right: 1rem;` di desktop (max-width 420px), `bottom: 0; left: 0; right: 0;` di mobile dengan handle untuk collapse.
+
+## Yang TIDAK berubah
+- LocalStorage tetap dipakai untuk basket user (`idx-basket-v1`).
+- Yahoo Finance tetap sumber harga via `/api/quote`.
+- TanStack Start, shadcn/ui, struktur routing.
+
+Setelah approve, saya jalankan `bun add -d xlsx`, parse file Excel, generate `idx-shares.ts`, lalu refactor UI sesuai daftar di atas.
