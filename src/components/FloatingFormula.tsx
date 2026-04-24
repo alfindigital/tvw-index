@@ -27,11 +27,18 @@ export function FloatingFormula({ formula }: Props) {
       <div
         className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-2xl border border-border/60 bg-card/95 shadow-[0_10px_40px_-10px_rgb(0_0_0_/_0.25)] backdrop-blur-xl transition-all`}
       >
-        {/* Header */}
-        <button
-          type="button"
+        {/* Header (div, not button — to allow nested action button) */}
+        <div
+          role="button"
+          tabIndex={0}
           onClick={() => setOpen((v) => !v)}
-          className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setOpen((v) => !v);
+            }
+          }}
+          className="flex w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left select-none"
         >
           <div className="flex min-w-0 items-center gap-2.5">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -70,7 +77,7 @@ export function FloatingFormula({ formula }: Props) {
               className={`h-4 w-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
             />
           </div>
-        </button>
+        </div>
 
         {open ? (
           <div className="border-t border-border/60 p-3">
