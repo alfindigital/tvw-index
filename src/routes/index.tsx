@@ -190,19 +190,16 @@ function IndexPage() {
       <Toaster position="top-center" richColors />
       <AppHeader />
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-32 pt-6 sm:pt-10">
-        {/* Stats grid: 1 hero + 2 compact */}
-        <section className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <div className="sm:col-span-2">
+      <main className="mx-auto w-full max-w-5xl px-4 pb-36 pt-5 sm:pt-8">
+        {/* Single-row minimalist stats */}
+        <section className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <StatCard
-              variant="hero"
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
-              sub={`${stocks.length} saham · ${dbCount.toLocaleString("id-ID")} emiten di DB`}
+              sub={`${dbCount.toLocaleString("id-ID")} emiten di DB`}
               icon={TrendingUp}
             />
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-1">
             <StatCard
               label="Largest Weight"
               icon={Crown}
