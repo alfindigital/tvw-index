@@ -58,7 +58,7 @@ export const Route = createFileRoute("/api/quote")({
     handlers: {
       OPTIONS: async () =>
         new Response(null, { status: 204, headers: CORS }),
-      GET: async ({ request }) => {
+      GET: async ({ request }: { request: Request }) => {
         const url = new URL(request.url);
         const tickersParam = url.searchParams.get("tickers") ?? "";
         const tickers = tickersParam
