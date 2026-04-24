@@ -1,9 +1,10 @@
 export type Stock = {
   id: string;
   ticker: string;
-  shares: number; // in juta (millions)
+  shares: number; // dalam juta (millions)
   price: number; // IDR per share
-  manual: boolean; // if true, do not overwrite on refresh
+  manualShares: boolean; // jika true, jangan auto-fill dari DB
+  manualPrice: boolean; // jika true, jangan overwrite saat refresh
   error?: string | null;
 };
 
@@ -19,11 +20,20 @@ export function loadBasket(): BasketState {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { stocks: [], lastRefresh: null };
-    const parsed = JSON.parse(raw) as BasketState;
-    return {
-      stocks: Array.isArray(parsed.stocks) ? parsed.stocks : [],
-      lastRefresh: parsed.lastRefresh ?? null,
-    };
+    const parsed = JSON.parse(raw);
+    const stocks: Stock[] = Array.isArray(parsed.stocks)
+      ? parsed.stocks.map((s: any) => ({
+          id: s.id ?? crypto.randomUUID(),
+          ticker: String(s.ticker ?? ""),
+          shares: Number(s.shares ?? 0),
+          price: Number(s.price ?? 0),
+          // backward compat: old "manual" field controlled price
+          manualShares: Boolean(s.manualShares ?? false),
+          manualPrice: Boolean(s.manualPrice ?? s.manual ?? false),
+          error: s.error ?? null,
+        }))
+      : [];
+    return { stocks, lastRefresh: parsed.lastRefresh ?? null };
   } catch {
     return { stocks: [], lastRefresh: null };
   }
@@ -44,7 +54,8 @@ export function newStock(): Stock {
     ticker: "",
     shares: 0,
     price: 0,
-    manual: false,
+    manualShares: false,
+    manualPrice: false,
     error: null,
   };
 }
