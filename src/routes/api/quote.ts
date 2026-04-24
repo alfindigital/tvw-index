@@ -79,4 +79,4 @@ export const Route = createFileRoute("/api/quote")({
       },
     },
   },
-});
+} as any);
