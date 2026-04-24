@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Plus, TrendingUp, Layers, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import {
   type Stock,
 } from "@/lib/storage";
 import { formatIDR, formatPct, formatTime } from "@/lib/format";
+import { getQuotes } from "@/lib/quotes.functions";
 import { IDX_SHARES } from "@/data/idx-shares";
 
 export const Route = createFileRoute("/")({
@@ -60,6 +62,7 @@ function IndexPage() {
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
   const didInitialFetch = useRef(false);
+  const getQuotesServer = useServerFn(getQuotes);
 
   // Hydrate from localStorage
   useEffect(() => {
@@ -123,14 +126,9 @@ function IndexPage() {
     if (!ticker) return;
     setLoadingIds((prev) => new Set(prev).add(id));
     try {
-      const res = await fetch(
-        `/api/quote?tickers=${encodeURIComponent(ticker)}`,
-      );
-      if (!res.ok) {
-        update(id, { error: "Server error" });
-        return;
-      }
-      const data: { quotes: Quote[] } = await res.json();
+      const data: { quotes: Quote[] } = await getQuotesServer({
+        data: { tickers: [ticker] },
+      });
       const q = data.quotes[0];
       if (!q) {
         update(id, { error: "Tidak ada respons" });
