@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import "@tanstack/react-start";
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
@@ -80,4 +79,4 @@ export const Route = createFileRoute("/api/quote")({
       },
     },
   },
-});
+} as any);
