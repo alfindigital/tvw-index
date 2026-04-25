@@ -9,15 +9,15 @@ import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
 import { FloatingFormula } from "@/components/FloatingFormula";
+import { TemplatesMenu } from "@/components/TemplatesMenu";
 import {
   loadBasket,
   saveBasket,
   newStock,
   type Stock,
 } from "@/lib/storage";
-import { formatIDR, formatPct, formatTime } from "@/lib/format";
+import { formatIDR } from "@/lib/format";
 import { getQuotes } from "@/lib/quotes.functions";
-import { IDX_SHARES } from "@/data/idx-shares";
 
 export const Route = createFileRoute("/")({
   head: () => ({
