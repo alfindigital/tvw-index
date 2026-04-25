@@ -148,7 +148,7 @@ export function TemplatesMenu({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            className="h-9 w-9 rounded-full text-current hover:bg-white/15 hover:text-current"
             aria-label={`Templates${templates.length ? ` (${templates.length})` : ""}`}
             title="Templates"
           >
