@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, TrendingUp, Layers, Crown } from "lucide-react";
+import { Plus, TrendingUp, Layers, Crown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
@@ -210,15 +210,7 @@ function IndexPage() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <Toaster position="top-center" richColors />
-      <AppHeader
-        actions={
-          <TemplatesMenu
-            currentStocks={stocks}
-            onLoadTemplate={loadFromTemplate}
-            onAfterImport={reloadFromStorage}
-          />
-        }
-      />
+      <AppHeader />
 
       <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
         {/* Single-row minimalist stats */}
@@ -251,7 +243,7 @@ function IndexPage() {
           <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
             <div className="min-w-0">
               <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                Basket Saham
+                Watchlist
               </h2>
               <p className="mt-0.5 text-xs text-muted-foreground">
                 Ketik ticker lalu tekan{" "}
@@ -261,17 +253,26 @@ function IndexPage() {
                 untuk auto-fill.
               </p>
             </div>
-            {stocks.length > 0 ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={refreshAll}
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Refresh semua
-              </Button>
-            ) : null}
+            <div className="flex shrink-0 items-center gap-1">
+              {stocks.length > 0 ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={refreshAll}
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  aria-label="Refresh semua"
+                  title="Refresh semua"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </Button>
+              ) : null}
+              <TemplatesMenu
+                currentStocks={stocks}
+                onLoadTemplate={loadFromTemplate}
+                onAfterImport={reloadFromStorage}
+              />
+            </div>
           </div>
 
           <div className="space-y-2.5">
