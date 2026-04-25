@@ -9,15 +9,15 @@ import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
 import { FloatingFormula } from "@/components/FloatingFormula";
+import { TemplatesMenu } from "@/components/TemplatesMenu";
 import {
   loadBasket,
   saveBasket,
   newStock,
   type Stock,
 } from "@/lib/storage";
-import { formatIDR, formatPct, formatTime } from "@/lib/format";
+import { formatIDR } from "@/lib/format";
 import { getQuotes } from "@/lib/quotes.functions";
-import { IDX_SHARES } from "@/data/idx-shares";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -187,21 +187,46 @@ function IndexPage() {
     );
   }
 
-  const dbCount = useMemo(() => Object.keys(IDX_SHARES).length, []);
+  
+
+  function loadFromTemplate(stocks: Stock[]) {
+    setStocks(stocks);
+    // re-fetch prices for non-manual after a tick
+    setTimeout(() => {
+      stocks
+        .filter((s) => s.ticker.trim() && !s.manualPrice)
+        .forEach((s) =>
+          fetchTickerForRow(s.id, s.ticker.trim().toUpperCase()),
+        );
+    }, 0);
+  }
+
+  function reloadFromStorage() {
+    const s = loadBasket();
+    setStocks(s.stocks);
+    setLastRefresh(s.lastRefresh);
+  }
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <Toaster position="top-center" richColors />
-      <AppHeader />
+      <AppHeader
+        actions={
+          <TemplatesMenu
+            currentStocks={stocks}
+            onLoadTemplate={loadFromTemplate}
+            onAfterImport={reloadFromStorage}
+          />
+        }
+      />
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-36 pt-5 sm:pt-8">
+      <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
         {/* Single-row minimalist stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <StatCard
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
-              sub={`${dbCount.toLocaleString("id-ID")} emiten di DB`}
               icon={TrendingUp}
             />
             <StatCard
@@ -212,29 +237,19 @@ function IndexPage() {
                   ? enriched.largest.ticker || "—"
                   : "—"
               }
-              sub={
-                enriched.largest.weight > 0
-                  ? formatPct(enriched.largest.weight)
-                  : "Belum ada data"
-              }
             />
             <StatCard
               label="Komponen"
               icon={Layers}
               value={String(stocks.length)}
-              sub={
-                lastRefresh
-                  ? `Update ${formatTime(lastRefresh)}`
-                  : "Belum di-refresh"
-              }
             />
           </div>
         </section>
 
         {/* List */}
         <section className="mt-8">
-          <div className="mb-3 flex items-end justify-between gap-3">
-            <div>
+          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
+            <div className="min-w-0">
               <h2 className="text-sm font-semibold tracking-tight text-foreground">
                 Basket Saham
               </h2>
@@ -243,7 +258,7 @@ function IndexPage() {
                 <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
                   Enter
                 </kbd>{" "}
-                untuk auto-fill shares & harga.
+                untuk auto-fill.
               </p>
             </div>
             {stocks.length > 0 ? (
@@ -299,9 +314,21 @@ function IndexPage() {
           </Button>
         </section>
 
-        <footer className="mt-12 text-center text-[11px] text-muted-foreground">
-          Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal di
-          browser
+        <footer className="mt-12 space-y-1 text-center text-[11px] text-muted-foreground">
+          <div>
+            Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
+          </div>
+          <div>
+            Built by{" "}
+            <a
+              href="https://alfindigital.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-primary hover:underline"
+            >
+              @alfindigital
+            </a>
+          </div>
         </footer>
       </main>
 
