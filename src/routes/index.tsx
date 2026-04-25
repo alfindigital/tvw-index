@@ -210,7 +210,30 @@ function IndexPage() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <Toaster position="top-center" richColors />
-      <AppHeader />
+      <AppHeader
+        actions={
+          <>
+            {stocks.length > 0 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={refreshAll}
+                className="h-9 w-9 rounded-full text-current hover:bg-white/15 hover:text-current"
+                aria-label="Refresh semua"
+                title="Refresh semua"
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            ) : null}
+            <TemplatesMenu
+              currentStocks={stocks}
+              onLoadTemplate={loadFromTemplate}
+              onAfterImport={reloadFromStorage}
+            />
+          </>
+        }
+      />
 
       <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
         {/* Single-row minimalist stats */}
