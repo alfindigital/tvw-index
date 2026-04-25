@@ -210,15 +210,7 @@ function IndexPage() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <Toaster position="top-center" richColors />
-      <AppHeader
-        actions={
-          <TemplatesMenu
-            currentStocks={stocks}
-            onLoadTemplate={loadFromTemplate}
-            onAfterImport={reloadFromStorage}
-          />
-        }
-      />
+      <AppHeader />
 
       <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
         {/* Single-row minimalist stats */}
