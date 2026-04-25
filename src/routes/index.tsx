@@ -99,7 +99,11 @@ function IndexPage() {
   const formula = useMemo(() => {
     return enriched.rows
       .filter((r) => r.ticker && r.weight > 0)
-      .map((r) => `${r.ticker}*${r.weight.toFixed(4)}`)
+      .map((r) => {
+        // Bersihkan suffix .JK kalau user input dgn suffix Yahoo
+        const sym = r.ticker.replace(/\.JK$/i, "").toUpperCase();
+        return `${sym}*${r.weight.toFixed(4)}`;
+      })
       .join(" + ");
   }, [enriched.rows]);
 
