@@ -187,7 +187,7 @@ function IndexPage() {
     );
   }
 
-  const dbCount = useMemo(() => Object.keys(IDX_SHARES).length, []);
+  
 
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
