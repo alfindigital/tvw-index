@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, TrendingUp, Layers, Crown } from "lucide-react";
+import { Plus, TrendingUp, Layers, Crown, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
