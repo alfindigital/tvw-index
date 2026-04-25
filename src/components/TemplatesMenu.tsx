@@ -145,17 +145,14 @@ export function TemplatesMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="outline"
-            size="sm"
-            className="h-8 gap-1.5 text-xs"
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            aria-label={`Templates${templates.length ? ` (${templates.length})` : ""}`}
+            title="Templates"
           >
-            <FolderOpen className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Templates</span>
-            {templates.length > 0 ? (
-              <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                {templates.length}
-              </span>
-            ) : null}
+            <FolderOpen className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
