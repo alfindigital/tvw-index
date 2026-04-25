@@ -201,7 +201,7 @@ export function TemplatesMenu({
             }}
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
-            Simpan basket sebagai template
+            Simpan sebagai template
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleExport}>
