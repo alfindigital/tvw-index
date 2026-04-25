@@ -148,7 +148,7 @@ export function TemplatesMenu({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+            className="h-9 w-9 rounded-full text-current hover:bg-white/15 hover:text-current"
             aria-label={`Templates${templates.length ? ` (${templates.length})` : ""}`}
             title="Templates"
           >
@@ -201,7 +201,7 @@ export function TemplatesMenu({
             }}
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
-            Simpan basket sebagai template
+            Simpan sebagai template
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleExport}>
