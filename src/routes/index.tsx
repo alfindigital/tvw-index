@@ -263,39 +263,17 @@ function IndexPage() {
 
         {/* List */}
         <section className="mt-8">
-          <div className="mb-3 flex flex-wrap items-end justify-between gap-2">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                Watchlist
-              </h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Ketik ticker lalu tekan{" "}
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
-                  Enter
-                </kbd>{" "}
-                untuk auto-fill.
-              </p>
-            </div>
-            <div className="flex shrink-0 items-center gap-1">
-              {stocks.length > 0 ? (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  onClick={refreshAll}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                  aria-label="Refresh semua"
-                  title="Refresh semua"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
-              ) : null}
-              <TemplatesMenu
-                currentStocks={stocks}
-                onLoadTemplate={loadFromTemplate}
-                onAfterImport={reloadFromStorage}
-              />
-            </div>
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">
+              Watchlist
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Ketik ticker lalu tekan{" "}
+              <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+                Enter
+              </kbd>{" "}
+              untuk auto-fill.
+            </p>
           </div>
 
           <div className="space-y-2.5">
