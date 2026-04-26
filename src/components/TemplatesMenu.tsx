@@ -163,7 +163,7 @@ export function TemplatesMenu({
           </DropdownMenuLabel>
           {templates.length === 0 ? (
             <div className="px-2 py-3 text-center text-xs text-muted-foreground">
-              Belum ada template
+              {TEMPLATES_EMPTY}
             </div>
           ) : (
             <div className="max-h-60 overflow-auto">
