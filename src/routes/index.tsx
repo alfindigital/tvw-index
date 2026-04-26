@@ -272,17 +272,29 @@ function IndexPage() {
 
         {/* List */}
         <section className="mt-8">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold tracking-tight text-foreground">
-              {WATCHLIST_LABEL}
-            </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Ketik ticker lalu tekan{" "}
-              <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
-                Enter
-              </kbd>{" "}
-              untuk auto-fill.
-            </p>
+          <div className="mb-3 flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-sm font-semibold tracking-tight text-foreground">
+                {WATCHLIST_LABEL}
+              </h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Ketik ticker lalu tekan{" "}
+                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+                  Enter
+                </kbd>{" "}
+                untuk auto-fill.
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={add}
+              className="hidden shrink-0 gap-2 border-dashed sm:inline-flex"
+            >
+              <Plus className="h-4 w-4" />
+              Tambah Saham
+            </Button>
           </div>
 
           <div className="space-y-2.5">
@@ -318,14 +330,14 @@ function IndexPage() {
             type="button"
             variant="outline"
             onClick={add}
-            className="mt-4 w-full gap-2 border-dashed sm:w-auto"
+            className="mt-4 w-full gap-2 border-dashed sm:hidden"
           >
             <Plus className="h-4 w-4" />
             Tambah Saham
           </Button>
         </section>
 
-        <footer className="mt-12 space-y-1 text-center text-[11px] text-muted-foreground">
+        <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground/80">
           <div>
             Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
           </div>
