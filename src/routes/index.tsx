@@ -330,14 +330,14 @@ function IndexPage() {
             type="button"
             variant="outline"
             onClick={add}
-            className="mt-4 w-full gap-2 border-dashed sm:w-auto"
+            className="mt-4 w-full gap-2 border-dashed sm:hidden"
           >
             <Plus className="h-4 w-4" />
             Tambah Saham
           </Button>
         </section>
 
-        <footer className="mt-12 space-y-1 text-center text-[11px] text-muted-foreground">
+        <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground/80">
           <div>
             Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
           </div>
