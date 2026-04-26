@@ -60,7 +60,7 @@ export function TemplatesMenu({
       return;
     }
     if (currentStocks.length === 0) {
-      toast.error("Basket masih kosong");
+      toast.error("Watchlist masih kosong");
       return;
     }
     const next: Template = {
@@ -221,13 +221,13 @@ export function TemplatesMenu({
           <DialogHeader>
             <DialogTitle>Simpan sebagai template</DialogTitle>
             <DialogDescription>
-              Basket saat ini ({currentStocks.length} saham) akan disimpan
+              Watchlist saat ini ({currentStocks.length} saham) akan disimpan
               sebagai preset di browser.
             </DialogDescription>
           </DialogHeader>
           <Input
             autoFocus
-            placeholder="cth: Banking Big 4, Energy Basket"
+            placeholder="cth: Banking Big 4, Energy Watchlist"
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
