@@ -274,7 +274,7 @@ function IndexPage() {
         <section className="mt-8">
           <div className="mb-3">
             <h2 className="text-sm font-semibold tracking-tight text-foreground">
-              Watchlist
+              {WATCHLIST_LABEL}
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Ketik ticker lalu tekan{" "}
