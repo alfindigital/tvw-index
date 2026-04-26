@@ -28,6 +28,7 @@ import {
   type Template,
 } from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
+import { TEMPLATES_EMPTY, WATCHLIST_EMPTY_TOAST } from "@/lib/copy";
 
 type Props = {
   currentStocks: Stock[];
@@ -60,7 +61,7 @@ export function TemplatesMenu({
       return;
     }
     if (currentStocks.length === 0) {
-      toast.error("Watchlist masih kosong");
+      toast.error(WATCHLIST_EMPTY_TOAST);
       return;
     }
     const next: Template = {
@@ -162,7 +163,7 @@ export function TemplatesMenu({
           </DropdownMenuLabel>
           {templates.length === 0 ? (
             <div className="px-2 py-3 text-center text-xs text-muted-foreground">
-              Belum ada template
+              {TEMPLATES_EMPTY}
             </div>
           ) : (
             <div className="max-h-60 overflow-auto">

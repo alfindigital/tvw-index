@@ -12,6 +12,12 @@ import { FloatingFormula } from "@/components/FloatingFormula";
 import { TemplatesMenu } from "@/components/TemplatesMenu";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 import {
+  WATCHLIST_LABEL,
+  WATCHLIST_EMPTY_TITLE,
+  WATCHLIST_EMPTY_HINT,
+  WATCHLIST_NO_TICKER_TOAST,
+} from "@/lib/copy";
+import {
   loadBasket,
   saveBasket,
   newStock,
@@ -180,7 +186,7 @@ function IndexPage() {
   function refreshAll() {
     const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
     if (list.length === 0) {
-      toast.info("Tidak ada ticker untuk di-refresh.");
+      toast.info(WATCHLIST_NO_TICKER_TOAST);
       return;
     }
     list.forEach((s) =>
@@ -268,7 +274,7 @@ function IndexPage() {
         <section className="mt-8">
           <div className="mb-3">
             <h2 className="text-sm font-semibold tracking-tight text-foreground">
-              Watchlist
+              {WATCHLIST_LABEL}
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Ketik ticker lalu tekan{" "}
@@ -286,10 +292,10 @@ function IndexPage() {
                   <Plus className="h-5 w-5" />
                 </div>
                 <p className="mt-3 text-sm font-medium text-foreground">
-                  Belum ada saham
+                  {WATCHLIST_EMPTY_TITLE}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Klik tombol di bawah untuk menambah saham pertama.
+                  {WATCHLIST_EMPTY_HINT}
                 </p>
               </div>
             ) : (
