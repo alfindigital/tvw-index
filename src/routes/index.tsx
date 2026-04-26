@@ -10,6 +10,7 @@ import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
 import { FloatingFormula } from "@/components/FloatingFormula";
 import { TemplatesMenu } from "@/components/TemplatesMenu";
+import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 import {
   loadBasket,
   saveBasket,
