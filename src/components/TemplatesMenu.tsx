@@ -28,6 +28,7 @@ import {
   type Template,
 } from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
+import { TEMPLATES_EMPTY, WATCHLIST_EMPTY_TOAST } from "@/lib/copy";
 
 type Props = {
   currentStocks: Stock[];
