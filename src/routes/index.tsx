@@ -186,7 +186,7 @@ function IndexPage() {
   function refreshAll() {
     const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
     if (list.length === 0) {
-      toast.info("Tidak ada ticker untuk di-refresh.");
+      toast.info(WATCHLIST_NO_TICKER_TOAST);
       return;
     }
     list.forEach((s) =>
