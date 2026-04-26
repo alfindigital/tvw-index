@@ -27,6 +27,7 @@ import {
   type Stock,
   type Template,
 } from "@/lib/storage";
+import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 
 type Props = {
   currentStocks: Stock[];
