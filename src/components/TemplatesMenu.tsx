@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   applyImport,
   buildExport,
@@ -28,7 +29,19 @@ import {
   type Template,
 } from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
-import { TEMPLATES_EMPTY, WATCHLIST_EMPTY_TOAST } from "@/lib/copy";
+import {
+  TEMPLATES_EMPTY,
+  WATCHLIST_EMPTY_TOAST,
+  TEMPLATE_NAME_MAX,
+  TEMPLATE_NAME_REQUIRED,
+  TEMPLATE_NAME_TOO_LONG,
+} from "@/lib/copy";
+
+const templateNameSchema = z
+  .string()
+  .trim()
+  .min(1, { message: TEMPLATE_NAME_REQUIRED })
+  .max(TEMPLATE_NAME_MAX, { message: TEMPLATE_NAME_TOO_LONG });
 
 type Props = {
   currentStocks: Stock[];
@@ -44,6 +57,7 @@ export function TemplatesMenu({
   const [templates, setTemplates] = useState<Template[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -54,16 +68,33 @@ export function TemplatesMenu({
     setTemplates(loadTemplates());
   }
 
-  function handleSave() {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error("Nama template wajib diisi");
-      return;
+  function openSaveDialog() {
+    setName("");
+    setNameError(null);
+    setSaveOpen(true);
+  }
+
+  function handleNameChange(value: string) {
+    setName(value);
+    if (nameError) {
+      const result = templateNameSchema.safeParse(value);
+      setNameError(result.success ? null : result.error.issues[0].message);
     }
+  }
+
+  function handleSave() {
     if (currentStocks.length === 0) {
       toast.error(WATCHLIST_EMPTY_TOAST);
       return;
     }
+    const result = templateNameSchema.safeParse(name);
+    if (!result.success) {
+      const msg = result.error.issues[0].message;
+      setNameError(msg);
+      toast.error(msg);
+      return;
+    }
+    const trimmed = result.data;
     const next: Template = {
       id: crypto.randomUUID(),
       name: trimmed,
@@ -74,6 +105,7 @@ export function TemplatesMenu({
     saveTemplates(list);
     setTemplates(list);
     setName("");
+    setNameError(null);
     setSaveOpen(false);
     toast.success(`Template "${trimmed}" disimpan`);
   }
@@ -199,7 +231,7 @@ export function TemplatesMenu({
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
-              setSaveOpen(true);
+              openSaveDialog();
             }}
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
@@ -217,7 +249,16 @@ export function TemplatesMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+      <Dialog
+        open={saveOpen}
+        onOpenChange={(open) => {
+          setSaveOpen(open);
+          if (!open) {
+            setName("");
+            setNameError(null);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Simpan sebagai template</DialogTitle>
@@ -226,15 +267,39 @@ export function TemplatesMenu({
               sebagai preset di browser.
             </DialogDescription>
           </DialogHeader>
-          <Input
-            autoFocus
-            placeholder="cth: Banking Big 4, Energy Watchlist"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-            }}
-          />
+          <div className="space-y-1.5">
+            <Input
+              autoFocus
+              placeholder="cth: Banking Big 4, Energy Watchlist"
+              value={name}
+              maxLength={TEMPLATE_NAME_MAX}
+              aria-invalid={nameError ? true : undefined}
+              aria-describedby={nameError ? "tpl-name-error" : "tpl-name-hint"}
+              onChange={(e) => handleNameChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
+              }}
+              className={
+                nameError ? "border-destructive focus-visible:ring-destructive/30" : ""
+              }
+            />
+            {nameError ? (
+              <p
+                id="tpl-name-error"
+                className="text-xs font-medium text-destructive"
+                role="alert"
+              >
+                {nameError}
+              </p>
+            ) : (
+              <p
+                id="tpl-name-hint"
+                className="text-[11px] text-muted-foreground"
+              >
+                {name.trim().length}/{TEMPLATE_NAME_MAX} karakter
+              </p>
+            )}
+          </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setSaveOpen(false)}>
               Batal

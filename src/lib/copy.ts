@@ -12,3 +12,8 @@ export const WATCHLIST_NO_TICKER_TOAST =
   "Watchlist masih kosong — belum ada ticker untuk di-refresh.";
 
 export const TEMPLATES_EMPTY = "Belum ada template tersimpan";
+
+// Template name validation
+export const TEMPLATE_NAME_MAX = 60;
+export const TEMPLATE_NAME_REQUIRED = "Nama template wajib diisi";
+export const TEMPLATE_NAME_TOO_LONG = `Nama template maksimal ${TEMPLATE_NAME_MAX} karakter`;
