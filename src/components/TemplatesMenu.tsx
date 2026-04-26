@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { z } from "zod";
 import {
   applyImport,
   buildExport,
@@ -28,7 +29,19 @@ import {
   type Template,
 } from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
-import { TEMPLATES_EMPTY, WATCHLIST_EMPTY_TOAST } from "@/lib/copy";
+import {
+  TEMPLATES_EMPTY,
+  WATCHLIST_EMPTY_TOAST,
+  TEMPLATE_NAME_MAX,
+  TEMPLATE_NAME_REQUIRED,
+  TEMPLATE_NAME_TOO_LONG,
+} from "@/lib/copy";
+
+const templateNameSchema = z
+  .string()
+  .trim()
+  .min(1, { message: TEMPLATE_NAME_REQUIRED })
+  .max(TEMPLATE_NAME_MAX, { message: TEMPLATE_NAME_TOO_LONG });
 
 type Props = {
   currentStocks: Stock[];
