@@ -61,7 +61,7 @@ export function TemplatesMenu({
       return;
     }
     if (currentStocks.length === 0) {
-      toast.error("Watchlist masih kosong");
+      toast.error(WATCHLIST_EMPTY_TOAST);
       return;
     }
     const next: Template = {
