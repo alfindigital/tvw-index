@@ -107,7 +107,9 @@ export function TemplatesMenu({
     setName("");
     setNameError(null);
     setSaveOpen(false);
-    toast.success(`Template "${trimmed}" disimpan`);
+    toast.success("Watchlist tersimpan sebagai template", {
+      description: trimmed,
+    });
   }
 
   function handleLoad(t: Template) {
