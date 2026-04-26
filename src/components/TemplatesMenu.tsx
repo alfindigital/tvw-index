@@ -231,7 +231,7 @@ export function TemplatesMenu({
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
-              setSaveOpen(true);
+              openSaveDialog();
             }}
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
