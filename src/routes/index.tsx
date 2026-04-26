@@ -23,13 +23,13 @@ import { getQuotes } from "@/lib/quotes.functions";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Index Builder — Kalkulator Basket Saham IDX" },
+      { title: "Index Builder — Kalkulator Watchlist Saham IDX" },
       {
         name: "description",
         content:
-          "Bikin basket saham IDX market-cap weighted. Database 957+ emiten built-in, harga otomatis Yahoo Finance, formula TradingView siap pakai.",
+          "Bikin watchlist saham IDX market-cap weighted. Database 957+ emiten built-in, harga otomatis Yahoo Finance, formula TradingView siap pakai.",
       },
-      { property: "og:title", content: "Index Builder — Basket Saham IDX" },
+      { property: "og:title", content: "Index Builder — Watchlist Saham IDX" },
       {
         property: "og:description",
         content:
