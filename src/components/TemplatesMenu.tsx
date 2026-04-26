@@ -249,7 +249,16 @@ export function TemplatesMenu({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <Dialog open={saveOpen} onOpenChange={setSaveOpen}>
+      <Dialog
+        open={saveOpen}
+        onOpenChange={(open) => {
+          setSaveOpen(open);
+          if (!open) {
+            setName("");
+            setNameError(null);
+          }
+        }}
+      >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Simpan sebagai template</DialogTitle>
@@ -258,15 +267,39 @@ export function TemplatesMenu({
               sebagai preset di browser.
             </DialogDescription>
           </DialogHeader>
-          <Input
-            autoFocus
-            placeholder="cth: Banking Big 4, Energy Watchlist"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSave();
-            }}
-          />
+          <div className="space-y-1.5">
+            <Input
+              autoFocus
+              placeholder="cth: Banking Big 4, Energy Watchlist"
+              value={name}
+              maxLength={TEMPLATE_NAME_MAX}
+              aria-invalid={nameError ? true : undefined}
+              aria-describedby={nameError ? "tpl-name-error" : "tpl-name-hint"}
+              onChange={(e) => handleNameChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
+              }}
+              className={
+                nameError ? "border-destructive focus-visible:ring-destructive/30" : ""
+              }
+            />
+            {nameError ? (
+              <p
+                id="tpl-name-error"
+                className="text-xs font-medium text-destructive"
+                role="alert"
+              >
+                {nameError}
+              </p>
+            ) : (
+              <p
+                id="tpl-name-hint"
+                className="text-[11px] text-muted-foreground"
+              >
+                {name.trim().length}/{TEMPLATE_NAME_MAX} karakter
+              </p>
+            )}
+          </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setSaveOpen(false)}>
               Batal
