@@ -27,6 +27,7 @@ import {
   type Stock,
   type Template,
 } from "@/lib/storage";
+import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 
 type Props = {
   currentStocks: Stock[];
@@ -148,11 +149,11 @@ export function TemplatesMenu({
             type="button"
             variant="ghost"
             size="icon"
-            className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-current hover:bg-white/15 hover:text-current"
+            className={HEADER_ICON_BUTTON_CLASS}
             aria-label={`Templates${templates.length ? ` (${templates.length})` : ""}`}
             title="Templates"
           >
-            <FolderOpen className="h-4 w-4" />
+            <FolderOpen className={HEADER_ICON_CLASS} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
