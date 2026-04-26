@@ -60,7 +60,7 @@ export function TemplatesMenu({
       return;
     }
     if (currentStocks.length === 0) {
-      toast.error("Basket masih kosong");
+      toast.error("Watchlist masih kosong");
       return;
     }
     const next: Template = {
