@@ -57,6 +57,7 @@ export function TemplatesMenu({
   const [templates, setTemplates] = useState<Template[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
   const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -67,16 +68,33 @@ export function TemplatesMenu({
     setTemplates(loadTemplates());
   }
 
-  function handleSave() {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      toast.error("Nama template wajib diisi");
-      return;
+  function openSaveDialog() {
+    setName("");
+    setNameError(null);
+    setSaveOpen(true);
+  }
+
+  function handleNameChange(value: string) {
+    setName(value);
+    if (nameError) {
+      const result = templateNameSchema.safeParse(value);
+      setNameError(result.success ? null : result.error.issues[0].message);
     }
+  }
+
+  function handleSave() {
     if (currentStocks.length === 0) {
       toast.error(WATCHLIST_EMPTY_TOAST);
       return;
     }
+    const result = templateNameSchema.safeParse(name);
+    if (!result.success) {
+      const msg = result.error.issues[0].message;
+      setNameError(msg);
+      toast.error(msg);
+      return;
+    }
+    const trimmed = result.data;
     const next: Template = {
       id: crypto.randomUUID(),
       name: trimmed,
@@ -87,6 +105,7 @@ export function TemplatesMenu({
     saveTemplates(list);
     setTemplates(list);
     setName("");
+    setNameError(null);
     setSaveOpen(false);
     toast.success(`Template "${trimmed}" disimpan`);
   }
