@@ -12,6 +12,12 @@ import { FloatingFormula } from "@/components/FloatingFormula";
 import { TemplatesMenu } from "@/components/TemplatesMenu";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 import {
+  WATCHLIST_LABEL,
+  WATCHLIST_EMPTY_TITLE,
+  WATCHLIST_EMPTY_HINT,
+  WATCHLIST_NO_TICKER_TOAST,
+} from "@/lib/copy";
+import {
   loadBasket,
   saveBasket,
   newStock,
