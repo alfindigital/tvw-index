@@ -292,10 +292,10 @@ function IndexPage() {
                   <Plus className="h-5 w-5" />
                 </div>
                 <p className="mt-3 text-sm font-medium text-foreground">
-                  Belum ada saham
+                  {WATCHLIST_EMPTY_TITLE}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Klik tombol di bawah untuk menambah saham pertama.
+                  {WATCHLIST_EMPTY_HINT}
                 </p>
               </div>
             ) : (
