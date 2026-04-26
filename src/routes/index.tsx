@@ -221,12 +221,12 @@ function IndexPage() {
                 size="icon"
                 onClick={refreshAll}
                 disabled={loadingIds.size > 0}
-                className="h-8 w-8 sm:h-9 sm:w-9 rounded-full text-current hover:bg-white/15 hover:text-current disabled:opacity-100"
+                className={`${HEADER_ICON_BUTTON_CLASS} disabled:opacity-100`}
                 aria-label={loadingIds.size > 0 ? "Sedang refresh" : "Refresh semua"}
                 aria-busy={loadingIds.size > 0}
                 title={loadingIds.size > 0 ? "Sedang refresh…" : "Refresh semua"}
               >
-                <RefreshCw className={`h-4 w-4 ${loadingIds.size > 0 ? "animate-spin" : ""}`} />
+                <RefreshCw className={`${HEADER_ICON_CLASS} ${loadingIds.size > 0 ? "animate-spin" : ""}`} />
               </Button>
             ) : null}
             <TemplatesMenu
