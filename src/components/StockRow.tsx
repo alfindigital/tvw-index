@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,8 @@ type Props = {
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void; // dipanggil saat Enter / blur
   onRemove: () => void;
+  /** Called when user presses Enter on the price field — useful to refocus quick-add */
+  onCommitPrice?: () => void;
 };
 
 export function StockRow({
@@ -24,7 +26,9 @@ export function StockRow({
   onChange,
   onCommitTicker,
   onRemove,
+  onCommitPrice,
 }: Props) {
+  const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
 
   function handleTickerChange(v: string) {
