@@ -1,114 +1,107 @@
-## Ringkasan
+## Tujuan
 
-Upgrade besar Index Builder: bundle data shares semua saham IDX dari file Excel ke dalam aplikasi (tersimpan permanen, tanpa cloud), auto-fetch harga saat ketik ticker + Enter, ticker error muncul di field-nya (bukan toast HTTP), formula TradingView jadi floating card mencolok, header sticky dengan toggle dark/light, dan rebrand jadi navy biru × putih premium.
+1. **Input ticker cepat**: ada satu input "Tambah ticker" yang aktif, ketik → tekan Enter → ticker langsung masuk ke watchlist (auto-fetch harga), tanpa harus klik tombol "Tambah Saham" lalu mengisi row baru.
+2. **Navigasi keyboard**: bisa pindah field pakai Tab/Enter, copy formula via shortcut, refresh & add via shortcut.
+3. **Settings menu** menggantikan tombol Templates di header. Semua aksi (templates, refresh, reset, export, import, dark/light) pindah ke dalam menu Settings di pojok kanan atas.
 
-## Yang akan dibangun
+## Perubahan UI
 
-### 1. Database shares IDX (bundled, local-only)
-- Parse `Stock_List_-_20260424.xlsx` dengan Python di build time → generate `src/data/idx-shares.ts` berisi `Record<string, number>` (ticker → shares dalam juta).
-- Data ini di-bundle ke JS, tidak butuh DB cloud, tidak butuh fetch ke server. Tersimpan otomatis di setiap browser yang load app.
-- Saat user ketik ticker valid → shares auto-terisi dari database.
-- Tetap bisa override manual (untuk IPO baru) — input shares editable, ada flag `manualShares` agar tidak ditimpa.
+### Header (kanan atas)
+Sebelum: `[Refresh] [Templates] [ThemeToggle]`
+Sesudah: `[Settings (⚙)]` saja.
 
-### 2. Auto-refresh on Enter
-- Input ticker: tekan Enter → langsung fetch harga + auto-fill shares dari DB.
-- Hapus tombol "Refresh Harga" massal (atau jadikan opsional kecil di pojok). Workflow: ketik ticker → Enter → selesai.
-- Saat fetch sedang jalan: tampilkan spinner kecil di field ticker.
+Klik Settings membuka dropdown panjang dengan grup:
 
-### 3. Error handling per-field (bukan toast)
-- Kalau ticker tidak ditemukan / Yahoo balas error / no price → tampilkan badge merah kecil di bawah field ticker: `"Ticker tidak ditemukan"` atau `"Tidak ada harga"`.
-- Tidak ada toast `HTTP 404` lagi. API route tetap balas 200 dengan `{error: "..."}` per quote.
-
-### 4. Floating TradingView Formula
-- Pindah dari section paling bawah → jadi **floating card** di kanan-bawah viewport (atau bottom sheet di mobile).
-- Bisa di-collapse/expand. Saat expand: formula besar, monospace, tombol Copy mencolok (warna primary navy).
-- Selalu visible saat scroll, jadi bisa langsung copy kapan saja.
-
-### 5. Stat cards modern
-- Ganti 3 kotak seragam → 1 hero card besar (Total Market Cap dengan angka besar + ikon) + 2 kartu pendamping yang lebih ringkas (Largest Weight dengan mini bar, Jumlah Saham).
-- Tambahkan gradient halus navy untuk hero card.
-
-### 6. Sticky header + theme toggle
-- Header `sticky top-0 z-50` dengan backdrop blur, border bawah halus.
-- Kiri: logo/wordmark "Index Builder" (kecil, minimalis).
-- Kanan: tombol toggle Dark/Light (icon Sun/Moon, simpan preferensi di localStorage key `theme`).
-- Hapus subtitle panjang, header benar-benar minimalis.
-
-### 7. Branding navy × putih premium
-Update `src/styles.css`:
-- **Light mode**: background putih bersih, primary navy `oklch(~0.30 0.10 260)` (deep navy), accent navy lebih terang. Tidak ada warna mencolok lain.
-- **Dark mode**: background navy sangat gelap `oklch(~0.15 0.04 260)`, foreground putih, primary navy lebih terang.
-- Hapus warna amber/red/blue ad-hoc di StockRow → pakai semantic colors (`destructive`, `muted`, `primary`).
-- Font tetap default, spacing lebih lega, border lebih halus.
-
-### 8. Mobile responsive polish
-- Stat cards: stack vertical di mobile, hero card full-width.
-- StockRow: layout sudah card-based, tinggal pastikan input ticker + Enter handler nyaman di mobile (autocomplete off, no zoom).
-- Floating formula card: di mobile jadi bottom sheet collapsible (sticky `bottom-0`), bukan floating kanan-bawah.
-
-## File yang akan diubah/dibuat
-
-**Baru:**
-- `scripts/generate-shares.mjs` — parse xlsx ke TS (run sekali di build mode).
-- `src/data/idx-shares.ts` — auto-generated database shares (`export const IDX_SHARES: Record<string, number>`).
-- `src/components/ThemeToggle.tsx` — toggle dark/light dengan localStorage.
-- `src/components/AppHeader.tsx` — sticky header.
-- `src/components/FloatingFormula.tsx` — floating formula card.
-- `src/hooks/use-theme.ts` — hook tema.
-
-**Diubah:**
-- `src/styles.css` — palet navy × putih.
-- `src/routes/__root.tsx` — apply class theme di `<html>`.
-- `src/routes/index.tsx` — rakit ulang layout (header sticky + stats baru + list + floating formula).
-- `src/components/StockRow.tsx` — Enter handler, error per-field, hilangkan badge auto/manual, auto-fill shares dari DB, badge `manual` cukup kecil untuk shares override.
-- `src/components/StatCard.tsx` — variant `hero` vs `compact`.
-- `src/lib/storage.ts` — tambah `manualShares: boolean` di `Stock`.
-
-## Detail teknis
-
-**Generate shares DB (build mode):**
-```
-bun add -d xlsx
-node scripts/generate-shares.mjs  # baca xlsx, tulis src/data/idx-shares.ts
-```
-Format output:
-```ts
-// auto-generated, do not edit
-export const IDX_SHARES: Record<string, number> = {
-  BBCA: 123456.78,
-  BBRI: 151559.78,
-  // ...
-};
+```text
+Tampilan
+  ◐ Dark mode                        [toggle]
+Watchlist
+  ↻ Refresh harga                    Shift+R
+  + Tambah saham                     N
+  ⌫ Reset watchlist
+Templates
+  (daftar template tersimpan, klik = load, ikon hapus di kanan)
+  ＋ Simpan sebagai template          Shift+S
+Data
+  ↓ Export data (.json)
+  ↑ Import data (.json)
+Bantuan
+  ⌨ Keyboard shortcuts               ?
 ```
 
-**Auto-fill shares saat ticker berubah:**
-```ts
-function onTickerChange(ticker: string) {
-  const upper = ticker.toUpperCase();
-  const patch: Partial<Stock> = { ticker: upper };
-  if (!stock.manualShares && IDX_SHARES[upper]) {
-    patch.shares = IDX_SHARES[upper];
+Menu pakai `DropdownMenu` shadcn yang sudah ada, dengan `DropdownMenuLabel` per grup dan `DropdownMenuShortcut` untuk hint shortcut. Confirm dialog untuk Reset.
+
+### Quick-add bar (di atas list watchlist)
+Baris baru di atas list:
+
+```text
+[ Ticker, mis. BBCA           ] [ + Tambah ]
+   Enter untuk tambah · ↑↓ untuk navigasi history
+```
+
+- Input single ticker, auto-uppercase, max 8 char.
+- Enter (atau klik tombol) → push stock baru ke list, auto-isi `shares` dari `IDX_SHARES`, langsung trigger `fetchTickerForRow`, lalu input dikosongkan dan tetap fokus untuk ticker berikutnya.
+- Tombol "Tambah" enabled hanya saat input non-empty.
+- Tombol "Tambah Saham" lama (desktop di header section + mobile bawah list) dihapus, digantikan input ini. Untuk row tanpa ticker yang ingin ditambah manual (hanya isi shares/price), tetap bisa lewat Settings → Tambah saham (tambah row kosong).
+
+### Keyboard shortcuts global
+Pasang listener di `IndexPage` (skip kalau target adalah input/textarea, kecuali shortcut yang sengaja universal):
+
+| Key | Aksi |
+|-----|------|
+| `N` | Fokus quick-add input |
+| `Shift+R` | Refresh semua harga |
+| `Shift+S` | Buka dialog Simpan template |
+| `Shift+C` | Copy formula TradingView ke clipboard (toast "Formula disalin") |
+| `?` | Buka dialog daftar shortcut |
+| `Esc` | Tutup dialog/dropdown yang terbuka (default Radix) |
+
+Di dalam row (StockRow), Tab sudah natural pindah Ticker → Shares → Harga → Hapus. Tambahan:
+- Pada input Harga, Enter → commit + pindah fokus ke quick-add (untuk lanjut tambah ticker baru cepat).
+- Pada input Shares, Enter → pindah fokus ke input Harga.
+
+### Dialog Shortcuts
+Dialog sederhana berisi tabel key → aksi (copy dari list di atas), dipicu oleh `?` atau menu Settings → Bantuan.
+
+## Detail Teknis
+
+### File baru
+- `src/components/SettingsMenu.tsx` — dropdown gabungan, terima props:
+  ```ts
+  {
+    stocks: Stock[];
+    loadingCount: number;
+    onRefreshAll(): void;
+    onAddEmpty(): void;
+    onReset(): void;
+    onLoadTemplate(stocks: Stock[]): void;
+    onAfterImport(): void;
+    onOpenShortcuts(): void;
   }
-  onChange(patch);
-}
-```
+  ```
+  Berisi semua isi `TemplatesMenu` saat ini + ThemeToggle inline (pakai `useTheme` langsung) + Refresh + Reset + entry Shortcuts. `TemplatesMenu.tsx` dihapus (atau dikosongkan—isinya dipindah ke SettingsMenu).
+- `src/components/QuickAddBar.tsx` — input + tombol, props: `{ onAdd(ticker: string): void; inputRef?: Ref<HTMLInputElement> }`.
+- `src/components/ShortcutsDialog.tsx` — Dialog shadcn dengan tabel shortcut.
+- `src/hooks/use-shortcuts.ts` — hook kecil untuk register handler global, dengan guard: skip kalau `document.activeElement` adalah `input/textarea/[contenteditable]` kecuali untuk shortcut yang ditandai `allowInInput: true` (mis. `Shift+C`).
 
-**Enter to refresh:**
-```tsx
-<Input
-  onKeyDown={(e) => { if (e.key === "Enter") refreshOne(stock.id); }}
-  ...
-/>
-```
-`refreshOne` panggil `/api/quote?tickers=XXX` untuk satu ticker, set `loading` state lokal, set `error` di stock kalau gagal.
+### Perubahan file
+- `src/routes/index.tsx`:
+  - Tambah `quickAddRef`, `shortcutsOpen` state.
+  - Fungsi baru `addTicker(raw: string)` yang membuat `Stock` dengan ticker yang sudah diparse, isi `shares` dari `IDX_SHARES` jika ada, push ke state, lalu panggil `fetchTickerForRow`.
+  - Pasang `useShortcuts` dengan handler N / Shift+R / Shift+S / Shift+C / `?`.
+  - Render `<QuickAddBar onAdd={addTicker} inputRef={quickAddRef} />` di atas list.
+  - Hapus tombol "Tambah Saham" lama (header section + mobile).
+  - Render `<ShortcutsDialog open=… />`.
+  - Ganti `<TemplatesMenu …>` dan `<ThemeToggle/>` di `AppHeader actions` dengan satu `<SettingsMenu …/>`. Refresh button juga dipindah ke dalam menu (header jadi cuma 1 ikon ⚙).
+- `src/components/AppHeader.tsx`: tetap, hanya 1 child action sekarang. Tidak perlu render `<ThemeToggle/>` di sini lagi (dipindah ke SettingsMenu) — hapus baris `<ThemeToggle/>`.
+- `src/components/StockRow.tsx`: pada input Shares & Harga tambah `onKeyDown` untuk Enter → next field / quick-add focus. Quick-add ref di-share via context ringan atau callback prop `onCommitPrice` baru.
+- `src/lib/copy.ts`: tambah konstanta untuk label tombol Settings dan judul dialog shortcuts (opsional).
 
-**Theme:** simpan di `localStorage["theme"]` = `"light" | "dark"`. Apply via `document.documentElement.classList.toggle("dark")`. Default ikut `prefers-color-scheme`.
+### Aksesibilitas
+- Setiap shortcut hint tampil di menu via `DropdownMenuShortcut`.
+- Semua tombol punya `aria-label` & `title`.
+- Quick-add input: `aria-label="Tambah ticker"`.
 
-**Floating formula:** `position: fixed; bottom: 1rem; right: 1rem;` di desktop (max-width 420px), `bottom: 0; left: 0; right: 0;` di mobile dengan handle untuk collapse.
-
-## Yang TIDAK berubah
-- LocalStorage tetap dipakai untuk basket user (`idx-basket-v1`).
-- Yahoo Finance tetap sumber harga via `/api/quote`.
-- TanStack Start, shadcn/ui, struktur routing.
-
-Setelah approve, saya jalankan `bun add -d xlsx`, parse file Excel, generate `idx-shares.ts`, lalu refactor UI sesuai daftar di atas.
+## Out of scope
+- Tidak menambah autocomplete dropdown di QuickAddBar (cukup input + Enter). Bisa fase berikutnya.
+- Tidak mengubah formula/perhitungan.

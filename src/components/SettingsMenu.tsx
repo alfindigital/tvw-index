@@ -1,5 +1,17 @@
 import { useEffect, useRef, useState } from "react";
-import { BookmarkPlus, Download, Upload, Trash2, FolderOpen } from "lucide-react";
+import {
+  BookmarkPlus,
+  Download,
+  Upload,
+  Trash2,
+  Settings as SettingsIcon,
+  RefreshCw,
+  Plus,
+  RotateCcw,
+  Sun,
+  Moon,
+  Keyboard,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,11 +22,22 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -28,6 +51,7 @@ import {
   type Stock,
   type Template,
 } from "@/lib/storage";
+import { useTheme } from "@/hooks/use-theme";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
@@ -45,24 +69,47 @@ const templateNameSchema = z
 
 type Props = {
   currentStocks: Stock[];
+  loadingCount: number;
+  onRefreshAll: () => void;
+  onAddEmpty: () => void;
+  onReset: () => void;
   onLoadTemplate: (stocks: Stock[]) => void;
   onAfterImport: () => void;
+  onOpenShortcuts: () => void;
+  /** External trigger to open save dialog (e.g. via Shift+S shortcut) */
+  saveDialogTrigger?: number;
 };
 
-export function TemplatesMenu({
+export function SettingsMenu({
   currentStocks,
+  loadingCount,
+  onRefreshAll,
+  onAddEmpty,
+  onReset,
   onLoadTemplate,
   onAfterImport,
+  onOpenShortcuts,
+  saveDialogTrigger,
 }: Props) {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [saveOpen, setSaveOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const { theme, toggle: toggleTheme } = useTheme();
 
   useEffect(() => {
     setTemplates(loadTemplates());
   }, []);
+
+  // Open save dialog when external trigger fires
+  useEffect(() => {
+    if (saveDialogTrigger === undefined) return;
+    if (saveDialogTrigger === 0) return;
+    openSaveDialog();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [saveDialogTrigger]);
 
   function refresh() {
     setTemplates(loadTemplates());
@@ -113,7 +160,6 @@ export function TemplatesMenu({
   }
 
   function handleLoad(t: Template) {
-    // Re-id supaya tidak bentrok
     const cloned = t.stocks.map((s) => ({
       ...s,
       id: crypto.randomUUID(),
@@ -154,7 +200,7 @@ export function TemplatesMenu({
 
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    e.target.value = ""; // reset
+    e.target.value = "";
     if (!file) return;
     const text = await file.text();
     const result = applyImport(text, "replace");
@@ -185,22 +231,83 @@ export function TemplatesMenu({
             variant="ghost"
             size="icon"
             className={HEADER_ICON_BUTTON_CLASS}
-            aria-label={`Templates${templates.length ? ` (${templates.length})` : ""}`}
-            title="Templates"
+            aria-label="Settings"
+            title="Settings"
           >
-            <FolderOpen className={HEADER_ICON_CLASS} />
+            <SettingsIcon className={HEADER_ICON_CLASS} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-64">
+        <DropdownMenuContent align="end" className="w-72">
+          {/* Tampilan */}
           <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            Saved Templates
+            Tampilan
+          </DropdownMenuLabel>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              toggleTheme();
+            }}
+          >
+            {theme === "dark" ? (
+              <Sun className="mr-2 h-3.5 w-3.5" />
+            ) : (
+              <Moon className="mr-2 h-3.5 w-3.5" />
+            )}
+            {theme === "dark" ? "Light mode" : "Dark mode"}
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Watchlist */}
+          <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Watchlist
+          </DropdownMenuLabel>
+          <DropdownMenuItem
+            disabled={loadingCount > 0 || currentStocks.length === 0}
+            onSelect={(e) => {
+              e.preventDefault();
+              onRefreshAll();
+            }}
+          >
+            <RefreshCw
+              className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`}
+            />
+            Refresh harga
+            <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              onAddEmpty();
+            }}
+          >
+            <Plus className="mr-2 h-3.5 w-3.5" />
+            Tambah baris kosong
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={currentStocks.length === 0}
+            onSelect={(e) => {
+              e.preventDefault();
+              setResetOpen(true);
+            }}
+            className="text-destructive focus:text-destructive"
+          >
+            <RotateCcw className="mr-2 h-3.5 w-3.5" />
+            Reset watchlist
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Templates */}
+          <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Templates
           </DropdownMenuLabel>
           {templates.length === 0 ? (
-            <div className="px-2 py-3 text-center text-xs text-muted-foreground">
+            <div className="px-2 py-2 text-center text-xs text-muted-foreground">
               {TEMPLATES_EMPTY}
             </div>
           ) : (
-            <div className="max-h-60 overflow-auto">
+            <div className="max-h-48 overflow-auto">
               {templates.map((t) => (
                 <DropdownMenuItem
                   key={t.id}
@@ -221,7 +328,7 @@ export function TemplatesMenu({
                     type="button"
                     onClick={() => handleDelete(t)}
                     className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    aria-label="Hapus"
+                    aria-label="Hapus template"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -229,7 +336,6 @@ export function TemplatesMenu({
               ))}
             </div>
           )}
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             onSelect={(e) => {
               e.preventDefault();
@@ -238,8 +344,15 @@ export function TemplatesMenu({
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
             Simpan sebagai template
+            <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
           </DropdownMenuItem>
+
           <DropdownMenuSeparator />
+
+          {/* Data */}
+          <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Data
+          </DropdownMenuLabel>
           <DropdownMenuItem onSelect={handleExport}>
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
@@ -248,9 +361,24 @@ export function TemplatesMenu({
             <Upload className="mr-2 h-3.5 w-3.5" />
             Import data (.json)
           </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Bantuan */}
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              onOpenShortcuts();
+            }}
+          >
+            <Keyboard className="mr-2 h-3.5 w-3.5" />
+            Keyboard shortcuts
+            <DropdownMenuShortcut>?</DropdownMenuShortcut>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
+      {/* Save template dialog */}
       <Dialog
         open={saveOpen}
         onOpenChange={(open) => {
@@ -282,7 +410,9 @@ export function TemplatesMenu({
                 if (e.key === "Enter") handleSave();
               }}
               className={
-                nameError ? "border-destructive focus-visible:ring-destructive/30" : ""
+                nameError
+                  ? "border-destructive focus-visible:ring-destructive/30"
+                  : ""
               }
             />
             {nameError ? (
@@ -310,6 +440,32 @@ export function TemplatesMenu({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Reset confirmation */}
+      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Semua saham di watchlist saat ini akan dihapus. Template tersimpan
+              tidak terpengaruh. Tindakan ini tidak bisa dibatalkan.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onReset();
+                setResetOpen(false);
+                toast.success("Watchlist direset");
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
