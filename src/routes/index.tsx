@@ -1,16 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, TrendingUp, Layers, Crown, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TrendingUp, Layers, Crown, Plus } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
 import { FloatingFormula } from "@/components/FloatingFormula";
-import { TemplatesMenu } from "@/components/TemplatesMenu";
-import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
+import { SettingsMenu } from "@/components/SettingsMenu";
+import { QuickAddBar } from "@/components/QuickAddBar";
+import { ShortcutsDialog } from "@/components/ShortcutsDialog";
+import { useShortcuts } from "@/hooks/use-shortcuts";
 import {
   WATCHLIST_LABEL,
   WATCHLIST_EMPTY_TITLE,
@@ -23,6 +24,7 @@ import {
   newStock,
   type Stock,
 } from "@/lib/storage";
+import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR } from "@/lib/format";
 import { getQuotes } from "@/lib/quotes.functions";
 
@@ -68,7 +70,11 @@ function IndexPage() {
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
   const didInitialFetch = useRef(false);
+  const quickAddRef = useRef<HTMLInputElement>(null);
+  const formulaRef = useRef<string>("");
   const getQuotesServer = useServerFn(getQuotes);
 
   // Hydrate from localStorage
@@ -85,7 +91,6 @@ function IndexPage() {
     saveBasket({ stocks, lastRefresh });
   }, [stocks, lastRefresh, hydrated]);
 
-  // Derived calculations
   const enriched = useMemo(() => {
     const rows = stocks.map((s) => {
       const marketCap = (s.shares || 0) * (s.price || 0) * 1_000_000;
@@ -107,12 +112,16 @@ function IndexPage() {
     return enriched.rows
       .filter((r) => r.ticker && r.weight > 0)
       .map((r) => {
-        // Bersihkan suffix .JK kalau user input dgn suffix Yahoo
         const sym = r.ticker.replace(/\.JK$/i, "").toUpperCase();
         return `${sym}*${r.weight.toFixed(4)}`;
       })
       .join(" + ");
   }, [enriched.rows]);
+
+  // Keep ref in sync for shortcut access
+  useEffect(() => {
+    formulaRef.current = formula;
+  }, [formula]);
 
   function update(id: string, patch: Partial<Stock>) {
     setStocks((prev) =>
@@ -120,7 +129,7 @@ function IndexPage() {
     );
   }
 
-  function add() {
+  function addEmpty() {
     setStocks((prev) => [...prev, newStock()]);
   }
 
@@ -131,6 +140,12 @@ function IndexPage() {
       n.delete(id);
       return n;
     });
+  }
+
+  function resetWatchlist() {
+    setStocks([]);
+    setLastRefresh(null);
+    setLoadingIds(new Set());
   }
 
   async function fetchTickerForRow(id: string, ticker: string) {
@@ -146,7 +161,6 @@ function IndexPage() {
         return;
       }
       if (q.price != null) {
-        // Hanya update price kalau bukan manual price
         const stock = stocks.find((s) => s.id === id);
         if (stock?.manualPrice) {
           update(id, { error: null });
@@ -170,6 +184,26 @@ function IndexPage() {
     }
   }
 
+  // Add ticker via quick-add: create row with shares from DB and trigger fetch
+  function addTicker(rawTicker: string) {
+    const ticker = rawTicker.trim().toUpperCase();
+    if (!ticker) return;
+    const id = crypto.randomUUID();
+    const sharesFromDb = IDX_SHARES[ticker];
+    const stock: Stock = {
+      id,
+      ticker,
+      shares: sharesFromDb ?? 0,
+      price: 0,
+      manualShares: false,
+      manualPrice: false,
+      error: null,
+    };
+    setStocks((prev) => [...prev, stock]);
+    // Trigger fetch on next tick so state is committed
+    setTimeout(() => fetchTickerForRow(id, ticker), 0);
+  }
+
   // Auto-fetch all on first mount
   useEffect(() => {
     if (!hydrated || didInitialFetch.current) return;
@@ -178,7 +212,6 @@ function IndexPage() {
       .filter((s) => s.ticker.trim() && !s.manualPrice)
       .map((s) => ({ id: s.id, ticker: s.ticker.trim().toUpperCase() }));
     if (tickersToFetch.length === 0) return;
-    // Fetch all in parallel
     tickersToFetch.forEach(({ id, ticker }) => fetchTickerForRow(id, ticker));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
@@ -194,11 +227,8 @@ function IndexPage() {
     );
   }
 
-  
-
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
-    // re-fetch prices for non-manual after a tick
     setTimeout(() => {
       stocks
         .filter((s) => s.ticker.trim() && !s.manualPrice)
@@ -212,40 +242,71 @@ function IndexPage() {
     const s = loadBasket();
     setStocks(s.stocks);
     setLastRefresh(s.lastRefresh);
+    didInitialFetch.current = false;
   }
+
+  function copyFormula() {
+    const f = formulaRef.current;
+    if (!f) {
+      toast.info("Belum ada formula untuk disalin");
+      return;
+    }
+    navigator.clipboard
+      .writeText(f)
+      .then(() => toast.success("Formula disalin"))
+      .catch(() => toast.error("Gagal menyalin"));
+  }
+
+  // Global keyboard shortcuts
+  useShortcuts([
+    {
+      key: "n",
+      handler: () => quickAddRef.current?.focus(),
+    },
+    {
+      key: "r",
+      shift: true,
+      handler: () => refreshAll(),
+    },
+    {
+      key: "s",
+      shift: true,
+      handler: () => setSaveDialogTrigger((n) => n + 1),
+    },
+    {
+      key: "c",
+      shift: true,
+      allowInInput: true,
+      handler: () => copyFormula(),
+    },
+    {
+      key: "?",
+      allowInInput: true,
+      handler: () => setShortcutsOpen(true),
+    },
+  ]);
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <Toaster position="top-center" richColors />
       <AppHeader
         actions={
-          <>
-            {stocks.length > 0 ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={refreshAll}
-                disabled={loadingIds.size > 0}
-                className={`${HEADER_ICON_BUTTON_CLASS} disabled:opacity-100`}
-                aria-label={loadingIds.size > 0 ? "Sedang refresh" : "Refresh semua"}
-                aria-busy={loadingIds.size > 0}
-                title={loadingIds.size > 0 ? "Sedang refresh…" : "Refresh semua"}
-              >
-                <RefreshCw className={`${HEADER_ICON_CLASS} ${loadingIds.size > 0 ? "animate-spin" : ""}`} />
-              </Button>
-            ) : null}
-            <TemplatesMenu
-              currentStocks={stocks}
-              onLoadTemplate={loadFromTemplate}
-              onAfterImport={reloadFromStorage}
-            />
-          </>
+          <SettingsMenu
+            currentStocks={stocks}
+            loadingCount={loadingIds.size}
+            onRefreshAll={refreshAll}
+            onAddEmpty={addEmpty}
+            onReset={resetWatchlist}
+            onLoadTemplate={loadFromTemplate}
+            onAfterImport={reloadFromStorage}
+            onOpenShortcuts={() => setShortcutsOpen(true)}
+            saveDialogTrigger={saveDialogTrigger}
+          />
         }
       />
 
       <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
-        {/* Single-row minimalist stats */}
+        {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <StatCard
@@ -270,31 +331,24 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* List */}
+        {/* Watchlist */}
         <section className="mt-8">
-          <div className="mb-3 flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-sm font-semibold tracking-tight text-foreground">
-                {WATCHLIST_LABEL}
-              </h2>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Ketik ticker lalu tekan{" "}
-                <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
-                  Enter
-                </kbd>{" "}
-                untuk auto-fill.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={add}
-              className="hidden shrink-0 gap-2 border-dashed sm:inline-flex"
-            >
-              <Plus className="h-4 w-4" />
-              Tambah Saham
-            </Button>
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold tracking-tight text-foreground">
+              {WATCHLIST_LABEL}
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Ketik ticker di bawah lalu tekan{" "}
+              <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
+                Enter
+              </kbd>{" "}
+              untuk langsung menambah & auto-fill harga.
+            </p>
+          </div>
+
+          {/* Quick add bar */}
+          <div className="mb-3">
+            <QuickAddBar ref={quickAddRef} onAdd={addTicker} />
           </div>
 
           <div className="space-y-2.5">
@@ -321,20 +375,11 @@ function IndexPage() {
                   onChange={(patch) => update(r.id, patch)}
                   onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
                   onRemove={() => remove(r.id)}
+                  onCommitPrice={() => quickAddRef.current?.focus()}
                 />
               ))
             )}
           </div>
-
-          <Button
-            type="button"
-            variant="outline"
-            onClick={add}
-            className="mt-4 w-full gap-2 border-dashed sm:hidden"
-          >
-            <Plus className="h-4 w-4" />
-            Tambah Saham
-          </Button>
         </section>
 
         <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground/80">
@@ -356,6 +401,8 @@ function IndexPage() {
       </main>
 
       <FloatingFormula formula={formula} />
+
+      <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
     </div>
   );
 }
