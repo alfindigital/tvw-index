@@ -158,6 +158,15 @@ export function StockRow({
             </div>
           ) : null}
         </div>
+        <StatusBadge
+          status={getStatus({
+            loading,
+            hasTicker: Boolean(stock.ticker),
+            hasError: Boolean(stock.error),
+            manualPrice: stock.manualPrice,
+            hasPrice: stock.price > 0,
+          })}
+        />
         <Button
           type="button"
           variant="ghost"
