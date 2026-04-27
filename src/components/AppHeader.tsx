@@ -1,6 +1,5 @@
 import { TrendingUp } from "lucide-react";
 import type { ReactNode } from "react";
-import { ThemeToggle } from "./ThemeToggle";
 
 type Props = {
   actions?: ReactNode;
@@ -20,7 +19,6 @@ export function AppHeader({ actions }: Props) {
         </div>
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
           {actions}
-          <ThemeToggle />
         </div>
       </div>
     </header>
