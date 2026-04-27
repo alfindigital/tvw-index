@@ -1,10 +1,79 @@
 import { useRef, useState } from "react";
-import { Loader2, Trash2, AlertCircle } from "lucide-react";
+import { Loader2, Trash2, AlertCircle, CheckCircle2, Hand } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCompact, formatPct } from "@/lib/format";
 import type { Stock } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
+
+type StatusKind = "fetching" | "error" | "manual" | "ok" | "empty";
+
+function getStatus(args: {
+  loading: boolean;
+  hasTicker: boolean;
+  hasError: boolean;
+  manualPrice: boolean;
+  hasPrice: boolean;
+}): StatusKind {
+  if (args.loading) return "fetching";
+  if (args.hasError) return "error";
+  if (args.manualPrice) return "manual";
+  if (args.hasTicker && args.hasPrice) return "ok";
+  return "empty";
+}
+
+const STATUS_STYLES: Record<
+  StatusKind,
+  { label: string; className: string; Icon: typeof Loader2 | null; spin?: boolean }
+> = {
+  fetching: {
+    label: "Fetching",
+    className:
+      "bg-primary/10 text-primary ring-1 ring-inset ring-primary/20",
+    Icon: Loader2,
+    spin: true,
+  },
+  ok: {
+    label: "OK",
+    className:
+      "bg-emerald-500/10 text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400",
+    Icon: CheckCircle2,
+  },
+  error: {
+    label: "Error",
+    className:
+      "bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/20",
+    Icon: AlertCircle,
+  },
+  manual: {
+    label: "Manual",
+    className:
+      "bg-amber-500/10 text-amber-600 ring-1 ring-inset ring-amber-500/20 dark:text-amber-400",
+    Icon: Hand,
+  },
+  empty: {
+    label: "—",
+    className:
+      "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
+    Icon: null,
+  },
+};
+
+function StatusBadge({ status }: { status: StatusKind }) {
+  const s = STATUS_STYLES[status];
+  return (
+    <span
+      className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-medium uppercase tracking-wider ${s.className}`}
+      aria-label={`Status: ${s.label}`}
+      title={s.label}
+    >
+      {s.Icon ? (
+        <s.Icon className={`h-3 w-3 ${s.spin ? "animate-spin" : ""}`} />
+      ) : null}
+      {s.label}
+    </span>
+  );
+}
 
 type Props = {
   stock: Stock;
