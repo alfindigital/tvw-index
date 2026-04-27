@@ -125,6 +125,13 @@ export function StockRow({
                 manualShares: true,
               })
             }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                priceRef.current?.focus();
+                priceRef.current?.select();
+              }
+            }}
             placeholder="0"
             className="mt-1 h-9 font-mono text-sm"
           />
@@ -141,6 +148,7 @@ export function StockRow({
             ) : null}
           </div>
           <Input
+            ref={priceRef}
             type="number"
             inputMode="decimal"
             min={0}
@@ -151,6 +159,13 @@ export function StockRow({
                 manualPrice: true,
               })
             }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                (e.target as HTMLInputElement).blur();
+                onCommitPrice?.();
+              }
+            }}
             placeholder="0"
             className="mt-1 h-9 font-mono text-sm"
           />
