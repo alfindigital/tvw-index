@@ -15,5 +15,11 @@ export const TEMPLATES_EMPTY = "Belum ada template tersimpan";
 
 // Template name validation
 export const TEMPLATE_NAME_MAX = 60;
-export const TEMPLATE_NAME_REQUIRED = "Nama template wajib diisi";
-export const TEMPLATE_NAME_TOO_LONG = `Nama template maksimal ${TEMPLATE_NAME_MAX} karakter`;
+export const TEMPLATE_NAME_REQUIRED =
+  "Nama template tidak boleh kosong. Yuk, beri nama yang mudah kamu ingat.";
+export const TEMPLATE_NAME_TOO_LONG = (length: number) =>
+  `Nama template terlalu panjang (${length}/${TEMPLATE_NAME_MAX} karakter). Coba persingkat ya.`;
+export const TEMPLATE_NAME_DUPLICATE = (name: string) =>
+  `Sudah ada template bernama "${name}". Pakai nama lain atau hapus template lama dulu.`;
+export const TEMPLATE_NAME_INVALID_FALLBACK =
+  "Nama template tidak valid. Coba periksa kembali.";
