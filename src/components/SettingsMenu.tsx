@@ -125,7 +125,7 @@ export function SettingsMenu({
     setName(value);
     if (nameError) {
       const result = templateNameSchema.safeParse(value);
-      setNameError(result.success ? null : result.error.issues[0].message);
+      setNameError(result.success ? null : (result.error.issues[0]?.message ?? "Invalid name"));
     }
   }
 
@@ -136,7 +136,7 @@ export function SettingsMenu({
     }
     const result = templateNameSchema.safeParse(name);
     if (!result.success) {
-      const msg = result.error.issues[0].message;
+      const msg = result.error.issues[0]?.message ?? "Invalid name";
       setNameError(msg);
       toast.error(msg);
       return;
