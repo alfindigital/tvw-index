@@ -1,21 +1,55 @@
-name: Typecheck
+name: Typecheck (strict)
 
 on:
   push:
+    branches: ["**"]
   pull_request:
+  workflow_dispatch:
+
+# Cancel superseded runs on the same ref to save CI minutes
+concurrency:
+  group: typecheck-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   typecheck:
+    name: bunx tsc --noEmit (strict tsconfig)
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('bun.lockb', 'bun.lock', 'package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: TypeScript check (fails on missing imports)
-        run: bunx tsc --noEmit
+      - name: Show effective TypeScript config
+        run: bunx tsc --showConfig | head -80
+
+      - name: TypeScript strict check
+        id: tsc
+        run: bunx tsc --noEmit --pretty
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ "${{ steps.tsc.outcome }}" = "success" ]; then
+            echo "✅ Typecheck passed with strict tsconfig." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Typecheck failed. Fix the errors above before merging." >> $GITHUB_STEP_SUMMARY
+          fi
