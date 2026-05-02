@@ -5,7 +5,7 @@
 //     error logger plugins, and sandbox detection (port/host/strictPort).
 // You can pass additional config via defineConfig({ vite: { ... } }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import { existsSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import type { Plugin } from "vite";
 
@@ -70,8 +70,100 @@ function importGuardPlugin(): Plugin {
   };
 }
 
+function startupImportScanPlugin(): Plugin {
+  // Matches static & dynamic imports + re-exports
+  const IMPORT_RE =
+    /(?:import\s+(?:[^"'`;]+?\s+from\s+)?|export\s+(?:\*|\{[^}]*\})\s+from\s+|import\s*\(\s*)["'`]([^"'`]+)["'`]/g;
+  const SKIP_DIRS = new Set(["node_modules", "dist", "build", ".git", ".lovable", ".github"]);
+  const CODE_EXT = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
+  const ASSET_RE = /\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i;
+
+  function walk(dir: string, out: string[] = []): string[] {
+    let entries;
+    try {
+      entries = readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return out;
+    }
+    for (const e of entries) {
+      if (SKIP_DIRS.has(e.name)) continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full, out);
+      else if (CODE_EXT.has(path.extname(e.name))) out.push(full);
+    }
+    return out;
+  }
+
+  return {
+    name: "lovable-startup-import-scan",
+    apply: "serve",
+    configureServer(server) {
+      const issues: Array<{ from: string; spec: string; resolved: string }> = [];
+      const files = walk(SRC_DIR);
+
+      for (const file of files) {
+        let src: string;
+        try {
+          src = readFileSync(file, "utf8");
+        } catch {
+          continue;
+        }
+        IMPORT_RE.lastIndex = 0;
+        let m: RegExpExecArray | null;
+        while ((m = IMPORT_RE.exec(src)) !== null) {
+          const spec = m[1];
+          if (!spec) continue;
+          if (!spec.startsWith("@/") && !spec.startsWith("./") && !spec.startsWith("../")) continue;
+          const clean = spec.split("?")[0] ?? spec;
+          if (ASSET_RE.test(clean)) continue;
+
+          const absPath = clean.startsWith("@/")
+            ? path.join(SRC_DIR, clean.slice(2))
+            : path.resolve(path.dirname(file), clean);
+
+          if (!tryResolve(absPath)) {
+            issues.push({
+              from: path.relative(process.cwd(), file),
+              spec,
+              resolved: path.relative(process.cwd(), absPath),
+            });
+          }
+        }
+      }
+
+      if (issues.length > 0) {
+        const logger = server.config.logger;
+        const lines: string[] = [
+          "",
+          `❌ [startup-scan] Found ${issues.length} broken import${issues.length === 1 ? "" : "s"}:`,
+          "",
+        ];
+        // Group by importer for readability
+        const byFile = new Map<string, typeof issues>();
+        for (const i of issues) {
+          const arr = byFile.get(i.from) ?? [];
+          arr.push(i);
+          byFile.set(i.from, arr);
+        }
+        for (const [from, list] of byFile) {
+          lines.push(`  ${from}`);
+          for (const i of list) {
+            lines.push(`    ✗ "${i.spec}"  →  missing file: ${i.resolved}`);
+          }
+        }
+        lines.push("");
+        lines.push(`  → Create the missing file(s), fix the import path, or remove the import.`);
+        lines.push("");
+        logger.error(lines.join("\n"));
+      } else {
+        server.config.logger.info("✓ [startup-scan] All local imports resolved.");
+      }
+    },
+  };
+}
+
 export default defineConfig({
   vite: {
-    plugins: [importGuardPlugin()],
+    plugins: [importGuardPlugin(), startupImportScanPlugin()],
   },
 });
