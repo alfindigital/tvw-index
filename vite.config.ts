@@ -38,7 +38,7 @@ function importGuardPlugin(): Plugin {
         return null;
       }
       // Skip query/asset suffixes like ?url, ?raw, ?worker
-      const cleanSource = source.split("?")[0];
+      const cleanSource = source.split("?")[0] ?? source;
       // Skip CSS / asset imports — let Vite handle them
       if (/\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i.test(cleanSource)) {
         return null;
@@ -48,14 +48,16 @@ function importGuardPlugin(): Plugin {
       if (cleanSource.startsWith("@/")) {
         absPath = path.join(SRC_DIR, cleanSource.slice(2));
       } else if (importer) {
-        absPath = path.resolve(path.dirname(importer.split("?")[0]), cleanSource);
+        const importerPath = importer.split("?")[0] ?? importer;
+        absPath = path.resolve(path.dirname(importerPath), cleanSource);
       } else {
         return null;
       }
 
       const resolved = tryResolve(absPath);
       if (!resolved) {
-        const from = importer ? path.relative(process.cwd(), importer.split("?")[0]) : "<unknown>";
+        const importerPath = importer ? (importer.split("?")[0] ?? importer) : null;
+        const from = importerPath ? path.relative(process.cwd(), importerPath) : "<unknown>";
         const msg =
           `\n\n[import-guard] Cannot find module "${source}"\n` +
           `  imported from: ${from}\n` +
