@@ -11,6 +11,7 @@ import {
   Sun,
   Moon,
   Keyboard,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -435,13 +436,19 @@ export function SettingsMenu({
               }
             />
             {nameError ? (
-              <p
+              <div
                 id="tpl-name-error"
-                className="text-xs font-medium text-destructive"
                 role="alert"
+                className="flex items-start gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-2 py-1.5"
               >
-                {nameError}
-              </p>
+                <AlertCircle
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive"
+                  aria-hidden="true"
+                />
+                <p className="text-xs font-medium leading-snug text-destructive">
+                  {nameError}
+                </p>
+              </div>
             ) : (
               <p
                 id="tpl-name-hint"
