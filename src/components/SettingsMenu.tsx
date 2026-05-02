@@ -11,6 +11,7 @@ import {
   Sun,
   Moon,
   Keyboard,
+  AlertCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -59,13 +60,33 @@ import {
   TEMPLATE_NAME_MAX,
   TEMPLATE_NAME_REQUIRED,
   TEMPLATE_NAME_TOO_LONG,
+  TEMPLATE_NAME_DUPLICATE,
+  TEMPLATE_NAME_INVALID_FALLBACK,
 } from "@/lib/copy";
 
 const templateNameSchema = z
   .string()
   .trim()
   .min(1, { message: TEMPLATE_NAME_REQUIRED })
-  .max(TEMPLATE_NAME_MAX, { message: TEMPLATE_NAME_TOO_LONG });
+  .max(TEMPLATE_NAME_MAX, {
+    message: TEMPLATE_NAME_INVALID_FALLBACK, // overridden by validateName for accurate count
+  });
+
+function validateName(
+  raw: string,
+  existing: Template[],
+): { ok: true; value: string } | { ok: false; message: string } {
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) return { ok: false, message: TEMPLATE_NAME_REQUIRED };
+  if (trimmed.length > TEMPLATE_NAME_MAX) {
+    return { ok: false, message: TEMPLATE_NAME_TOO_LONG(trimmed.length) };
+  }
+  const dup = existing.find(
+    (t) => t.name.trim().toLowerCase() === trimmed.toLowerCase(),
+  );
+  if (dup) return { ok: false, message: TEMPLATE_NAME_DUPLICATE(trimmed) };
+  return { ok: true, value: trimmed };
+}
 
 type Props = {
   currentStocks: Stock[];
@@ -124,8 +145,8 @@ export function SettingsMenu({
   function handleNameChange(value: string) {
     setName(value);
     if (nameError) {
-      const result = templateNameSchema.safeParse(value);
-      setNameError(result.success ? null : (result.error.issues[0]?.message ?? "Invalid name"));
+      const result = validateName(value, templates);
+      setNameError(result.ok ? null : result.message);
     }
   }
 
@@ -134,14 +155,13 @@ export function SettingsMenu({
       toast.error(WATCHLIST_EMPTY_TOAST);
       return;
     }
-    const result = templateNameSchema.safeParse(name);
-    if (!result.success) {
-      const msg = result.error.issues[0]?.message ?? "Invalid name";
-      setNameError(msg);
-      toast.error(msg);
+    const result = validateName(name, templates);
+    if (!result.ok) {
+      setNameError(result.message);
+      toast.error(result.message);
       return;
     }
-    const trimmed = result.data;
+    const trimmed = result.value;
     const next: Template = {
       id: crypto.randomUUID(),
       name: trimmed,
@@ -416,13 +436,19 @@ export function SettingsMenu({
               }
             />
             {nameError ? (
-              <p
+              <div
                 id="tpl-name-error"
-                className="text-xs font-medium text-destructive"
                 role="alert"
+                className="flex items-start gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-2 py-1.5"
               >
-                {nameError}
-              </p>
+                <AlertCircle
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive"
+                  aria-hidden="true"
+                />
+                <p className="text-xs font-medium leading-snug text-destructive">
+                  {nameError}
+                </p>
+              </div>
             ) : (
               <p
                 id="tpl-name-hint"
