@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tv-weight-index.lovable.app/sitemap.xml
