@@ -1,0 +1,9 @@
+# Index Builder
+
+> Bangun watchlist saham IDX, hitung bobot index, dan pantau harga serta market cap secara real-time.
+
+Index Builder adalah alat berbasis web untuk menyusun watchlist saham Indonesia (IDX), menghitung bobot index custom, dan memantau pergerakan harga serta kapitalisasi pasar.
+
+## Pages
+
+- [Home](/): Watchlist saham IDX dengan kalkulator bobot index dan data harga real-time.
