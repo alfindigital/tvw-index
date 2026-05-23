@@ -1,4 +1,5 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 
@@ -88,5 +89,15 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    let cancelled = false;
+    void import("@/lib/a11y-contrast").then(({ startContrastWatcher }) => {
+      if (!cancelled) startContrastWatcher();
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   return <Outlet />;
 }
