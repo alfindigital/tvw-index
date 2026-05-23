@@ -425,7 +425,7 @@ function IndexPage() {
           </div>
         </section>
 
-        <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground/80">
+        <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground">
           <div>
             Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
           </div>
