@@ -31,18 +31,22 @@ import { getQuotes } from "@/lib/quotes.functions";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Index Builder — Kalkulator Watchlist Saham IDX" },
+      { title: "IndexW — Watchlist Saham IDX Bobot Market Cap" },
       {
         name: "description",
         content:
-          "Bikin watchlist saham IDX market-cap weighted. Database 957+ emiten built-in, harga otomatis Yahoo Finance, formula TradingView siap pakai.",
+          "Bikin watchlist saham IDX yang dibobotin market cap. Database 957+ emiten built-in, harga otomatis dari Yahoo Finance, formula TradingView siap salin.",
       },
-      { property: "og:title", content: "Index Builder — Watchlist Saham IDX" },
+      { property: "og:title", content: "IndexW — Watchlist Saham IDX" },
       {
         property: "og:description",
         content:
-          "Database shares IDX siap pakai. Ketik ticker → Enter → langsung dapat market cap, weight, dan formula TradingView.",
+          "Ketik ticker → Enter → langsung dapat market cap, weight, dan formula TradingView. Tools indie untuk investor IDX.",
       },
+      { property: "og:url", content: "https://tv-weight-index.lovable.app/" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://tv-weight-index.lovable.app/" },
     ],
   }),
   component: IndexPage,
@@ -348,7 +352,7 @@ function IndexPage() {
         }
       />
 
-      <main className="mx-auto w-full max-w-5xl px-3 pb-36 pt-5 sm:px-4 sm:pt-8">
+      <main className="mx-auto w-full max-w-5xl px-4 pb-40 pt-5 sm:px-6 sm:pt-8">
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -425,12 +429,15 @@ function IndexPage() {
           </div>
         </section>
 
-        <footer className="mt-16 space-y-0.5 text-center text-[10px] leading-relaxed text-muted-foreground">
+        <footer className="mt-16 space-y-1 text-center text-[11px] leading-relaxed text-muted-foreground">
+          <div className="font-medium text-foreground/80">
+            IndexW · Watchlist saham IDX, dibobotin market cap.
+          </div>
           <div>
             Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
           </div>
           <div>
-            Built by{" "}
+            Dibuat oleh{" "}
             <a
               href="https://alfindigital.com"
               target="_blank"
