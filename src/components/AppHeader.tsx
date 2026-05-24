@@ -1,5 +1,5 @@
-import { TrendingUp } from "lucide-react";
 import type { ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 
 type Props = {
   actions?: ReactNode;
@@ -7,14 +7,15 @@ type Props = {
 
 export function AppHeader({ actions }: Props) {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-primary text-primary-foreground shadow-sm">
-      <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-3 sm:px-4">
-        <div className="flex min-w-0 flex-1 items-center gap-2">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-foreground/15 backdrop-blur-sm">
-            <TrendingUp className="h-4 w-4" />
-          </div>
-          <span className="truncate text-sm font-semibold tracking-tight">
-            Index Builder
+    <header className="sticky top-0 z-40 border-b border-primary/30 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.7)]">
+      <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-3 sm:h-16 sm:px-5">
+        <div className="flex min-w-0 flex-1 items-center">
+          <Logo />
+          <span
+            className="ml-3 hidden text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/60 md:inline"
+            aria-hidden
+          >
+            · Saham IDX
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
