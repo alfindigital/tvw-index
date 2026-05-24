@@ -23,7 +23,7 @@ export function FloatingFormula({ formula }: Props) {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-4 sm:pb-6">
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-4 pb-safe sm:px-6 sm:pb-6">
       <div
         className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-2xl border border-primary/20 bg-primary text-primary-foreground shadow-[0_20px_50px_-15px_rgb(0_0_0_/_0.45)] ring-1 ring-primary/30 backdrop-blur-xl transition-all`}
       >

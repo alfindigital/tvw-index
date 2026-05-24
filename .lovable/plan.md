@@ -1,107 +1,63 @@
-## Tujuan
+# Rebrand → IndexW
 
-1. **Input ticker cepat**: ada satu input "Tambah ticker" yang aktif, ketik → tekan Enter → ticker langsung masuk ke watchlist (auto-fetch harga), tanpa harus klik tombol "Tambah Saham" lalu mengisi row baru.
-2. **Navigasi keyboard**: bisa pindah field pakai Tab/Enter, copy formula via shortcut, refresh & add via shortcut.
-3. **Settings menu** menggantikan tombol Templates di header. Semua aksi (templates, refresh, reset, export, import, dark/light) pindah ke dalam menu Settings di pojok kanan atas.
+## Identitas baru
+- **Nama**: IndexW (sebelumnya "Index Builder / TV Weight Index")
+- **Tagline**: "Watchlist saham IDX, dibobotin market cap."
+- **Palette**: Midnight Indigo — `#0a0a1a` (bg dark), `#141432` (surface), `#1e1e5a` (deep), `#4f46e5` (indigo aksen)
+- **Typography**: Plus Jakarta Sans (heading + body), JetBrains Mono untuk angka/ticker/formula (biar tidak terasa generic dan angka tetap monospace rapi)
+- **Logo mark**: ikon timbangan (scale) custom SVG inline + monogram "W" sebagai favicon
+- **Tone**: tenang, presisi, fintech-grade — bukan AI-generic
 
-## Perubahan UI
+## Yang akan diubah
 
-### Header (kanan atas)
-Sebelum: `[Refresh] [Templates] [ThemeToggle]`
-Sesudah: `[Settings (⚙)]` saja.
+### 1. Design tokens (`src/styles.css`)
+- Ganti palet light & dark ke Midnight Indigo (oklch ekuivalen dari hex di atas)
+- Primary = indigo `#4f46e5`, surface dark = `#0a0a1a`/`#141432`
+- Tambah token `--font-sans` (Plus Jakarta Sans) dan `--font-mono` (JetBrains Mono)
+- Import Google Fonts (Plus Jakarta Sans 400/500/600/700 + JetBrains Mono 500)
+- Hapus bias warna navy lama, samakan chart colors ke skala indigo
 
-Klik Settings membuka dropdown panjang dengan grup:
+### 2. Meta & SEO (`src/routes/__root.tsx`, `src/routes/index.tsx`, `sitemap.xml.ts`)
+- `og:site_name` = "IndexW"
+- Title default & index: "IndexW — Watchlist Saham IDX Bobot Market Cap"
+- Update JSON-LD WebSite/Organization → name "IndexW"
+- Favicon & apple-touch-icon baru (monogram "W" indigo)
 
-```text
-Tampilan
-  ◐ Dark mode                        [toggle]
-Watchlist
-  ↻ Refresh harga                    Shift+R
-  + Tambah saham                     N
-  ⌫ Reset watchlist
-Templates
-  (daftar template tersimpan, klik = load, ikon hapus di kanan)
-  ＋ Simpan sebagai template          Shift+S
-Data
-  ↓ Export data (.json)
-  ↑ Import data (.json)
-Bantuan
-  ⌨ Keyboard shortcuts               ?
-```
+### 3. Logo & header (`src/components/AppHeader.tsx`)
+- Komponen `Logo` baru: ikon timbangan (Lucide `Scale`) di kotak indigo gradient + wordmark "IndexW"
+- Header: sticky, blur backdrop, padding mobile-friendly
+- Actions tetap (SettingsMenu) tapi spacing dirapikan untuk layar sempit
 
-Menu pakai `DropdownMenu` shadcn yang sudah ada, dengan `DropdownMenuLabel` per grup dan `DropdownMenuShortcut` untuk hint shortcut. Confirm dialog untuk Reset.
+### 4. Aset visual
+- `public/favicon.svg` baru (monogram W indigo)
+- `public/apple-touch-icon.png` (192×192) generated
+- `public/og-image.png` (1200×630) bermerek IndexW
 
-### Quick-add bar (di atas list watchlist)
-Baris baru di atas list:
+### 5. Konsistensi tipografi di komponen
+- StockRow, StatCard, QuickAddBar, FloatingFormula: angka & ticker pakai `font-mono` (JetBrains Mono), label & heading pakai sans default
+- Hapus penggunaan `font-mono` ad-hoc Tailwind default; pakai token
 
-```text
-[ Ticker, mis. BBCA           ] [ + Tambah ]
-   Enter untuk tambah · ↑↓ untuk navigasi history
-```
+### 6. Mobile responsiveness pass
+- AppHeader: logo + actions stack rapi <380px, wordmark tetap visible
+- StatCard grid: sudah 1-col mobile (oke), perketat padding di <360px
+- StockRow: pastikan field ticker/shares/price tidak overflow, tombol hapus tetap tappable (min 40px)
+- QuickAddBar: full-width sticky-feel di mobile
+- FloatingFormula: bottom sheet style di mobile, panel di desktop (sudah ada — tinjau ulang spacing)
+- Footer & main padding: `px-4` mobile, `px-6` ≥sm, tetap `max-w-5xl` desktop
 
-- Input single ticker, auto-uppercase, max 8 char.
-- Enter (atau klik tombol) → push stock baru ke list, auto-isi `shares` dari `IDX_SHARES`, langsung trigger `fetchTickerForRow`, lalu input dikosongkan dan tetap fokus untuk ticker berikutnya.
-- Tombol "Tambah" enabled hanya saat input non-empty.
-- Tombol "Tambah Saham" lama (desktop di header section + mobile bawah list) dihapus, digantikan input ini. Untuk row tanpa ticker yang ingin ditambah manual (hanya isi shares/price), tetap bisa lewat Settings → Tambah saham (tambah row kosong).
+### 7. Copy
+- `src/lib/copy.ts`: ganti nama produk → IndexW di empty state, toast, dialog
+- Footer: "IndexW · Data IDX bundled · Harga via Yahoo Finance"
 
-### Keyboard shortcuts global
-Pasang listener di `IndexPage` (skip kalau target adalah input/textarea, kecuali shortcut yang sengaja universal):
+## Detail teknis
+- Font loading via `<link>` preconnect + stylesheet di `__root.tsx` head (bukan @import CSS, biar tidak block render)
+- Tailwind v4: register `--font-sans` & `--font-mono` di `@theme inline` agar utility `font-sans` / `font-mono` otomatis pakai font baru
+- Tidak menyentuh logic (storage, quotes server fn, shortcuts) — murni branding + responsive polish
+- Tidak menambah dependensi npm
 
-| Key | Aksi |
-|-----|------|
-| `N` | Fokus quick-add input |
-| `Shift+R` | Refresh semua harga |
-| `Shift+S` | Buka dialog Simpan template |
-| `Shift+C` | Copy formula TradingView ke clipboard (toast "Formula disalin") |
-| `?` | Buka dialog daftar shortcut |
-| `Esc` | Tutup dialog/dropdown yang terbuka (default Radix) |
+## Yang TIDAK diubah
+- Logika fetch harga, perhitungan market cap & weight, storage, shortcuts
+- Struktur route dan server functions
+- Konten data IDX
 
-Di dalam row (StockRow), Tab sudah natural pindah Ticker → Shares → Harga → Hapus. Tambahan:
-- Pada input Harga, Enter → commit + pindah fokus ke quick-add (untuk lanjut tambah ticker baru cepat).
-- Pada input Shares, Enter → pindah fokus ke input Harga.
-
-### Dialog Shortcuts
-Dialog sederhana berisi tabel key → aksi (copy dari list di atas), dipicu oleh `?` atau menu Settings → Bantuan.
-
-## Detail Teknis
-
-### File baru
-- `src/components/SettingsMenu.tsx` — dropdown gabungan, terima props:
-  ```ts
-  {
-    stocks: Stock[];
-    loadingCount: number;
-    onRefreshAll(): void;
-    onAddEmpty(): void;
-    onReset(): void;
-    onLoadTemplate(stocks: Stock[]): void;
-    onAfterImport(): void;
-    onOpenShortcuts(): void;
-  }
-  ```
-  Berisi semua isi `TemplatesMenu` saat ini + ThemeToggle inline (pakai `useTheme` langsung) + Refresh + Reset + entry Shortcuts. `TemplatesMenu.tsx` dihapus (atau dikosongkan—isinya dipindah ke SettingsMenu).
-- `src/components/QuickAddBar.tsx` — input + tombol, props: `{ onAdd(ticker: string): void; inputRef?: Ref<HTMLInputElement> }`.
-- `src/components/ShortcutsDialog.tsx` — Dialog shadcn dengan tabel shortcut.
-- `src/hooks/use-shortcuts.ts` — hook kecil untuk register handler global, dengan guard: skip kalau `document.activeElement` adalah `input/textarea/[contenteditable]` kecuali untuk shortcut yang ditandai `allowInInput: true` (mis. `Shift+C`).
-
-### Perubahan file
-- `src/routes/index.tsx`:
-  - Tambah `quickAddRef`, `shortcutsOpen` state.
-  - Fungsi baru `addTicker(raw: string)` yang membuat `Stock` dengan ticker yang sudah diparse, isi `shares` dari `IDX_SHARES` jika ada, push ke state, lalu panggil `fetchTickerForRow`.
-  - Pasang `useShortcuts` dengan handler N / Shift+R / Shift+S / Shift+C / `?`.
-  - Render `<QuickAddBar onAdd={addTicker} inputRef={quickAddRef} />` di atas list.
-  - Hapus tombol "Tambah Saham" lama (header section + mobile).
-  - Render `<ShortcutsDialog open=… />`.
-  - Ganti `<TemplatesMenu …>` dan `<ThemeToggle/>` di `AppHeader actions` dengan satu `<SettingsMenu …/>`. Refresh button juga dipindah ke dalam menu (header jadi cuma 1 ikon ⚙).
-- `src/components/AppHeader.tsx`: tetap, hanya 1 child action sekarang. Tidak perlu render `<ThemeToggle/>` di sini lagi (dipindah ke SettingsMenu) — hapus baris `<ThemeToggle/>`.
-- `src/components/StockRow.tsx`: pada input Shares & Harga tambah `onKeyDown` untuk Enter → next field / quick-add focus. Quick-add ref di-share via context ringan atau callback prop `onCommitPrice` baru.
-- `src/lib/copy.ts`: tambah konstanta untuk label tombol Settings dan judul dialog shortcuts (opsional).
-
-### Aksesibilitas
-- Setiap shortcut hint tampil di menu via `DropdownMenuShortcut`.
-- Semua tombol punya `aria-label` & `title`.
-- Quick-add input: `aria-label="Tambah ticker"`.
-
-## Out of scope
-- Tidak menambah autocomplete dropdown di QuickAddBar (cukup input + Enter). Bisa fase berikutnya.
-- Tidak mengubah formula/perhitungan.
+Setelah implement, saya akan QA cepat di viewport mobile 390px + desktop 1280px lewat preview.

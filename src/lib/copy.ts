@@ -1,10 +1,13 @@
 // Centralized user-facing copy for watchlist states so heading,
 // empty messages, and toasts stay in sync across the UI.
+export const APP_NAME = "IndexW";
+export const APP_TAGLINE = "Watchlist saham IDX, dibobotin market cap.";
+
 export const WATCHLIST_LABEL = "Watchlist";
 
 export const WATCHLIST_EMPTY_TITLE = "Watchlist masih kosong";
 export const WATCHLIST_EMPTY_HINT =
-  "Klik tombol di bawah untuk menambah saham pertama.";
+  "Ketik ticker di atas (mis. BBCA) lalu tekan Enter untuk menambah saham pertama.";
 
 // Used when an action (refresh, save template) needs the watchlist to have items.
 export const WATCHLIST_EMPTY_TOAST = "Watchlist masih kosong";
