@@ -1,7 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TrendingUp, Layers, Crown, Plus, AlertTriangle, RefreshCw } from "lucide-react";
+import { TrendingUp, Layers, Crown, Plus, AlertTriangle, RefreshCw, Twitter, Facebook, Send, Youtube } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
