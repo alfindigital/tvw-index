@@ -1,7 +1,8 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TrendingUp, Layers, Crown, Plus, AlertTriangle, RefreshCw } from "lucide-react";
+import { TrendingUp, Layers, Crown, Plus, AlertTriangle, RefreshCw, Twitter, Facebook, Send, Youtube } from "lucide-react";
+import { Logo } from "@/components/Logo";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -439,23 +440,39 @@ function IndexPage() {
           </div>
         </section>
 
-        <footer className="mt-16 space-y-1 text-center text-[11px] leading-relaxed text-muted-foreground">
-          <div className="font-medium text-foreground/80">
-            IndexW · Watchlist saham IDX, dibobotin market cap.
-          </div>
-          <div>
-            Data shares IDX bundled · Harga via Yahoo Finance · Tersimpan lokal
-          </div>
-          <div>
-            Dibuat oleh{" "}
-            <a
-              href="https://alfindigital.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium text-primary hover:underline"
-            >
-              @alfindigital
-            </a>
+        <footer className="mt-16 border-t border-primary/20 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground rounded-xl shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.7)]">
+          <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-2 px-4 py-3 text-[11px] sm:flex-row sm:gap-3">
+            <div className="flex items-center gap-2">
+              <Logo size="sm" />
+              <span className="text-primary-foreground/60">· dibuat oleh</span>
+              <a
+                href="https://alfindigital.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-primary-foreground hover:underline"
+              >
+                @alfindigital
+              </a>
+            </div>
+            <nav aria-label="Sosial media" className="flex items-center gap-1">
+              {[
+                { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
+                { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
+                { href: "https://t.me/alfindigital", label: "Telegram", Icon: Send },
+                { href: "https://youtube.com/@alfindigital", label: "YouTube", Icon: Youtube },
+              ].map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground/75 transition-colors hover:bg-white/10 hover:text-primary-foreground"
+                >
+                  <Icon className="h-4 w-4" strokeWidth={2.25} />
+                </a>
+              ))}
+            </nav>
           </div>
         </footer>
       </main>
