@@ -45,7 +45,7 @@ export function FloatingFormula({ formula }: Props) {
               <Sparkles className="h-3.5 w-3.5" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
+              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/70">
                 TradingView Formula
               </div>
               <div className="truncate font-mono text-[11px] text-primary-foreground/70">
