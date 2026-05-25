@@ -11,6 +11,7 @@ import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
+import { LastUpdated } from "@/components/LastUpdated";
 import { useShortcuts } from "@/hooks/use-shortcuts";
 import {
   WATCHLIST_LABEL,
@@ -377,6 +378,15 @@ function IndexPage() {
             />
           </div>
         </section>
+
+        {/* Last updated */}
+        <div className="mt-3">
+          <LastUpdated
+            lastRefresh={lastRefresh}
+            loading={loadingIds.size > 0}
+            onRefresh={refreshAll}
+          />
+        </div>
 
         {/* Watchlist */}
         <section className="mt-8">
