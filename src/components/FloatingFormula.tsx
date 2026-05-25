@@ -25,7 +25,7 @@ export function FloatingFormula({ formula }: Props) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-4 pb-safe sm:px-6 sm:pb-6">
       <div
-        className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-2xl border border-primary/20 bg-primary text-primary-foreground shadow-[0_20px_50px_-15px_rgb(0_0_0_/_0.45)] ring-1 ring-primary/30 backdrop-blur-xl transition-all`}
+        className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground shadow-[0_20px_50px_-15px_oklch(0.10_0.03_275_/_0.7)] ring-1 ring-primary/30 backdrop-blur-xl transition-all`}
       >
         {/* Header (div, not button — to allow nested action button) */}
         <div
@@ -45,7 +45,7 @@ export function FloatingFormula({ formula }: Props) {
               <Sparkles className="h-3.5 w-3.5" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary-foreground">
+              <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/70">
                 TradingView Formula
               </div>
               <div className="truncate font-mono text-[11px] text-primary-foreground/70">
