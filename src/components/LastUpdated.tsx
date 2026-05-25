@@ -55,15 +55,17 @@ export function LastUpdated({ lastRefresh, loading, onRefresh }: Props) {
       </div>
       <Button
         type="button"
-        variant="ghost"
         size="sm"
         onClick={onRefresh}
         disabled={loading}
-        className="h-7 gap-1.5 px-2 text-xs"
-        aria-label="Perbarui harga"
+        className="h-9 gap-1.5 px-3 text-xs font-semibold shadow-sm"
+        aria-label={loading ? "Sedang memperbarui harga" : "Perbarui harga"}
       >
-        <RefreshCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
-        <span className="hidden sm:inline">Perbarui</span>
+        <RefreshCw
+          className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`}
+          aria-hidden
+        />
+        <span>{loading ? "Memperbarui…" : "Perbarui harga"}</span>
       </Button>
     </div>
   );

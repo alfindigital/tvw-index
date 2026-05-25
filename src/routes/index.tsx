@@ -197,8 +197,12 @@ function IndexPage() {
     setLoadingIds(new Set());
   }
 
-  async function fetchTickerForRow(id: string, ticker: string) {
-    if (!ticker) return;
+  async function fetchTickerForRow(
+    id: string,
+    ticker: string,
+    opts: { silent?: boolean } = {},
+  ): Promise<{ ok: boolean; ticker: string; error?: string }> {
+    if (!ticker) return { ok: false, ticker, error: "ticker kosong" };
     setLoadingIds((prev) => new Set(prev).add(id));
     try {
       const data: { quotes: Quote[] } = await getQuotesServer({
@@ -206,8 +210,10 @@ function IndexPage() {
       });
       const q = data.quotes[0];
       if (!q) {
-        update(id, { error: "Tidak ada respons" });
-        return;
+        const msg = "Tidak ada respons";
+        update(id, { error: msg });
+        if (!opts.silent) toast.error(`${ticker}: ${msg}`);
+        return { ok: false, ticker, error: msg };
       }
       if (q.price != null) {
         const stock = stocks.find((s) => s.id === id);
@@ -217,13 +223,17 @@ function IndexPage() {
           update(id, { price: Number(q.price), error: null });
         }
         setLastRefresh(Date.now());
-      } else {
-        update(id, { error: humanError(q.error) });
+        return { ok: true, ticker };
       }
+      const msg = humanError(q.error);
+      update(id, { error: msg });
+      if (!opts.silent) toast.error(`${ticker}: ${msg}`);
+      return { ok: false, ticker, error: msg };
     } catch (err) {
-      update(id, {
-        error: humanError(err instanceof Error ? err.message : "fetch"),
-      });
+      const msg = humanError(err instanceof Error ? err.message : "fetch");
+      update(id, { error: msg });
+      if (!opts.silent) toast.error(`${ticker}: ${msg}`);
+      return { ok: false, ticker, error: msg };
     } finally {
       setLoadingIds((prev) => {
         const n = new Set(prev);
@@ -239,6 +249,9 @@ function IndexPage() {
     if (!ticker) return;
     const id = crypto.randomUUID();
     const sharesFromDb = IDX_SHARES[ticker];
+    if (sharesFromDb == null) {
+      toast.warning(`${ticker} tidak ada di database shares IDX — isi manual ya.`);
+    }
     const stock: Stock = {
       id,
       ticker,
@@ -261,19 +274,41 @@ function IndexPage() {
       .filter((s) => s.ticker.trim() && !s.manualPrice)
       .map((s) => ({ id: s.id, ticker: s.ticker.trim().toUpperCase() }));
     if (tickersToFetch.length === 0) return;
-    tickersToFetch.forEach(({ id, ticker }) => fetchTickerForRow(id, ticker));
+    tickersToFetch.forEach(({ id, ticker }) =>
+      fetchTickerForRow(id, ticker, { silent: true }),
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 
-  function refreshAll() {
+  async function refreshAll() {
     const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
     if (list.length === 0) {
       toast.info(WATCHLIST_NO_TICKER_TOAST);
       return;
     }
-    list.forEach((s) =>
-      fetchTickerForRow(s.id, s.ticker.trim().toUpperCase()),
+    const toastId = toast.loading(`Memperbarui ${list.length} ticker…`);
+    const results = await Promise.all(
+      list.map((s) =>
+        fetchTickerForRow(s.id, s.ticker.trim().toUpperCase(), { silent: true }),
+      ),
     );
+    const failed = results.filter((r) => !r.ok);
+    if (failed.length === 0) {
+      toast.success(`Berhasil memperbarui ${results.length} ticker`, { id: toastId });
+    } else if (failed.length === results.length) {
+      toast.error(`Gagal memperbarui semua ticker (${failed.length})`, {
+        id: toastId,
+        description: failed.slice(0, 3).map((f) => `${f.ticker}: ${f.error}`).join(" · "),
+      });
+    } else {
+      toast.warning(
+        `${results.length - failed.length} berhasil, ${failed.length} gagal`,
+        {
+          id: toastId,
+          description: failed.slice(0, 3).map((f) => `${f.ticker}: ${f.error}`).join(" · "),
+        },
+      );
+    }
   }
 
   function loadFromTemplate(stocks: Stock[]) {
