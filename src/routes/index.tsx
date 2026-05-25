@@ -379,6 +379,15 @@ function IndexPage() {
           </div>
         </section>
 
+        {/* Last updated */}
+        <div className="mt-3">
+          <LastUpdated
+            lastRefresh={lastRefresh}
+            loading={loadingIds.size > 0}
+            onRefresh={refreshAll}
+          />
+        </div>
+
         {/* Watchlist */}
         <section className="mt-8">
           <div className="mb-3">
