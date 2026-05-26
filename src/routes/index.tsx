@@ -468,7 +468,10 @@ function IndexPage() {
             lastRefresh={lastRefresh}
             loading={loadingIds.size > 0}
             onRefresh={refreshAll}
+            failedCount={failedIds.size}
+            onRetryFailed={retryFailed}
           />
+
         </div>
 
         {/* Watchlist */}
