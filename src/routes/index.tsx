@@ -118,6 +118,7 @@ function IndexPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
+  const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
@@ -125,6 +126,7 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const getQuotesServer = useServerFn(getQuotes);
+
 
   // Hydrate from localStorage
   useEffect(() => {
@@ -189,13 +191,21 @@ function IndexPage() {
       n.delete(id);
       return n;
     });
+    setFailedIds((prev) => {
+      if (!prev.has(id)) return prev;
+      const n = new Set(prev);
+      n.delete(id);
+      return n;
+    });
   }
 
   function resetWatchlist() {
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());
+    setFailedIds(new Set());
   }
+
 
   async function fetchTickerForRow(
     id: string,
@@ -280,19 +290,39 @@ function IndexPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 
-  async function refreshAll() {
-    const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
+  async function refreshList(
+    list: Stock[],
+    opts: { isRetry?: boolean } = {},
+  ) {
     if (list.length === 0) {
       toast.info(WATCHLIST_NO_TICKER_TOAST);
       return;
     }
-    const toastId = toast.loading(`Memperbarui ${list.length} ticker…`);
+    const label = opts.isRetry ? "Mencoba ulang" : "Memperbarui";
+    const toastId = toast.loading(`${label} ${list.length} ticker…`);
     const results = await Promise.all(
-      list.map((s) =>
-        fetchTickerForRow(s.id, s.ticker.trim().toUpperCase(), { silent: true }),
-      ),
+      list.map(async (s) => {
+        const r = await fetchTickerForRow(
+          s.id,
+          s.ticker.trim().toUpperCase(),
+          { silent: true },
+        );
+        return { ...r, id: s.id };
+      }),
     );
     const failed = results.filter((r) => !r.ok);
+    const succeededIds = new Set(results.filter((r) => r.ok).map((r) => r.id));
+    const failedIdSet = new Set(failed.map((r) => r.id));
+
+    setFailedIds((prev) => {
+      const next = new Set(prev);
+      // Remove ids that just succeeded
+      for (const id of succeededIds) next.delete(id);
+      // Add ids that just failed
+      for (const id of failedIdSet) next.add(id);
+      return next;
+    });
+
     if (failed.length === 0) {
       toast.success(`Berhasil memperbarui ${results.length} ticker`, { id: toastId });
     } else if (failed.length === results.length) {
@@ -310,6 +340,23 @@ function IndexPage() {
       );
     }
   }
+
+  async function refreshAll() {
+    const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
+    await refreshList(list);
+  }
+
+  async function retryFailed() {
+    const list = stocks.filter(
+      (s) => failedIds.has(s.id) && s.ticker.trim() && !s.manualPrice,
+    );
+    if (list.length === 0) {
+      toast.info("Tidak ada ticker gagal untuk dicoba ulang");
+      return;
+    }
+    await refreshList(list, { isRetry: true });
+  }
+
 
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
@@ -421,7 +468,10 @@ function IndexPage() {
             lastRefresh={lastRefresh}
             loading={loadingIds.size > 0}
             onRefresh={refreshAll}
+            failedCount={failedIds.size}
+            onRetryFailed={retryFailed}
           />
+
         </div>
 
         {/* Watchlist */}
