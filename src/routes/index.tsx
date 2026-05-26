@@ -255,8 +255,12 @@ function IndexPage() {
 
   // Add ticker via quick-add: create row with shares from DB and trigger fetch
   function addTicker(rawTicker: string) {
-    const ticker = rawTicker.trim().toUpperCase();
-    if (!ticker) return;
+    const result = validateTicker(rawTicker);
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+    const ticker = result.ticker;
     const id = crypto.randomUUID();
     const sharesFromDb = IDX_SHARES[ticker];
     if (sharesFromDb == null) {
@@ -275,6 +279,7 @@ function IndexPage() {
     // Trigger fetch on next tick so state is committed
     setTimeout(() => fetchTickerForRow(id, ticker), 0);
   }
+
 
   // Auto-fetch all on first mount
   useEffect(() => {
