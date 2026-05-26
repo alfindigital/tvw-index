@@ -22,7 +22,13 @@ type Props = {
 };
 
 
-export function LastUpdated({ lastRefresh, loading, onRefresh }: Props) {
+export function LastUpdated({
+  lastRefresh,
+  loading,
+  onRefresh,
+  failedCount = 0,
+  onRetryFailed,
+}: Props) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
@@ -32,6 +38,7 @@ export function LastUpdated({ lastRefresh, loading, onRefresh }: Props) {
 
   const rel = relative(lastRefresh, now);
   const abs = lastRefresh ? formatTime(lastRefresh) : null;
+  const showRetry = failedCount > 0 && !!onRetryFailed;
 
   return (
     <div
@@ -56,20 +63,38 @@ export function LastUpdated({ lastRefresh, loading, onRefresh }: Props) {
           )}
         </span>
       </div>
-      <Button
-        type="button"
-        size="icon"
-        onClick={onRefresh}
-        disabled={loading}
-        className="h-8 w-8 shrink-0"
-        aria-label={loading ? "Sedang memperbarui harga" : "Perbarui harga"}
-        title={loading ? "Memperbarui…" : "Perbarui harga"}
-      >
-        <RefreshCw
-          className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`}
-          aria-hidden
-        />
-      </Button>
+      <div className="flex shrink-0 items-center gap-1.5">
+        {showRetry ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={onRetryFailed}
+            disabled={loading}
+            className="h-8 gap-1.5 border-destructive/40 px-2.5 text-[11px] font-semibold text-destructive hover:bg-destructive/10 hover:text-destructive"
+            aria-label={`Coba ulang ${failedCount} ticker yang gagal`}
+            title={`Coba ulang ${failedCount} ticker yang gagal`}
+          >
+            <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+            <span>Retry {failedCount} gagal</span>
+          </Button>
+        ) : null}
+        <Button
+          type="button"
+          size="icon"
+          onClick={onRefresh}
+          disabled={loading}
+          className="h-8 w-8"
+          aria-label={loading ? "Sedang memperbarui harga" : "Perbarui harga"}
+          title={loading ? "Memperbarui…" : "Perbarui harga"}
+        >
+          <RefreshCw
+            className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`}
+            aria-hidden
+          />
+        </Button>
+      </div>
     </div>
   );
 }
+
