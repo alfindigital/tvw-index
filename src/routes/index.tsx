@@ -389,7 +389,7 @@ function IndexPage() {
         }
       />
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-40 pt-5 sm:px-6 sm:pt-8">
+      <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pt-8">
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
           <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
@@ -473,11 +473,18 @@ function IndexPage() {
               ))
             )}
           </div>
+
+          {/* Formula — inline, di bawah hasil */}
+          {enriched.rows.length > 0 && (
+            <div className="mt-5">
+              <FloatingFormula formula={formula} />
+            </div>
+          )}
         </section>
 
-        <footer className="mt-16 border-t border-primary/20 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground rounded-xl shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.7)]">
-          <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-2 px-4 py-3 text-[11px] sm:flex-row sm:gap-3">
-            <div className="flex items-center gap-2">
+        <footer className="mt-10 border-t border-primary/20 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground rounded-lg shadow-[0_4px_16px_-12px_oklch(0.10_0.03_275_/_0.6)]">
+          <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-1 px-3 py-1.5 text-[10px] sm:flex-row sm:gap-2">
+            <div className="flex items-center gap-1.5">
               <Logo size="sm" />
               <span className="text-primary-foreground/60">· dibuat oleh</span>
               <a
@@ -489,7 +496,7 @@ function IndexPage() {
                 @alfindigital
               </a>
             </div>
-            <nav aria-label="Sosial media" className="flex items-center gap-1">
+            <nav aria-label="Sosial media" className="flex items-center gap-0.5">
               {[
                 { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
                 { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
@@ -502,9 +509,9 @@ function IndexPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-md text-primary-foreground/75 transition-colors hover:bg-white/10 hover:text-primary-foreground"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded text-primary-foreground/75 transition-colors hover:bg-white/10 hover:text-primary-foreground"
                 >
-                  <Icon className="h-4 w-4" strokeWidth={2.25} />
+                  <Icon className="h-3 w-3" strokeWidth={2.25} />
                 </a>
               ))}
             </nav>
@@ -512,9 +519,8 @@ function IndexPage() {
         </footer>
       </main>
 
-      <FloatingFormula formula={formula} />
-
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
     </div>
   );
 }
+

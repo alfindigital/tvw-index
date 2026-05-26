@@ -23,9 +23,9 @@ export function FloatingFormula({ formula }: Props) {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex justify-center px-3 pb-4 pb-safe sm:px-6 sm:pb-6">
+    <div className="w-full">
       <div
-        className={`pointer-events-auto w-full max-w-xl overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground shadow-[0_20px_50px_-15px_oklch(0.10_0.03_275_/_0.7)] ring-1 ring-primary/30 backdrop-blur-xl transition-all`}
+        className={`w-full overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.7)] ring-1 ring-primary/20 transition-all`}
       >
         {/* Header (div, not button — to allow nested action button) */}
         <div
