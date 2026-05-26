@@ -191,13 +191,21 @@ function IndexPage() {
       n.delete(id);
       return n;
     });
+    setFailedIds((prev) => {
+      if (!prev.has(id)) return prev;
+      const n = new Set(prev);
+      n.delete(id);
+      return n;
+    });
   }
 
   function resetWatchlist() {
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());
+    setFailedIds(new Set());
   }
+
 
   async function fetchTickerForRow(
     id: string,
