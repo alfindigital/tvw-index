@@ -29,6 +29,7 @@ import {
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR } from "@/lib/format";
 import { getQuotes } from "@/lib/quotes.functions";
+import { validateTicker } from "@/lib/ticker";
 
 export const Route = createFileRoute("/")({
   head: () => ({
