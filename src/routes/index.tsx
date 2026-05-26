@@ -213,11 +213,17 @@ function IndexPage() {
     ticker: string,
     opts: { silent?: boolean } = {},
   ): Promise<{ ok: boolean; ticker: string; error?: string }> {
-    if (!ticker) return { ok: false, ticker, error: "ticker kosong" };
+    const v = validateTicker(ticker);
+    if (!v.ok) {
+      update(id, { error: v.error });
+      if (!opts.silent) toast.error(`${ticker || "(kosong)"}: ${v.error}`);
+      return { ok: false, ticker, error: v.error };
+    }
+    const cleanTicker = v.ticker;
     setLoadingIds((prev) => new Set(prev).add(id));
     try {
       const data: { quotes: Quote[] } = await getQuotesServer({
-        data: { tickers: [ticker] },
+        data: { tickers: [cleanTicker] },
       });
       const q = data.quotes[0];
       if (!q) {
