@@ -29,6 +29,7 @@ import {
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR } from "@/lib/format";
 import { getQuotes } from "@/lib/quotes.functions";
+import { validateTicker } from "@/lib/ticker";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -212,11 +213,17 @@ function IndexPage() {
     ticker: string,
     opts: { silent?: boolean } = {},
   ): Promise<{ ok: boolean; ticker: string; error?: string }> {
-    if (!ticker) return { ok: false, ticker, error: "ticker kosong" };
+    const v = validateTicker(ticker);
+    if (!v.ok) {
+      update(id, { error: v.error });
+      if (!opts.silent) toast.error(`${ticker || "(kosong)"}: ${v.error}`);
+      return { ok: false, ticker, error: v.error };
+    }
+    const cleanTicker = v.ticker;
     setLoadingIds((prev) => new Set(prev).add(id));
     try {
       const data: { quotes: Quote[] } = await getQuotesServer({
-        data: { tickers: [ticker] },
+        data: { tickers: [cleanTicker] },
       });
       const q = data.quotes[0];
       if (!q) {
@@ -255,8 +262,12 @@ function IndexPage() {
 
   // Add ticker via quick-add: create row with shares from DB and trigger fetch
   function addTicker(rawTicker: string) {
-    const ticker = rawTicker.trim().toUpperCase();
-    if (!ticker) return;
+    const result = validateTicker(rawTicker);
+    if (!result.ok) {
+      toast.error(result.error);
+      return;
+    }
+    const ticker = result.ticker;
     const id = crypto.randomUUID();
     const sharesFromDb = IDX_SHARES[ticker];
     if (sharesFromDb == null) {
@@ -275,6 +286,7 @@ function IndexPage() {
     // Trigger fetch on next tick so state is committed
     setTimeout(() => fetchTickerForRow(id, ticker), 0);
   }
+
 
   // Auto-fetch all on first mount
   useEffect(() => {
