@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RefreshCw, Clock } from "lucide-react";
+import { RefreshCw, Clock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatTime } from "@/lib/format";
 
@@ -17,7 +17,10 @@ type Props = {
   lastRefresh: number | null;
   loading: boolean;
   onRefresh: () => void;
+  failedCount?: number;
+  onRetryFailed?: () => void;
 };
+
 
 export function LastUpdated({ lastRefresh, loading, onRefresh }: Props) {
   const [now, setNow] = useState(() => Date.now());
