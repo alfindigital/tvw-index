@@ -118,6 +118,7 @@ function IndexPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
+  const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
@@ -125,6 +126,7 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const getQuotesServer = useServerFn(getQuotes);
+
 
   // Hydrate from localStorage
   useEffect(() => {
