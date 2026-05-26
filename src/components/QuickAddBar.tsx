@@ -16,10 +16,11 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(
     const trimmed = value.trim().toUpperCase();
 
     // Live validation only after user typed something — don't shout on empty.
-    const liveError =
-      trimmed.length === 0 ? null : validateTicker(trimmed).ok
-        ? null
-        : validateTicker(trimmed).error;
+    let liveError: string | null = null;
+    if (trimmed.length > 0) {
+      const v = validateTicker(trimmed);
+      if (!v.ok) liveError = v.error;
+    }
     const shownError = error ?? liveError;
     const canAdd = trimmed.length > 0 && !liveError;
 
