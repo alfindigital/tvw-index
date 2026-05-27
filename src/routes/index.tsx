@@ -199,6 +199,11 @@ function IndexPage() {
       n.delete(id);
       return n;
     });
+    setFetchedAt((prev) => {
+      if (!(id in prev)) return prev;
+      const { [id]: _, ...rest } = prev;
+      return rest;
+    });
   }
 
   function resetWatchlist() {
@@ -206,6 +211,7 @@ function IndexPage() {
     setLastRefresh(null);
     setLoadingIds(new Set());
     setFailedIds(new Set());
+    setFetchedAt({});
   }
 
 
