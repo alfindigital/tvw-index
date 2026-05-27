@@ -543,21 +543,21 @@ function IndexPage() {
           )}
         </section>
 
-        <footer className="mt-10 border-t border-primary/20 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] text-primary-foreground rounded-lg shadow-[0_4px_16px_-12px_oklch(0.10_0.03_275_/_0.6)]">
-          <div className="mx-auto flex w-full max-w-5xl flex-col items-center justify-between gap-1 px-3 py-1.5 text-[10px] sm:flex-row sm:gap-2">
-            <div className="flex items-center gap-1.5">
-              <Logo size="sm" />
-              <span className="text-primary-foreground/60">· dibuat oleh</span>
+        <footer className="mt-10 bg-transparent">
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-2 px-3 py-3 text-[11px] text-muted-foreground">
+            <span>
+              by{" "}
               <a
                 href="https://alfindigital.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-semibold text-primary-foreground hover:underline"
+                className="font-medium text-foreground hover:underline"
               >
                 @alfindigital
               </a>
-            </div>
-            <nav aria-label="Sosial media" className="flex items-center gap-0.5">
+            </span>
+            <span aria-hidden className="text-muted-foreground/40">|</span>
+            <nav aria-label="Sosial media" className="flex items-center gap-1">
               {[
                 { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
                 { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
@@ -570,9 +570,9 @@ function IndexPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="inline-flex h-6 w-6 items-center justify-center rounded text-primary-foreground/75 transition-colors hover:bg-white/10 hover:text-primary-foreground"
+                  className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <Icon className="h-3 w-3" strokeWidth={2.25} />
+                  <Icon className="h-3.5 w-3.5" strokeWidth={2} />
                 </a>
               ))}
             </nav>
