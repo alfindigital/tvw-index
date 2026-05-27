@@ -536,6 +536,7 @@ function IndexPage() {
                   marketCap={r.marketCap}
                   weight={r.weight}
                   loading={loadingIds.has(r.id)}
+                  lastFetchedAt={fetchedAt[r.id] ?? null}
                   onChange={(patch) => update(r.id, patch)}
                   onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
                   onRemove={() => remove(r.id)}
