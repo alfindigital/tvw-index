@@ -120,6 +120,7 @@ function IndexPage() {
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
+  const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
