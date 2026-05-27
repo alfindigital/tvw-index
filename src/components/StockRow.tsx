@@ -113,6 +113,12 @@ export function StockRow({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!lastFetchedAt) return;
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, [lastFetchedAt]);
 
   function handleTickerChange(v: string) {
     const upper = v.toUpperCase().slice(0, 8);
