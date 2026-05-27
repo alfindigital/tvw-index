@@ -182,30 +182,12 @@ export function StockRow({
               <Hand className="h-3 w-3" />
               <span>Harga manual · auto-fetch dimatikan</span>
             </div>
-          ) : stock.ticker && stock.price > 0 ? (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
-              <CheckCircle2 className="h-3 w-3" />
-              <span>
-                {lastFetchedAt
-                  ? `Diperbarui ${formatRelative(lastFetchedAt, now)}`
-                  : "Harga ter-update"}
-              </span>
-            </div>
           ) : tickerDraft && !inDB && !stock.manualShares ? (
             <div className="mt-1.5 text-xs text-muted-foreground">
               Tidak ada di DB IDX · isi shares manual
             </div>
           ) : null}
         </div>
-        <StatusBadge
-          status={getStatus({
-            loading,
-            hasTicker: Boolean(stock.ticker),
-            hasError: Boolean(stock.error),
-            manualPrice: stock.manualPrice,
-            hasPrice: stock.price > 0,
-          })}
-        />
         <Button
           type="button"
           variant="ghost"
