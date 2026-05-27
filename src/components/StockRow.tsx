@@ -187,7 +187,7 @@ export function StockRow({
               <CheckCircle2 className="h-3 w-3" />
               <span>
                 {lastFetchedAt
-                  ? `Diperbarui ${formatRelative(lastFetchedAt)}`
+                  ? `Diperbarui ${formatRelative(lastFetchedAt, now)}`
                   : "Harga ter-update"}
               </span>
             </div>
