@@ -149,10 +149,29 @@ export function StockRow({
               <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             ) : null}
           </div>
-          {stock.error ? (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
-              <AlertCircle className="h-3 w-3" />
-              <span>{stock.error}</span>
+          {loading ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-primary">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Mengambil harga…</span>
+            </div>
+          ) : stock.error ? (
+            <div className="mt-1.5 flex items-start gap-1 text-xs text-destructive">
+              <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+              <span className="break-words">{stock.error}</span>
+            </div>
+          ) : stock.manualPrice ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+              <Hand className="h-3 w-3" />
+              <span>Harga manual · auto-fetch dimatikan</span>
+            </div>
+          ) : stock.ticker && stock.price > 0 ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>
+                {lastFetchedAt
+                  ? `Diperbarui ${formatRelative(lastFetchedAt)}`
+                  : "Harga ter-update"}
+              </span>
             </div>
           ) : tickerDraft && !inDB && !stock.manualShares ? (
             <div className="mt-1.5 text-xs text-muted-foreground">
