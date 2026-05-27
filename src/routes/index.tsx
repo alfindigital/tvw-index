@@ -240,7 +240,9 @@ function IndexPage() {
         } else {
           update(id, { price: Number(q.price), error: null });
         }
-        setLastRefresh(Date.now());
+        const now = Date.now();
+        setLastRefresh(now);
+        setFetchedAt((prev) => ({ ...prev, [id]: now }));
         return { ok: true, ticker };
       }
       const msg = humanError(q.error);
