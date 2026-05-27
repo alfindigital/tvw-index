@@ -75,6 +75,18 @@ function StatusBadge({ status }: { status: StatusKind }) {
   );
 }
 
+function formatRelative(ts: number, now: number): string {
+  const s = Math.max(0, Math.floor((now - ts) / 1000));
+  if (s < 5) return "baru saja";
+  if (s < 60) return `${s} dtk lalu`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} mnt lalu`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} jam lalu`;
+  const d = Math.floor(h / 24);
+  return `${d} hari lalu`;
+}
+
 type Props = {
   stock: Stock;
   marketCap: number;
