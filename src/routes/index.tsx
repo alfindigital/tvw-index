@@ -120,6 +120,7 @@ function IndexPage() {
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
+  const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
@@ -198,6 +199,11 @@ function IndexPage() {
       n.delete(id);
       return n;
     });
+    setFetchedAt((prev) => {
+      if (!(id in prev)) return prev;
+      const { [id]: _, ...rest } = prev;
+      return rest;
+    });
   }
 
   function resetWatchlist() {
@@ -205,6 +211,7 @@ function IndexPage() {
     setLastRefresh(null);
     setLoadingIds(new Set());
     setFailedIds(new Set());
+    setFetchedAt({});
   }
 
 
@@ -239,7 +246,9 @@ function IndexPage() {
         } else {
           update(id, { price: Number(q.price), error: null });
         }
-        setLastRefresh(Date.now());
+        const now = Date.now();
+        setLastRefresh(now);
+        setFetchedAt((prev) => ({ ...prev, [id]: now }));
         return { ok: true, ticker };
       }
       const msg = humanError(q.error);
@@ -527,6 +536,7 @@ function IndexPage() {
                   marketCap={r.marketCap}
                   weight={r.weight}
                   loading={loadingIds.has(r.id)}
+                  lastFetchedAt={fetchedAt[r.id] ?? null}
                   onChange={(patch) => update(r.id, patch)}
                   onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
                   onRemove={() => remove(r.id)}

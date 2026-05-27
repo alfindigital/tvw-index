@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle, CheckCircle2, Hand } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -75,11 +75,24 @@ function StatusBadge({ status }: { status: StatusKind }) {
   );
 }
 
+function formatRelative(ts: number, now: number): string {
+  const s = Math.max(0, Math.floor((now - ts) / 1000));
+  if (s < 5) return "baru saja";
+  if (s < 60) return `${s} dtk lalu`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} mnt lalu`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} jam lalu`;
+  const d = Math.floor(h / 24);
+  return `${d} hari lalu`;
+}
+
 type Props = {
   stock: Stock;
   marketCap: number;
   weight: number;
   loading: boolean;
+  lastFetchedAt?: number | null;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void; // dipanggil saat Enter / blur
   onRemove: () => void;
@@ -92,6 +105,7 @@ export function StockRow({
   marketCap,
   weight,
   loading,
+  lastFetchedAt,
   onChange,
   onCommitTicker,
   onRemove,
@@ -99,6 +113,12 @@ export function StockRow({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!lastFetchedAt) return;
+    const t = setInterval(() => setNow(Date.now()), 30_000);
+    return () => clearInterval(t);
+  }, [lastFetchedAt]);
 
   function handleTickerChange(v: string) {
     const upper = v.toUpperCase().slice(0, 8);
@@ -147,10 +167,29 @@ export function StockRow({
               <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             ) : null}
           </div>
-          {stock.error ? (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-destructive">
-              <AlertCircle className="h-3 w-3" />
-              <span>{stock.error}</span>
+          {loading ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-primary">
+              <Loader2 className="h-3 w-3 animate-spin" />
+              <span>Mengambil harga…</span>
+            </div>
+          ) : stock.error ? (
+            <div className="mt-1.5 flex items-start gap-1 text-xs text-destructive">
+              <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+              <span className="break-words">{stock.error}</span>
+            </div>
+          ) : stock.manualPrice ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+              <Hand className="h-3 w-3" />
+              <span>Harga manual · auto-fetch dimatikan</span>
+            </div>
+          ) : stock.ticker && stock.price > 0 ? (
+            <div className="mt-1.5 flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>
+                {lastFetchedAt
+                  ? `Diperbarui ${formatRelative(lastFetchedAt, now)}`
+                  : "Harga ter-update"}
+              </span>
             </div>
           ) : tickerDraft && !inDB && !stock.manualShares ? (
             <div className="mt-1.5 text-xs text-muted-foreground">
