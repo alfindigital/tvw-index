@@ -80,6 +80,7 @@ type Props = {
   marketCap: number;
   weight: number;
   loading: boolean;
+  lastFetchedAt?: number | null;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void; // dipanggil saat Enter / blur
   onRemove: () => void;
@@ -92,6 +93,7 @@ export function StockRow({
   marketCap,
   weight,
   loading,
+  lastFetchedAt,
   onChange,
   onCommitTicker,
   onRemove,
