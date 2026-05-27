@@ -483,17 +483,6 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* Last updated */}
-        <div className="mt-3">
-          <LastUpdated
-            lastRefresh={lastRefresh}
-            loading={loadingIds.size > 0}
-            onRefresh={refreshAll}
-            failedCount={failedIds.size}
-            onRetryFailed={retryFailed}
-          />
-
-        </div>
 
         {/* Watchlist */}
         <section className="mt-8">
