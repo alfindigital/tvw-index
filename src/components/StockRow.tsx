@@ -1,91 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Loader2, Trash2, AlertCircle, CheckCircle2, Hand } from "lucide-react";
+import { useRef, useState } from "react";
+import { Loader2, Trash2, AlertCircle, Hand } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCompact, formatPct } from "@/lib/format";
 import type { Stock } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
-
-type StatusKind = "fetching" | "error" | "manual" | "ok" | "empty";
-
-function getStatus(args: {
-  loading: boolean;
-  hasTicker: boolean;
-  hasError: boolean;
-  manualPrice: boolean;
-  hasPrice: boolean;
-}): StatusKind {
-  if (args.loading) return "fetching";
-  if (args.hasError) return "error";
-  if (args.manualPrice) return "manual";
-  if (args.hasTicker && args.hasPrice) return "ok";
-  return "empty";
-}
-
-const STATUS_STYLES: Record<
-  StatusKind,
-  { label: string; className: string; Icon: typeof Loader2 | null; spin?: boolean }
-> = {
-  fetching: {
-    label: "Fetching",
-    className:
-      "bg-primary/10 text-primary ring-1 ring-inset ring-primary/20",
-    Icon: Loader2,
-    spin: true,
-  },
-  ok: {
-    label: "OK",
-    className:
-      "bg-emerald-500/10 text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400",
-    Icon: CheckCircle2,
-  },
-  error: {
-    label: "Error",
-    className:
-      "bg-destructive/10 text-destructive ring-1 ring-inset ring-destructive/20",
-    Icon: AlertCircle,
-  },
-  manual: {
-    label: "Manual",
-    className:
-      "bg-amber-500/10 text-amber-600 ring-1 ring-inset ring-amber-500/20 dark:text-amber-400",
-    Icon: Hand,
-  },
-  empty: {
-    label: "—",
-    className:
-      "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
-    Icon: null,
-  },
-};
-
-function StatusBadge({ status }: { status: StatusKind }) {
-  const s = STATUS_STYLES[status];
-  return (
-    <span
-      className={`inline-flex h-6 shrink-0 items-center gap-1 rounded-full px-2 text-[10px] font-medium uppercase tracking-wider ${s.className}`}
-      aria-label={`Status: ${s.label}`}
-      title={s.label}
-    >
-      {s.Icon ? (
-        <s.Icon className={`h-3 w-3 ${s.spin ? "animate-spin" : ""}`} />
-      ) : null}
-      {s.label}
-    </span>
-  );
-}
-
-function formatRelative(ts: number, now: number): string {
-  const s = Math.max(0, Math.floor((now - ts) / 1000));
-  if (s < 5) return "baru saja";
-  if (s < 60) return `${s} dtk lalu`;
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m} mnt lalu`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h} jam lalu`;
-  const d = Math.floor(h / 24);
-  return `${d} hari lalu`;
-}
 
 type Props = {
   stock: Stock;
@@ -94,18 +13,23 @@ type Props = {
   loading: boolean;
   lastFetchedAt?: number | null;
   onChange: (patch: Partial<Stock>) => void;
-  onCommitTicker: (ticker: string) => void; // dipanggil saat Enter / blur
+  onCommitTicker: (ticker: string) => void;
   onRemove: () => void;
-  /** Called when user presses Enter on the price field — useful to refocus quick-add */
   onCommitPrice?: () => void;
 };
+
+function formatSharesInput(value: number): string {
+  if (!value) return "";
+  // up to 2 decimals, trim trailing zeros
+  const fixed = value.toFixed(2);
+  return fixed.replace(/\.?0+$/, "");
+}
 
 export function StockRow({
   stock,
   marketCap,
   weight,
   loading,
-  lastFetchedAt,
   onChange,
   onCommitTicker,
   onRemove,
@@ -113,16 +37,9 @@ export function StockRow({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!lastFetchedAt) return;
-    const t = setInterval(() => setNow(Date.now()), 30_000);
-    return () => clearInterval(t);
-  }, [lastFetchedAt]);
 
   function handleTickerChange(v: string) {
-    const upper = v.toUpperCase().slice(0, 8);
-    setTickerDraft(upper);
+    setTickerDraft(v.toUpperCase().slice(0, 8));
   }
 
   function commit() {
@@ -140,9 +57,10 @@ export function StockRow({
 
   return (
     <div className="rounded-xl border border-border bg-card p-3 transition-colors hover:border-ring/40 sm:p-4">
-      {/* Top: ticker input + actions */}
-      <div className="flex items-start gap-2">
-        <div className="flex-1">
+      {/* Row 1: ticker + shares + price + remove (stacks on mobile) */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-2">
+        {/* Ticker */}
+        <div className="sm:flex-1 sm:min-w-0">
           <div className="relative">
             <Input
               value={tickerDraft}
@@ -157,121 +75,117 @@ export function StockRow({
               onBlur={() => {
                 if (tickerDraft !== stock.ticker) commit();
               }}
-              placeholder="TICKER · Enter"
+              placeholder="TICKER"
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
-              className="h-10 pr-9 font-mono text-base font-semibold uppercase tracking-wider sm:text-sm"
+              className="h-10 pr-9 font-mono text-base font-semibold uppercase tracking-wider sm:h-9 sm:text-sm"
             />
             {loading ? (
               <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
             ) : null}
           </div>
-          {loading ? (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-primary">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>Mengambil harga…</span>
-            </div>
-          ) : stock.error ? (
-            <div className="mt-1.5 flex items-start gap-1 text-xs text-destructive">
-              <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
-              <span className="break-words">{stock.error}</span>
-            </div>
-          ) : stock.manualPrice ? (
-            <div className="mt-1.5 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-              <Hand className="h-3 w-3" />
-              <span>Harga manual · auto-fetch dimatikan</span>
-            </div>
-          ) : tickerDraft && !inDB && !stock.manualShares ? (
-            <div className="mt-1.5 text-xs text-muted-foreground">
-              Tidak ada di DB IDX · isi shares manual
-            </div>
-          ) : null}
         </div>
+
+        {/* Shares + Price (grid on mobile, inline on sm+) */}
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-[2] sm:gap-2">
+          <label className="block sm:flex-1">
+            <span className="sr-only">Shares (jt)</span>
+            <div className="relative">
+              <Input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step="0.01"
+                value={formatSharesInput(stock.shares)}
+                onChange={(e) =>
+                  onChange({
+                    shares: Number(e.target.value) || 0,
+                    manualShares: true,
+                  })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    priceRef.current?.focus();
+                    priceRef.current?.select();
+                  }
+                }}
+                placeholder="Shares"
+                className="h-10 pr-9 font-mono text-sm sm:h-9"
+              />
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                jt{stock.manualShares ? "*" : ""}
+              </span>
+            </div>
+          </label>
+          <label className="block sm:flex-1">
+            <span className="sr-only">Harga (IDR)</span>
+            <div className="relative">
+              <Input
+                ref={priceRef}
+                type="number"
+                inputMode="decimal"
+                min={0}
+                value={stock.price || ""}
+                onChange={(e) =>
+                  onChange({
+                    price: Number(e.target.value) || 0,
+                    manualPrice: true,
+                  })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    (e.target as HTMLInputElement).blur();
+                    onCommitPrice?.();
+                  }
+                }}
+                placeholder="Harga"
+                className="h-10 pr-10 font-mono text-sm sm:h-9"
+              />
+              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                IDR{stock.manualPrice ? "*" : ""}
+              </span>
+            </div>
+          </label>
+        </div>
+
         <Button
           type="button"
           variant="ghost"
           size="icon"
           onClick={onRemove}
-          className="h-9 w-9 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+          className="h-9 w-9 shrink-0 self-end text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:self-start"
           aria-label="Hapus saham"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
       </div>
 
-      {/* Inputs: shares + price */}
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:gap-3">
-        <label className="block">
-          <div className="flex items-center justify-between">
-            <span className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Shares (juta)
-            </span>
-            {stock.manualShares ? (
-              <span className="text-[9px] font-medium uppercase tracking-wider text-primary">
-                manual
-              </span>
-            ) : null}
-          </div>
-          <Input
-            type="number"
-            inputMode="decimal"
-            min={0}
-            value={stock.shares || ""}
-            onChange={(e) =>
-              onChange({
-                shares: Number(e.target.value) || 0,
-                manualShares: true,
-              })
-            }
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                priceRef.current?.focus();
-                priceRef.current?.select();
-              }
-            }}
-            placeholder="0"
-            className="mt-1 h-9 font-mono text-sm"
-          />
-        </label>
-        <label className="block">
-          <div className="flex items-center justify-between">
-            <span className="block text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-              Harga (IDR)
-            </span>
-            {stock.manualPrice ? (
-              <span className="text-[9px] font-medium uppercase tracking-wider text-primary">
-                manual
-              </span>
-            ) : null}
-          </div>
-          <Input
-            ref={priceRef}
-            type="number"
-            inputMode="decimal"
-            min={0}
-            value={stock.price || ""}
-            onChange={(e) =>
-              onChange({
-                price: Number(e.target.value) || 0,
-                manualPrice: true,
-              })
-            }
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                (e.target as HTMLInputElement).blur();
-                onCommitPrice?.();
-              }
-            }}
-            placeholder="0"
-            className="mt-1 h-9 font-mono text-sm"
-          />
-        </label>
-      </div>
+      {/* Inline status */}
+      {loading ? (
+        <div className="mt-2 flex items-center gap-1 text-xs text-primary">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          <span>Mengambil harga…</span>
+        </div>
+      ) : stock.error ? (
+        <div className="mt-2 flex items-start gap-1 text-xs text-destructive">
+          <AlertCircle className="mt-0.5 h-3 w-3 shrink-0" />
+          <span className="break-words">{stock.error}</span>
+        </div>
+      ) : stock.manualPrice ? (
+        <div className="mt-2 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+          <Hand className="h-3 w-3" />
+          <span>Harga manual · auto-fetch dimatikan</span>
+        </div>
+      ) : tickerDraft && !inDB && !stock.manualShares ? (
+        <div className="mt-2 text-xs text-muted-foreground">
+          Tidak ada di DB IDX · isi shares manual
+        </div>
+      ) : null}
 
-      {/* Footer: market cap + weight */}
+      {/* Row 2: Market Cap + weight */}
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
         <div>
           <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
