@@ -57,43 +57,56 @@ export function StockRow({
 
   return (
     <div className="rounded-xl border border-border bg-card p-3 transition-colors hover:border-ring/40 sm:p-4">
-      {/* Row 1: ticker + shares + price + remove (stacks on mobile) */}
+      {/* Mobile: ticker+remove on one row; shares+price below.
+          Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-        {/* Ticker */}
-        <div className="sm:flex-1 sm:min-w-0">
-          <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Ticker
+        {/* Ticker + remove (inline on mobile, flex item on desktop) */}
+        <div className="flex items-end gap-2 sm:flex-1 sm:min-w-0">
+          <div className="min-w-0 flex-1">
+            <div className="mb-1 text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+              Ticker
+            </div>
+            <div className="relative">
+              <Input
+                value={tickerDraft}
+                onChange={(e) => handleTickerChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commit();
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}
+                onBlur={() => {
+                  if (tickerDraft !== stock.ticker) commit();
+                }}
+                placeholder="TICKER"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                className="h-9 pr-9 font-mono text-sm font-semibold uppercase tracking-wider"
+              />
+              {loading ? (
+                <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+              ) : null}
+            </div>
           </div>
-          <div className="relative">
-            <Input
-              value={tickerDraft}
-              onChange={(e) => handleTickerChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  commit();
-                  (e.target as HTMLInputElement).blur();
-                }
-              }}
-              onBlur={() => {
-                if (tickerDraft !== stock.ticker) commit();
-              }}
-              placeholder="TICKER"
-              autoComplete="off"
-              autoCapitalize="characters"
-              spellCheck={false}
-              className="h-10 pr-9 font-mono text-base font-semibold uppercase tracking-wider sm:h-9 sm:text-sm"
-            />
-            {loading ? (
-              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-            ) : null}
-          </div>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            className="h-9 w-9 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            aria-label="Hapus saham"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Shares + Price (grid on mobile, inline on sm+) */}
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-[2] sm:gap-2">
           <label className="block sm:flex-1">
-            <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
               Shares (Jt)
             </span>
             <div className="relative">
@@ -117,7 +130,7 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-10 pr-9 font-mono text-sm sm:h-9"
+                className="h-9 pr-9 font-mono text-sm"
               />
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
@@ -125,7 +138,7 @@ export function StockRow({
             </div>
           </label>
           <label className="block sm:flex-1">
-            <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
               Price (IDR)
             </span>
             <div className="relative">
@@ -149,7 +162,7 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-10 pr-10 font-mono text-sm sm:h-9"
+                className="h-9 pr-10 font-mono text-sm"
               />
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
@@ -157,17 +170,6 @@ export function StockRow({
             </div>
           </label>
         </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={onRemove}
-          className="h-9 w-9 shrink-0 self-end text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-          aria-label="Hapus saham"
-        >
-          <Trash2 className="h-4 w-4" />
-        </Button>
       </div>
 
       {/* Inline status */}
