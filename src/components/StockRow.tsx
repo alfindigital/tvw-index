@@ -144,16 +144,19 @@ export function StockRow({
             <div className="relative">
               <Input
                 ref={priceRef}
-                type="number"
-                inputMode="decimal"
-                min={0}
-                value={stock.price || ""}
-                onChange={(e) =>
-                  onChange({
-                    price: Number(e.target.value) || 0,
-                    manualPrice: true,
-                  })
+                type="text"
+                inputMode="numeric"
+                value={
+                  stock.price ? stock.price.toLocaleString("id-ID") : ""
                 }
+                onChange={(e) => {
+                  const raw = e.target.value.replace(/\D/g, "");
+                  const num = Math.min(Number(raw) || 0, 999999999999);
+                  onChange({
+                    price: num,
+                    manualPrice: true,
+                  });
+                }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
@@ -162,7 +165,7 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 pr-10 font-mono text-sm"
+                className="h-9 pr-12 font-mono text-sm tabular-nums"
               />
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
