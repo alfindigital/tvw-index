@@ -105,11 +105,11 @@ export function StockRow({
 
         {/* Shares + Price (grid on mobile, inline on sm+) */}
         <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-[2] sm:gap-2">
-          <label className="block sm:flex-1">
+          <label className="block min-w-0 sm:flex-1">
             <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
               Shares (Jt)
             </span>
-            <div className="relative">
+            <div className="relative w-full min-w-0">
               <Input
                 type="number"
                 inputMode="decimal"
@@ -130,18 +130,18 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 pr-9 font-mono text-sm"
+                className="h-9 w-full min-w-0 pr-8 font-mono text-sm tabular-nums"
               />
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
               </span>
             </div>
           </label>
-          <label className="block sm:flex-1">
+          <label className="block min-w-0 sm:flex-1">
             <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
               Price (IDR)
             </span>
-            <div className="relative">
+            <div className="relative w-full min-w-0">
               <Input
                 ref={priceRef}
                 type="text"
@@ -165,7 +165,7 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 pr-12 font-mono text-sm tabular-nums"
+                className="h-9 w-full min-w-0 pr-10 font-mono text-sm tabular-nums"
               />
               <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
