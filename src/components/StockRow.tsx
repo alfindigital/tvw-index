@@ -138,7 +138,7 @@ export function StockRow({
             </div>
           </label>
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[10px] font-medium uppercase tracking-[0.08em] text-muted-foreground">
+            <span className="mb-1 block text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
               Price (IDR)
             </span>
             <div className="relative w-full min-w-0">
