@@ -96,10 +96,10 @@ export function StockRow({
             variant="ghost"
             size="icon"
             onClick={onRemove}
-            className="h-9 w-9 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+            className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
             aria-label="Hapus saham"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </Button>
         </div>
 
