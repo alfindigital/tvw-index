@@ -225,3 +225,24 @@ function StockRowImpl({
     </div>
   );
 }
+
+export const StockRow = memo(StockRowImpl, (prev, next) => {
+  return (
+    prev.loading === next.loading &&
+    prev.marketCap === next.marketCap &&
+    prev.weight === next.weight &&
+    prev.lastFetchedAt === next.lastFetchedAt &&
+    prev.onChange === next.onChange &&
+    prev.onCommitTicker === next.onCommitTicker &&
+    prev.onRemove === next.onRemove &&
+    prev.onCommitPrice === next.onCommitPrice &&
+    prev.stock.id === next.stock.id &&
+    prev.stock.ticker === next.stock.ticker &&
+    prev.stock.shares === next.stock.shares &&
+    prev.stock.price === next.stock.price &&
+    prev.stock.manualShares === next.stock.manualShares &&
+    prev.stock.manualPrice === next.stock.manualPrice &&
+    prev.stock.error === next.stock.error
+  );
+});
+
