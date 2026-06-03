@@ -56,7 +56,7 @@ function StockRowImpl({
   const inDB = tickerDraft && IDX_SHARES[tickerDraft] != null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4">
+    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
       {/* Mobile: ticker+remove on one row; shares+price below.
           Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
