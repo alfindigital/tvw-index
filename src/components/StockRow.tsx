@@ -104,9 +104,9 @@ export function StockRow({
         </div>
 
         {/* Shares + Price (grid on mobile, inline on sm+) */}
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-[2] sm:gap-2">
+        <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-[2] sm:gap-2">
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
+            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
               Shares (Jt)
             </span>
             <div className="relative w-full min-w-0">
