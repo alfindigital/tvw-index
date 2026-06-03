@@ -56,14 +56,14 @@ export function StockRow({
   const inDB = tickerDraft && IDX_SHARES[tickerDraft] != null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-3 transition-colors hover:border-ring/40 sm:p-4">
+    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4">
       {/* Mobile: ticker+remove on one row; shares+price below.
           Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
         {/* Ticker + remove (inline on mobile, flex item on desktop) */}
-        <div className="flex items-end gap-2 sm:flex-1 sm:min-w-0">
+        <div className="flex items-end gap-1.5 sm:flex-1 sm:min-w-0 sm:gap-2">
           <div className="min-w-0 flex-1">
-            <div className="mb-1 text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
+            <div className="mb-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
               Ticker
             </div>
             <div className="relative">
@@ -84,7 +84,7 @@ export function StockRow({
                 autoComplete="off"
                 autoCapitalize="characters"
                 spellCheck={false}
-                className="h-9 pr-9 font-mono text-sm font-semibold uppercase tracking-wider"
+                className="h-9 pr-9 font-mono text-sm font-semibold uppercase leading-5 tracking-wider"
               />
               {loading ? (
                 <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
@@ -104,9 +104,9 @@ export function StockRow({
         </div>
 
         {/* Shares + Price (grid on mobile, inline on sm+) */}
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-[2] sm:gap-2">
+        <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-[2] sm:gap-2">
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
+            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
               Shares (Jt)
             </span>
             <div className="relative w-full min-w-0">
@@ -130,15 +130,15 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-8 font-mono text-sm tabular-nums"
+                className="h-9 w-full min-w-0 pr-7 font-mono text-sm leading-5 tabular-nums"
               />
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
               </span>
             </div>
           </label>
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
+            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
               Price (IDR)
             </span>
             <div className="relative w-full min-w-0">
@@ -165,9 +165,9 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-10 font-mono text-sm tabular-nums"
+                className="h-9 w-full min-w-0 pr-9 font-mono text-sm leading-5 tabular-nums"
               />
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
               </span>
             </div>
