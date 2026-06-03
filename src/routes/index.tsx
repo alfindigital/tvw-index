@@ -193,17 +193,17 @@ function IndexPage() {
     formulaRef.current = formula;
   }, [formula]);
 
-  function update(id: string, patch: Partial<Stock>) {
+  const update = useCallback((id: string, patch: Partial<Stock>) => {
     setStocks((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...patch } : s)),
     );
-  }
+  }, []);
 
   function addEmpty() {
     setStocks((prev) => [...prev, newStock()]);
   }
 
-  function remove(id: string) {
+  const remove = useCallback((id: string) => {
     setStocks((prev) => prev.filter((s) => s.id !== id));
     setLoadingIds((prev) => {
       const n = new Set(prev);
@@ -221,7 +221,26 @@ function IndexPage() {
       const { [id]: _, ...rest } = prev;
       return rest;
     });
-  }
+    rowHandlersRef.current.delete(id);
+  }, []);
+
+  const getRowHandlers = useCallback(
+    (id: string) => {
+      const cache = rowHandlersRef.current;
+      const existing = cache.get(id);
+      if (existing) return existing;
+      const handlers = {
+        onChange: (patch: Partial<Stock>) => update(id, patch),
+        onCommitTicker: (t: string) => fetchTickerRef.current(id, t),
+        onRemove: () => remove(id),
+        onCommitPrice: () => quickAddRef.current?.focus(),
+      };
+      cache.set(id, handlers);
+      return handlers;
+    },
+    [update, remove],
+  );
+
 
   function resetWatchlist() {
     setStocks([]);
