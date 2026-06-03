@@ -25,7 +25,7 @@ function formatSharesInput(value: number): string {
   return fixed.replace(/\.?0+$/, "");
 }
 
-export function StockRow({
+function StockRowImpl({
   stock,
   marketCap,
   weight,
