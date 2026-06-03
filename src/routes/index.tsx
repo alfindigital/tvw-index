@@ -304,6 +304,8 @@ function IndexPage() {
       });
     }
   }
+  fetchTickerRef.current = fetchTickerForRow;
+
 
   // Add ticker via quick-add: create row with shares from DB and trigger fetch
   function addTicker(rawTicker: string) {
