@@ -165,9 +165,9 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-10 font-mono text-sm tabular-nums"
+                className="h-9 w-full min-w-0 pr-9 font-mono text-sm leading-5 tabular-nums"
               />
-              <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
               </span>
             </div>
