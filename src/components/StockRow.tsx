@@ -63,7 +63,7 @@ export function StockRow({
         {/* Ticker + remove (inline on mobile, flex item on desktop) */}
         <div className="flex items-end gap-1.5 sm:flex-1 sm:min-w-0 sm:gap-2">
           <div className="min-w-0 flex-1">
-            <div className="mb-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
+            <div className="mb-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
               Ticker
             </div>
             <div className="relative">
@@ -84,7 +84,8 @@ export function StockRow({
                 autoComplete="off"
                 autoCapitalize="characters"
                 spellCheck={false}
-                className="h-9 pr-9 font-mono text-sm font-semibold uppercase leading-5 tracking-wider"
+                title={tickerDraft || undefined}
+                className="h-9 truncate pr-9 font-mono text-[15px] font-semibold uppercase leading-5 tracking-wider sm:text-sm"
               />
               {loading ? (
                 <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
@@ -106,7 +107,7 @@ export function StockRow({
         {/* Shares + Price (grid on mobile, inline on sm+) */}
         <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-[2] sm:gap-2">
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
+            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
               Shares (Jt)
             </span>
             <div className="relative w-full min-w-0">
@@ -130,7 +131,8 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-7 font-mono text-sm leading-5 tabular-nums"
+                title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
+                className="h-9 w-full min-w-0 truncate pr-7 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
               />
               <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
@@ -138,7 +140,7 @@ export function StockRow({
             </div>
           </label>
           <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
+            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
               Price (IDR)
             </span>
             <div className="relative w-full min-w-0">
@@ -165,7 +167,8 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-9 font-mono text-sm leading-5 tabular-nums"
+                title={stock.price ? `Rp ${stock.price.toLocaleString("id-ID")}` : undefined}
+                className="h-9 w-full min-w-0 truncate pr-9 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
               />
               <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
