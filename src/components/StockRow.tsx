@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { memo, useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle, Hand } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ function formatSharesInput(value: number): string {
   return fixed.replace(/\.?0+$/, "");
 }
 
-export function StockRow({
+function StockRowImpl({
   stock,
   marketCap,
   weight,
@@ -56,7 +56,7 @@ export function StockRow({
   const inDB = tickerDraft && IDX_SHARES[tickerDraft] != null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4">
+    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
       {/* Mobile: ticker+remove on one row; shares+price below.
           Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
@@ -225,3 +225,24 @@ export function StockRow({
     </div>
   );
 }
+
+export const StockRow = memo(StockRowImpl, (prev, next) => {
+  return (
+    prev.loading === next.loading &&
+    prev.marketCap === next.marketCap &&
+    prev.weight === next.weight &&
+    prev.lastFetchedAt === next.lastFetchedAt &&
+    prev.onChange === next.onChange &&
+    prev.onCommitTicker === next.onCommitTicker &&
+    prev.onRemove === next.onRemove &&
+    prev.onCommitPrice === next.onCommitPrice &&
+    prev.stock.id === next.stock.id &&
+    prev.stock.ticker === next.stock.ticker &&
+    prev.stock.shares === next.stock.shares &&
+    prev.stock.price === next.stock.price &&
+    prev.stock.manualShares === next.stock.manualShares &&
+    prev.stock.manualPrice === next.stock.manualPrice &&
+    prev.stock.error === next.stock.error
+  );
+});
+

@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TrendingUp, Layers, Crown, Plus, AlertTriangle, RefreshCw, Twitter, Facebook, Send, Youtube } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Toaster } from "@/components/ui/sonner";
@@ -128,6 +128,23 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const getQuotesServer = useServerFn(getQuotes);
+  // Stable per-row handler cache so memoized StockRow doesn't re-render
+  // every time the parent re-renders.
+  const rowHandlersRef = useRef(
+    new Map<
+      string,
+      {
+        onChange: (patch: Partial<Stock>) => void;
+        onCommitTicker: (t: string) => void;
+        onRemove: () => void;
+        onCommitPrice: () => void;
+      }
+    >(),
+  );
+  const fetchTickerRef = useRef<
+    (id: string, ticker: string, opts?: { silent?: boolean }) => Promise<{ ok: boolean; ticker: string; error?: string }>
+  >(async () => ({ ok: false, ticker: "" }));
+
 
 
   // Hydrate from localStorage
@@ -176,17 +193,17 @@ function IndexPage() {
     formulaRef.current = formula;
   }, [formula]);
 
-  function update(id: string, patch: Partial<Stock>) {
+  const update = useCallback((id: string, patch: Partial<Stock>) => {
     setStocks((prev) =>
       prev.map((s) => (s.id === id ? { ...s, ...patch } : s)),
     );
-  }
+  }, []);
 
   function addEmpty() {
     setStocks((prev) => [...prev, newStock()]);
   }
 
-  function remove(id: string) {
+  const remove = useCallback((id: string) => {
     setStocks((prev) => prev.filter((s) => s.id !== id));
     setLoadingIds((prev) => {
       const n = new Set(prev);
@@ -204,7 +221,26 @@ function IndexPage() {
       const { [id]: _, ...rest } = prev;
       return rest;
     });
-  }
+    rowHandlersRef.current.delete(id);
+  }, []);
+
+  const getRowHandlers = useCallback(
+    (id: string) => {
+      const cache = rowHandlersRef.current;
+      const existing = cache.get(id);
+      if (existing) return existing;
+      const handlers = {
+        onChange: (patch: Partial<Stock>) => update(id, patch),
+        onCommitTicker: (t: string) => fetchTickerRef.current(id, t),
+        onRemove: () => remove(id),
+        onCommitPrice: () => quickAddRef.current?.focus(),
+      };
+      cache.set(id, handlers);
+      return handlers;
+    },
+    [update, remove],
+  );
+
 
   function resetWatchlist() {
     setStocks([]);
@@ -268,6 +304,8 @@ function IndexPage() {
       });
     }
   }
+  fetchTickerRef.current = fetchTickerForRow;
+
 
   // Add ticker via quick-add: create row with shares from DB and trigger fetch
   function addTicker(rawTicker: string) {
@@ -518,20 +556,23 @@ function IndexPage() {
                 </p>
               </div>
             ) : (
-              enriched.rows.map((r) => (
-                <StockRow
-                  key={r.id}
-                  stock={r}
-                  marketCap={r.marketCap}
-                  weight={r.weight}
-                  loading={loadingIds.has(r.id)}
-                  lastFetchedAt={fetchedAt[r.id] ?? null}
-                  onChange={(patch) => update(r.id, patch)}
-                  onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
-                  onRemove={() => remove(r.id)}
-                  onCommitPrice={() => quickAddRef.current?.focus()}
-                />
-              ))
+              enriched.rows.map((r) => {
+                const h = getRowHandlers(r.id);
+                return (
+                  <StockRow
+                    key={r.id}
+                    stock={r}
+                    marketCap={r.marketCap}
+                    weight={r.weight}
+                    loading={loadingIds.has(r.id)}
+                    lastFetchedAt={fetchedAt[r.id] ?? null}
+                    onChange={h.onChange}
+                    onCommitTicker={h.onCommitTicker}
+                    onRemove={h.onRemove}
+                    onCommitPrice={h.onCommitPrice}
+                  />
+                );
+              })
             )}
           </div>
 
