@@ -61,9 +61,9 @@ export function StockRow({
           Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
         {/* Ticker + remove (inline on mobile, flex item on desktop) */}
-        <div className="flex items-end gap-2 sm:flex-1 sm:min-w-0">
+        <div className="flex items-end gap-1.5 sm:flex-1 sm:min-w-0 sm:gap-2">
           <div className="min-w-0 flex-1">
-            <div className="mb-1 text-[11px] font-medium uppercase leading-4 tracking-[0.08em] text-muted-foreground sm:text-xs">
+            <div className="mb-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 sm:text-xs">
               Ticker
             </div>
             <div className="relative">
