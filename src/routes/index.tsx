@@ -128,6 +128,23 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const getQuotesServer = useServerFn(getQuotes);
+  // Stable per-row handler cache so memoized StockRow doesn't re-render
+  // every time the parent re-renders.
+  const rowHandlersRef = useRef(
+    new Map<
+      string,
+      {
+        onChange: (patch: Partial<Stock>) => void;
+        onCommitTicker: (t: string) => void;
+        onRemove: () => void;
+        onCommitPrice: () => void;
+      }
+    >(),
+  );
+  const fetchTickerRef = useRef<
+    (id: string, ticker: string, opts?: { silent?: boolean }) => Promise<{ ok: boolean; ticker: string; error?: string }>
+  >(async () => ({ ok: false, ticker: "" }));
+
 
 
   // Hydrate from localStorage
