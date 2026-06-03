@@ -84,7 +84,7 @@ export function StockRow({
                 autoComplete="off"
                 autoCapitalize="characters"
                 spellCheck={false}
-                className="h-9 pr-9 font-mono text-sm font-semibold uppercase tracking-wider"
+                className="h-9 pr-9 font-mono text-sm font-semibold uppercase leading-5 tracking-wider"
               />
               {loading ? (
                 <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
