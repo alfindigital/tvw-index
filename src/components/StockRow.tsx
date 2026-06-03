@@ -131,7 +131,8 @@ export function StockRow({
                   }
                 }}
                 placeholder="0"
-                className="h-9 w-full min-w-0 pr-7 font-mono text-sm leading-5 tabular-nums"
+                title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
+                className="h-9 w-full min-w-0 truncate pr-7 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
               />
               <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
