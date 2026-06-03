@@ -556,20 +556,23 @@ function IndexPage() {
                 </p>
               </div>
             ) : (
-              enriched.rows.map((r) => (
-                <StockRow
-                  key={r.id}
-                  stock={r}
-                  marketCap={r.marketCap}
-                  weight={r.weight}
-                  loading={loadingIds.has(r.id)}
-                  lastFetchedAt={fetchedAt[r.id] ?? null}
-                  onChange={(patch) => update(r.id, patch)}
-                  onCommitTicker={(t) => fetchTickerForRow(r.id, t)}
-                  onRemove={() => remove(r.id)}
-                  onCommitPrice={() => quickAddRef.current?.focus()}
-                />
-              ))
+              enriched.rows.map((r) => {
+                const h = getRowHandlers(r.id);
+                return (
+                  <StockRow
+                    key={r.id}
+                    stock={r}
+                    marketCap={r.marketCap}
+                    weight={r.weight}
+                    loading={loadingIds.has(r.id)}
+                    lastFetchedAt={fetchedAt[r.id] ?? null}
+                    onChange={h.onChange}
+                    onCommitTicker={h.onCommitTicker}
+                    onRemove={h.onRemove}
+                    onCommitPrice={h.onCommitPrice}
+                  />
+                );
+              })
             )}
           </div>
 
