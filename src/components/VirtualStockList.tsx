@@ -53,6 +53,7 @@ export function VirtualStockList({
       >
         {items.map((vi) => {
           const r = rows[vi.index];
+          if (!r) return null;
           const h = getRowHandlers(r.id);
           return (
             <div
