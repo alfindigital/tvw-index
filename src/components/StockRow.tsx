@@ -1,4 +1,4 @@
-import { memo, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle, Hand } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,17 @@ function StockRowImpl({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
+  const renderCountRef = useRef(0);
+  renderCountRef.current += 1;
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      // eslint-disable-next-line no-console
+      console.debug(
+        `[StockRow re-render] ${stock.ticker || stock.id} #${renderCountRef.current}`,
+        { price: stock.price, shares: stock.shares, loading },
+      );
+    }
+  });
 
   function handleTickerChange(v: string) {
     setTickerDraft(v.toUpperCase().slice(0, 8));
@@ -56,7 +67,18 @@ function StockRowImpl({
   const inDB = tickerDraft && IDX_SHARES[tickerDraft] != null;
 
   return (
-    <div className="rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+    <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+      {import.meta.env.DEV ? (
+        <span
+          key={renderCountRef.current}
+          aria-hidden
+          title={`Render #${renderCountRef.current}`}
+          className="pointer-events-none absolute right-2 top-2 z-10 flex h-2 w-2"
+        >
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+        </span>
+      ) : null}
       {/* Mobile: ticker+remove on one row; shares+price below.
           Desktop: one row with ticker | shares | price | remove */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
