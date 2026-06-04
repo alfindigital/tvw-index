@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
+import { StockListSkeleton } from "@/components/StockRowSkeleton";
+import { VirtualStockList } from "@/components/VirtualStockList";
 import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { QuickAddBar } from "@/components/QuickAddBar";
