@@ -558,7 +558,38 @@ function IndexPage() {
                 <p className="mt-1 text-xs text-muted-foreground">
                   {WATCHLIST_EMPTY_HINT}
                 </p>
+                <p className="mt-3 text-[11px] text-muted-foreground/80">
+                  Tip: ketik kode emiten (mis. <span className="font-mono text-foreground">BBCA</span>) di kotak Quick Add lalu tekan Enter.
+                </p>
               </div>
+            ) : enriched.total === 0 && loadingIds.size === 0 ? (
+              <>
+                <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
+                  <p className="text-sm font-medium text-foreground">
+                    Belum ada data harga
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Tekan tombol Refresh atau commit ulang ticker untuk mengambil harga terbaru.
+                  </p>
+                </div>
+                {enriched.rows.map((r) => {
+                  const h = getRowHandlers(r.id);
+                  return (
+                    <StockRow
+                      key={r.id}
+                      stock={r}
+                      marketCap={r.marketCap}
+                      weight={r.weight}
+                      loading={loadingIds.has(r.id)}
+                      lastFetchedAt={fetchedAt[r.id] ?? null}
+                      onChange={h.onChange}
+                      onCommitTicker={h.onCommitTicker}
+                      onRemove={h.onRemove}
+                      onCommitPrice={h.onCommitPrice}
+                    />
+                  );
+                })}
+              </>
             ) : enriched.rows.length > 15 ? (
               <VirtualStockList
                 rows={enriched.rows}
