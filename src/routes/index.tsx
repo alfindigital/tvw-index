@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
+import { StockListSkeleton } from "@/components/StockRowSkeleton";
+import { VirtualStockList } from "@/components/VirtualStockList";
 import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { QuickAddBar } from "@/components/QuickAddBar";
@@ -543,7 +545,9 @@ function IndexPage() {
           </div>
 
           <div className="space-y-2.5">
-            {enriched.rows.length === 0 ? (
+            {!hydrated ? (
+              <StockListSkeleton count={3} />
+            ) : enriched.rows.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-border bg-card/50 p-10 text-center">
                 <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
                   <Plus className="h-5 w-5" />
@@ -555,6 +559,13 @@ function IndexPage() {
                   {WATCHLIST_EMPTY_HINT}
                 </p>
               </div>
+            ) : enriched.rows.length > 15 ? (
+              <VirtualStockList
+                rows={enriched.rows}
+                loadingIds={loadingIds}
+                fetchedAt={fetchedAt}
+                getRowHandlers={getRowHandlers}
+              />
             ) : (
               enriched.rows.map((r) => {
                 const h = getRowHandlers(r.id);
