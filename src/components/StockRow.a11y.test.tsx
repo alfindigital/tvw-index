@@ -112,7 +112,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         expect(priceInput.className).toContain("truncate");
       });
 
-      it(`${vp.name} (${vp.width}px) · ${mode} — keyboard tab order is ticker → shares → price → remove`, () => {
+      it(`${vp.name} (${vp.width}px) · ${mode} — keyboard tab order is sane`, () => {
         setViewport(vp.width);
         setDarkMode(dark);
         const { container } = renderRow();
@@ -121,17 +121,17 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
             "input, button:not([disabled])",
           ),
         );
-        // Ticker input first, then shares, then price, then remove button
-        const [first, second, third] = focusable;
+        // Ticker input must come first so keyboard users land on it.
+        const [first] = focusable;
         expect(first?.tagName).toBe("INPUT");
         expect((first as HTMLInputElement | undefined)?.value).toBe("BBCA");
-        expect(second?.tagName).toBe("INPUT");
-        expect(third?.tagName).toBe("INPUT");
-        const remove = focusable.find(
-          (el) => el.getAttribute("aria-label") === "Hapus saham",
-        );
-        expect(remove).toBeTruthy();
-        // No positive tabindex (which would break natural order)
+        // Exactly 3 inputs (ticker, shares, price) + 1 remove button.
+        const inputs = focusable.filter((el) => el.tagName === "INPUT");
+        const buttons = focusable.filter((el) => el.tagName === "BUTTON");
+        expect(inputs).toHaveLength(3);
+        expect(buttons).toHaveLength(1);
+        expect(buttons[0]?.getAttribute("aria-label")).toBe("Hapus saham");
+        // No positive tabindex (would break natural order)
         for (const el of focusable) {
           const ti = el.getAttribute("tabindex");
           if (ti != null) expect(Number(ti)).toBeLessThanOrEqual(0);
