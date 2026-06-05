@@ -122,10 +122,11 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
           ),
         );
         // Ticker input first, then shares, then price, then remove button
-        expect(focusable[0].tagName).toBe("INPUT");
-        expect((focusable[0] as HTMLInputElement).value).toBe("BBCA");
-        expect(focusable[1].tagName).toBe("INPUT");
-        expect(focusable[2].tagName).toBe("INPUT");
+        const [first, second, third] = focusable;
+        expect(first?.tagName).toBe("INPUT");
+        expect((first as HTMLInputElement | undefined)?.value).toBe("BBCA");
+        expect(second?.tagName).toBe("INPUT");
+        expect(third?.tagName).toBe("INPUT");
         const remove = focusable.find(
           (el) => el.getAttribute("aria-label") === "Hapus saham",
         );
