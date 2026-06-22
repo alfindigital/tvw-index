@@ -1,6 +1,8 @@
 // Generates the social OG image + PWA/Apple icons from inline SVG.
-// Run once after branding changes:  node scripts/generate-og.mjs
-// (sharp is a dev-only generator dependency, like xlsx for generate-shares.)
+// The generated PNGs are committed, so this only needs re-running after a
+// branding change. `sharp` is intentionally NOT a committed dependency (it's a
+// heavy native module); install it ad-hoc to regenerate, e.g.:
+//   bun add -d sharp && node scripts/generate-og.mjs && bun remove sharp
 import sharp from "sharp";
 import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
