@@ -1,9 +1,10 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Loader2, Trash2, AlertCircle, Hand } from "lucide-react";
+import { Loader2, Trash2, AlertCircle, Hand, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { formatCompact, formatPct } from "@/lib/format";
+import { formatCompact, formatPct, formatTime } from "@/lib/format";
 import type { Stock } from "@/lib/storage";
+import type { WeightMode } from "@/lib/weight";
 import { IDX_SHARES } from "@/data/idx-shares";
 
 type Props = {
@@ -12,16 +13,18 @@ type Props = {
   weight: number;
   loading: boolean;
   lastFetchedAt?: number | null;
+  weightMode?: WeightMode;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void;
   onRemove: () => void;
   onCommitPrice?: () => void;
+  onEnableAuto?: () => void;
 };
 
 function formatSharesInput(value: number): string {
   if (!value) return "";
-  // up to 2 decimals, trim trailing zeros
-  const fixed = value.toFixed(2);
+  // up to 4 decimals, trim trailing zeros (preserve dataset precision)
+  const fixed = value.toFixed(4);
   return fixed.replace(/\.?0+$/, "");
 }
 
@@ -30,10 +33,13 @@ function StockRowImpl({
   marketCap,
   weight,
   loading,
+  lastFetchedAt,
+  weightMode = "mcap",
   onChange,
   onCommitTicker,
   onRemove,
   onCommitPrice,
+  onEnableAuto,
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
@@ -41,11 +47,11 @@ function StockRowImpl({
   renderCountRef.current += 1;
   useEffect(() => {
     if (import.meta.env.DEV) {
-      // eslint-disable-next-line no-console
-      console.debug(
-        `[StockRow re-render] ${stock.ticker || stock.id} #${renderCountRef.current}`,
-        { price: stock.price, shares: stock.shares, loading },
-      );
+      console.debug(`[StockRow re-render] ${stock.ticker || stock.id} #${renderCountRef.current}`, {
+        price: stock.price,
+        shares: stock.shares,
+        loading,
+      });
     }
   });
 
@@ -65,6 +71,7 @@ function StockRowImpl({
   }
 
   const inDB = tickerDraft && IDX_SHARES[tickerDraft] != null;
+  const showFreeFloat = weightMode === "freefloat";
 
   return (
     <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
@@ -91,6 +98,7 @@ function StockRowImpl({
             <div className="relative">
               <Input
                 value={tickerDraft}
+                aria-label="Ticker saham"
                 onChange={(e) => handleTickerChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -119,10 +127,10 @@ function StockRowImpl({
             variant="ghost"
             size="icon"
             onClick={onRemove}
-            className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
-            aria-label="Hapus saham"
+            className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
+            aria-label={`Hapus ${stock.ticker || "saham"}`}
           >
-            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </div>
 
@@ -154,7 +162,7 @@ function StockRowImpl({
                 }}
                 placeholder="0"
                 title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
-                className="h-9 w-full min-w-0 truncate pr-7 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
+                className="h-9 w-full min-w-0 pr-7 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
               />
               <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 jt{stock.manualShares ? "*" : ""}
@@ -170,9 +178,7 @@ function StockRowImpl({
                 ref={priceRef}
                 type="text"
                 inputMode="numeric"
-                value={
-                  stock.price ? stock.price.toLocaleString("id-ID") : ""
-                }
+                value={stock.price ? stock.price.toLocaleString("id-ID") : ""}
                 onChange={(e) => {
                   const raw = e.target.value.replace(/\D/g, "");
                   const num = Math.min(Number(raw) || 0, 999999999999);
@@ -190,7 +196,7 @@ function StockRowImpl({
                 }}
                 placeholder="0"
                 title={stock.price ? `Rp ${stock.price.toLocaleString("id-ID")}` : undefined}
-                className="h-9 w-full min-w-0 truncate pr-9 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
+                className="h-9 w-full min-w-0 pr-9 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
               />
               <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                 IDR{stock.manualPrice ? "*" : ""}
@@ -212,17 +218,33 @@ function StockRowImpl({
           <span className="break-words">{stock.error}</span>
         </div>
       ) : stock.manualPrice ? (
-        <div className="mt-2 flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-          <Hand className="h-3 w-3" />
-          <span>Harga manual · auto-fetch dimatikan</span>
+        <div className="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+          <span className="flex items-center gap-1">
+            <Hand className="h-3 w-3" />
+            Harga manual
+          </span>
+          {onEnableAuto ? (
+            <button
+              type="button"
+              onClick={onEnableAuto}
+              className="inline-flex items-center gap-1 rounded text-[11px] font-semibold text-primary underline-offset-2 hover:underline"
+            >
+              <Zap className="h-3 w-3" />
+              Pakai harga auto
+            </button>
+          ) : null}
         </div>
       ) : tickerDraft && !inDB && !stock.manualShares ? (
         <div className="mt-2 text-xs text-muted-foreground">
           Tidak ada di DB IDX · isi shares manual
         </div>
+      ) : lastFetchedAt ? (
+        <div className="mt-2 text-xs text-muted-foreground">
+          Harga close · diperbarui {formatTime(lastFetchedAt)}
+        </div>
       ) : null}
 
-      {/* Row 2: Market Cap + weight */}
+      {/* Row 2: Market Cap + weight (+ free-float when in free-float mode) */}
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
         <div>
           <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
@@ -232,6 +254,35 @@ function StockRowImpl({
             {formatCompact(marketCap)}
           </div>
         </div>
+        {showFreeFloat ? (
+          <label className="flex items-center gap-1.5">
+            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+              Free-float
+            </span>
+            <div className="relative w-16">
+              <Input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                max={100}
+                step="1"
+                value={stock.freeFloat ?? ""}
+                onChange={(e) => {
+                  const raw = e.target.value;
+                  onChange({
+                    freeFloat: raw === "" ? null : Math.max(0, Math.min(100, Number(raw) || 0)),
+                  });
+                }}
+                placeholder="100"
+                aria-label={`Free-float persen ${stock.ticker}`}
+                className="h-7 w-full pr-5 text-center font-mono text-xs tabular-nums"
+              />
+              <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                %
+              </span>
+            </div>
+          </label>
+        ) : null}
         <div className="flex flex-1 items-center gap-3">
           <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
             <div
@@ -254,17 +305,19 @@ export const StockRow = memo(StockRowImpl, (prev, next) => {
     prev.marketCap === next.marketCap &&
     prev.weight === next.weight &&
     prev.lastFetchedAt === next.lastFetchedAt &&
+    prev.weightMode === next.weightMode &&
     prev.onChange === next.onChange &&
     prev.onCommitTicker === next.onCommitTicker &&
     prev.onRemove === next.onRemove &&
     prev.onCommitPrice === next.onCommitPrice &&
+    prev.onEnableAuto === next.onEnableAuto &&
     prev.stock.id === next.stock.id &&
     prev.stock.ticker === next.stock.ticker &&
     prev.stock.shares === next.stock.shares &&
     prev.stock.price === next.stock.price &&
     prev.stock.manualShares === next.stock.manualShares &&
     prev.stock.manualPrice === next.stock.manualPrice &&
+    prev.stock.freeFloat === next.stock.freeFloat &&
     prev.stock.error === next.stock.error
   );
 });
-

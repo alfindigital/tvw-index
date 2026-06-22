@@ -5,6 +5,9 @@ export type Stock = {
   price: number; // IDR per share
   manualShares: boolean; // jika true, jangan auto-fill dari DB
   manualPrice: boolean; // jika true, jangan overwrite saat refresh
+  // Free-float persen (0–100). null/undefined diperlakukan sebagai 100%.
+  // Dipakai saat mode bobot = "freefloat".
+  freeFloat?: number | null;
   error?: string | null;
 };
 
@@ -22,16 +25,94 @@ export type Template = {
 
 const KEY = "idx-basket-v1";
 const TPL_KEY = "idx-templates-v1";
+const SETTINGS_KEY = "idx-settings-v1";
 
-function normalizeStock(s: any): Stock {
+// ---------- App settings (weighting / display preferences) ----------
+
+export type WeightModeSetting = "mcap" | "freefloat";
+export type SortKey = "manual" | "weight" | "mcap" | "ticker";
+
+export type AppSettings = {
+  weightMode: WeightModeSetting;
+  /** Per-name weight cap in percent (e.g. 10). null = no cap. */
+  capPct: number | null;
+  /** Prefix TradingView symbols with `IDX:`. */
+  usePrefix: boolean;
+  sort: SortKey;
+};
+
+export const DEFAULT_SETTINGS: AppSettings = {
+  weightMode: "mcap",
+  capPct: null,
+  usePrefix: true,
+  sort: "manual",
+};
+
+export function loadSettings(): AppSettings {
+  if (typeof window === "undefined") return { ...DEFAULT_SETTINGS };
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (!raw) return { ...DEFAULT_SETTINGS };
+    const p = JSON.parse(raw);
+    return {
+      weightMode: p.weightMode === "freefloat" ? "freefloat" : "mcap",
+      capPct:
+        p.capPct == null || !isFinite(Number(p.capPct))
+          ? null
+          : Math.max(1, Math.min(100, Number(p.capPct))),
+      usePrefix: p.usePrefix !== false,
+      sort: (["manual", "weight", "mcap", "ticker"] as const).includes(p.sort) ? p.sort : "manual",
+    };
+  } catch {
+    return { ...DEFAULT_SETTINGS };
+  }
+}
+
+export function saveSettings(s: AppSettings) {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+  } catch {
+    // ignore
+  }
+}
+
+type RawStock = {
+  id?: unknown;
+  ticker?: unknown;
+  shares?: unknown;
+  price?: unknown;
+  manualShares?: unknown;
+  manualPrice?: unknown;
+  manual?: unknown;
+  freeFloat?: unknown;
+  error?: unknown;
+};
+
+type RawTemplate = {
+  id?: unknown;
+  name?: unknown;
+  createdAt?: unknown;
+  stocks?: unknown;
+};
+
+function normalizeFreeFloat(v: unknown): number | null {
+  if (v == null || v === "") return null;
+  const n = Number(v);
+  if (!isFinite(n)) return null;
+  return Math.max(0, Math.min(100, n));
+}
+
+function normalizeStock(s: RawStock): Stock {
   return {
-    id: s.id ?? crypto.randomUUID(),
+    id: typeof s.id === "string" ? s.id : crypto.randomUUID(),
     ticker: String(s.ticker ?? ""),
     shares: Number(s.shares ?? 0),
     price: Number(s.price ?? 0),
     manualShares: Boolean(s.manualShares ?? false),
     manualPrice: Boolean(s.manualPrice ?? s.manual ?? false),
-    error: s.error ?? null,
+    freeFloat: normalizeFreeFloat(s.freeFloat),
+    error: typeof s.error === "string" ? s.error : null,
   };
 }
 
@@ -41,9 +122,7 @@ export function loadBasket(): BasketState {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { stocks: [], lastRefresh: null };
     const parsed = JSON.parse(raw);
-    const stocks: Stock[] = Array.isArray(parsed.stocks)
-      ? parsed.stocks.map(normalizeStock)
-      : [];
+    const stocks: Stock[] = Array.isArray(parsed.stocks) ? parsed.stocks.map(normalizeStock) : [];
     return { stocks, lastRefresh: parsed.lastRefresh ?? null };
   } catch {
     return { stocks: [], lastRefresh: null };
@@ -67,6 +146,7 @@ export function newStock(): Stock {
     price: 0,
     manualShares: false,
     manualPrice: false,
+    freeFloat: null,
     error: null,
   };
 }
@@ -80,7 +160,7 @@ export function loadTemplates(): Template[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.map((t: any) => ({
+    return (parsed as RawTemplate[]).map((t) => ({
       id: String(t.id ?? crypto.randomUUID()),
       name: String(t.name ?? "Untitled"),
       createdAt: Number(t.createdAt ?? Date.now()),
@@ -127,23 +207,18 @@ export type ImportResult = {
   templateCount?: number;
 };
 
-export function applyImport(
-  raw: string,
-  mode: "replace" | "merge" = "replace",
-): ImportResult {
+export function applyImport(raw: string, mode: "replace" | "merge" = "replace"): ImportResult {
   try {
     const data = JSON.parse(raw);
     if (!data || data.type !== "idx-basket-export") {
       return { ok: false, error: "File tidak valid" };
     }
     const basket: BasketState = {
-      stocks: Array.isArray(data.basket?.stocks)
-        ? data.basket.stocks.map(normalizeStock)
-        : [],
+      stocks: Array.isArray(data.basket?.stocks) ? data.basket.stocks.map(normalizeStock) : [],
       lastRefresh: data.basket?.lastRefresh ?? null,
     };
     const templates: Template[] = Array.isArray(data.templates)
-      ? data.templates.map((t: any) => ({
+      ? (data.templates as RawTemplate[]).map((t) => ({
           id: String(t.id ?? crypto.randomUUID()),
           name: String(t.name ?? "Untitled"),
           createdAt: Number(t.createdAt ?? Date.now()),

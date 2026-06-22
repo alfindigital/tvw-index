@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   BookmarkPlus,
   Download,
+  FileSpreadsheet,
   Upload,
   Trash2,
   Settings as SettingsIcon,
@@ -81,9 +82,7 @@ function validateName(
   if (trimmed.length > TEMPLATE_NAME_MAX) {
     return { ok: false, message: TEMPLATE_NAME_TOO_LONG(trimmed.length) };
   }
-  const dup = existing.find(
-    (t) => t.name.trim().toLowerCase() === trimmed.toLowerCase(),
-  );
+  const dup = existing.find((t) => t.name.trim().toLowerCase() === trimmed.toLowerCase());
   if (dup) return { ok: false, message: TEMPLATE_NAME_DUPLICATE(trimmed) };
   return { ok: true, value: trimmed };
 }
@@ -97,6 +96,7 @@ type Props = {
   onLoadTemplate: (stocks: Stock[]) => void;
   onAfterImport: () => void;
   onOpenShortcuts: () => void;
+  onExportCsv: () => void;
   /** External trigger to open save dialog (e.g. via Shift+S shortcut) */
   saveDialogTrigger?: number;
 };
@@ -110,6 +110,7 @@ export function SettingsMenu({
   onLoadTemplate,
   onAfterImport,
   onOpenShortcuts,
+  onExportCsv,
   saveDialogTrigger,
 }: Props) {
   const [templates, setTemplates] = useState<Template[]>([]);
@@ -129,7 +130,7 @@ export function SettingsMenu({
     if (saveDialogTrigger === undefined) return;
     if (saveDialogTrigger === 0) return;
     openSaveDialog();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // openSaveDialog only resets local form state; safe to omit from deps.
   }, [saveDialogTrigger]);
 
   function refresh() {
@@ -230,9 +231,7 @@ export function SettingsMenu({
     }
     refresh();
     onAfterImport();
-    toast.success(
-      `Import sukses · ${result.basketCount} saham · ${result.templateCount} template`,
-    );
+    toast.success(`Import sukses · ${result.basketCount} saham · ${result.templateCount} template`);
   }
 
   return (
@@ -289,9 +288,7 @@ export function SettingsMenu({
               onRefreshAll();
             }}
           >
-            <RefreshCw
-              className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`}
-            />
+            <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`} />
             Refresh harga
             <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -340,9 +337,7 @@ export function SettingsMenu({
                     className="min-w-0 flex-1 text-left"
                   >
                     <div className="truncate text-sm font-medium">{t.name}</div>
-                    <div className="text-[10px] text-muted-foreground">
-                      {t.stocks.length} saham
-                    </div>
+                    <div className="text-[10px] text-muted-foreground">{t.stocks.length} saham</div>
                   </button>
                   <button
                     type="button"
@@ -376,6 +371,10 @@ export function SettingsMenu({
           <DropdownMenuItem onSelect={handleExport}>
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
+          </DropdownMenuItem>
+          <DropdownMenuItem disabled={currentStocks.length === 0} onSelect={onExportCsv}>
+            <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
+            Export watchlist (.csv)
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleImportClick}>
             <Upload className="mr-2 h-3.5 w-3.5" />
@@ -413,8 +412,8 @@ export function SettingsMenu({
           <DialogHeader>
             <DialogTitle>Simpan sebagai template</DialogTitle>
             <DialogDescription>
-              Watchlist saat ini ({currentStocks.length} saham) akan disimpan
-              sebagai preset di browser.
+              Watchlist saat ini ({currentStocks.length} saham) akan disimpan sebagai preset di
+              browser.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
@@ -429,11 +428,7 @@ export function SettingsMenu({
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSave();
               }}
-              className={
-                nameError
-                  ? "border-destructive focus-visible:ring-destructive/30"
-                  : ""
-              }
+              className={nameError ? "border-destructive focus-visible:ring-destructive/30" : ""}
             />
             {nameError ? (
               <div
@@ -445,15 +440,10 @@ export function SettingsMenu({
                   className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive"
                   aria-hidden="true"
                 />
-                <p className="text-xs font-medium leading-snug text-destructive">
-                  {nameError}
-                </p>
+                <p className="text-xs font-medium leading-snug text-destructive">{nameError}</p>
               </div>
             ) : (
-              <p
-                id="tpl-name-hint"
-                className="text-[11px] text-muted-foreground"
-              >
+              <p id="tpl-name-hint" className="text-[11px] text-muted-foreground">
                 {name.trim().length}/{TEMPLATE_NAME_MAX} karakter
               </p>
             )}
@@ -473,8 +463,8 @@ export function SettingsMenu({
           <AlertDialogHeader>
             <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
             <AlertDialogDescription>
-              Semua saham di watchlist saat ini akan dihapus. Template tersimpan
-              tidak terpengaruh. Tindakan ini tidak bisa dibatalkan.
+              Semua saham di watchlist saat ini akan dihapus. Template tersimpan tidak terpengaruh.
+              Tindakan ini tidak bisa dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-
-const BASE_URL = "https://tv-weight-index.lovable.app";
+import { SITE_URL } from "@/lib/site";
+import { IDX_TICKERS } from "@/data/idx-shares";
 
 interface SitemapEntry {
   path: string;
@@ -15,12 +15,18 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          // One indexable page per emiten — long-tail SEO from data we already ship.
+          ...IDX_TICKERS.map((t) => ({
+            path: `/saham/${t}`,
+            changefreq: "weekly" as const,
+            priority: "0.6",
+          })),
         ];
 
         const urls = entries.map((e) =>
           [
             `  <url>`,
-            `    <loc>${BASE_URL}${e.path}</loc>`,
+            `    <loc>${SITE_URL}${e.path}</loc>`,
             e.changefreq ? `    <changefreq>${e.changefreq}</changefreq>` : null,
             e.priority ? `    <priority>${e.priority}</priority>` : null,
             `  </url>`,

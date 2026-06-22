@@ -36,9 +36,7 @@ export function ShortcutsDialog({ open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>
-            Operasikan Index Builder lebih cepat tanpa mouse.
-          </DialogDescription>
+          <DialogDescription>Operasikan IndexW lebih cepat tanpa mouse.</DialogDescription>
         </DialogHeader>
         <div className="divide-y divide-border rounded-lg border border-border">
           {ROWS.map((r) => (
@@ -50,11 +48,7 @@ export function ShortcutsDialog({ open, onOpenChange }: Props) {
               <span className="flex shrink-0 items-center gap-1">
                 {r.keys.map((k, i) => (
                   <span key={i} className="flex items-center gap-1">
-                    {i > 0 ? (
-                      <span className="text-[10px] text-muted-foreground">
-                        +
-                      </span>
-                    ) : null}
+                    {i > 0 ? <span className="text-[10px] text-muted-foreground">+</span> : null}
                     <Kbd>{k}</Kbd>
                   </span>
                 ))}

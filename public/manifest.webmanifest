@@ -1,0 +1,17 @@
+{
+  "name": "IndexW — Watchlist Saham IDX",
+  "short_name": "IndexW",
+  "description": "Bangun watchlist saham IDX, hitung bobot market cap, dan dapatkan formula TradingView siap pakai.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0a0a1a",
+  "theme_color": "#0a0a1a",
+  "lang": "id",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

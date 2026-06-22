@@ -1,9 +1,12 @@
-# Index Builder
+# IndexW
 
-> Bangun watchlist saham IDX, hitung bobot index, dan pantau harga serta market cap secara real-time.
+> Bangun watchlist saham IDX, hitung bobot market cap (opsi free-float), dan dapatkan formula TradingView siap salin.
 
-Index Builder adalah alat berbasis web untuk menyusun watchlist saham Indonesia (IDX), menghitung bobot index custom, dan memantau pergerakan harga serta kapitalisasi pasar.
+IndexW adalah alat web indie untuk investor IDX: susun watchlist saham Indonesia, hitung bobot index custom berbasis kapitalisasi pasar (atau free-float adjusted), pantau market cap, lalu ekspor formula TradingView (mis. `IDX:BBCA*0.45 + IDX:TLKM*0.23`) untuk men-chart index buatanmu sendiri.
+
+Catatan data: harga diambil dari Yahoo Finance (harga close/delayed, bukan real-time). Data jumlah saham beredar di-bundle dari rilis IDX dan punya tanggal "as of" — cek di footer aplikasi.
 
 ## Pages
 
-- [Home](/): Watchlist saham IDX dengan kalkulator bobot index dan data harga real-time.
+- [Home](/): Watchlist saham IDX + kalkulator bobot index + formula TradingView.
+- [Saham](/saham/BBCA): Halaman per-emiten (mis. /saham/BBCA) dengan jumlah saham beredar dan tombol tambah ke watchlist.

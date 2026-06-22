@@ -88,18 +88,17 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setViewport(vp.width);
         setDarkMode(dark);
         const { getByLabelText } = renderRow();
-        const removeBtn = getByLabelText("Hapus saham") as HTMLButtonElement;
+        // aria-label is specific to the row's ticker for clearer SR output.
+        const removeBtn = getByLabelText("Hapus BBCA") as HTMLButtonElement;
         expect(removeBtn.tagName).toBe("BUTTON");
-        // Tap-target classes encode the minimum size (h-8 = 32px mobile, h-9 sm+)
-        expect(removeBtn.className).toMatch(/h-8|h-9/);
+        // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
+        expect(removeBtn.className).toMatch(/h-10|h-9/);
       });
 
       it(`${vp.name} (${vp.width}px) · ${mode} — long numeric values get tooltip via title`, () => {
         setViewport(vp.width);
         setDarkMode(dark);
-        const { container } = renderRow(
-          makeStock({ shares: 9876543.21, price: 999_999_999 }),
-        );
+        const { container } = renderRow(makeStock({ shares: 9876543.21, price: 999_999_999 }));
         const inputs = container.querySelectorAll("input");
         // ticker, shares, price
         expect(inputs.length).toBeGreaterThanOrEqual(3);
@@ -107,9 +106,10 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         const priceInput = inputs[2] as HTMLInputElement;
         expect(sharesInput.getAttribute("title")).toContain("juta");
         expect(priceInput.getAttribute("title")).toContain("Rp");
-        // truncate class so overflow doesn't get clipped silently
-        expect(sharesInput.className).toContain("truncate");
-        expect(priceInput.className).toContain("truncate");
+        // Numeric inputs must NOT truncate — clipping digits hides the value the
+        // user is editing. Full value stays reachable via the `title` tooltip.
+        expect(sharesInput.className).not.toContain("truncate");
+        expect(priceInput.className).not.toContain("truncate");
       });
 
       it(`${vp.name} (${vp.width}px) · ${mode} — keyboard tab order is sane`, () => {
@@ -117,9 +117,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setDarkMode(dark);
         const { container } = renderRow();
         const focusable = Array.from(
-          container.querySelectorAll<HTMLElement>(
-            "input, button:not([disabled])",
-          ),
+          container.querySelectorAll<HTMLElement>("input, button:not([disabled])"),
         );
         // Ticker input must come first so keyboard users land on it.
         const [first] = focusable;
@@ -130,7 +128,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         const buttons = focusable.filter((el) => el.tagName === "BUTTON");
         expect(inputs).toHaveLength(3);
         expect(buttons).toHaveLength(1);
-        expect(buttons[0]?.getAttribute("aria-label")).toBe("Hapus saham");
+        expect(buttons[0]?.getAttribute("aria-label")).toBe("Hapus BBCA");
         // No positive tabindex (would break natural order)
         for (const el of focusable) {
           const ti = el.getAttribute("tabindex");

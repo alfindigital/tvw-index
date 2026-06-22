@@ -2,20 +2,21 @@ import { useEffect, useRef } from "react";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import { StockRow } from "@/components/StockRow";
 import type { Stock } from "@/lib/storage";
-
-type EnrichedStock = Stock & { marketCap: number; weight: number };
+import type { WeightMode, EnrichedStock } from "@/lib/weight";
 
 type RowHandlers = {
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (t: string) => void;
   onRemove: () => void;
   onCommitPrice: () => void;
+  onEnableAuto: () => void;
 };
 
 type Props = {
   rows: EnrichedStock[];
   loadingIds: Set<string>;
   fetchedAt: Record<string, number>;
+  weightMode?: WeightMode;
   getRowHandlers: (id: string) => RowHandlers;
 };
 
@@ -23,6 +24,7 @@ export function VirtualStockList({
   rows,
   loadingIds,
   fetchedAt,
+  weightMode,
   getRowHandlers,
 }: Props) {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -74,10 +76,12 @@ export function VirtualStockList({
                 weight={r.weight}
                 loading={loadingIds.has(r.id)}
                 lastFetchedAt={fetchedAt[r.id] ?? null}
+                weightMode={weightMode}
                 onChange={h.onChange}
                 onCommitTicker={h.onCommitTicker}
                 onRemove={h.onRemove}
                 onCommitPrice={h.onCommitPrice}
+                onEnableAuto={h.onEnableAuto}
               />
             </div>
           );
