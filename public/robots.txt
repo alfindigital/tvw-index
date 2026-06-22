@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://tv-weight-index.lovable.app/sitemap.xml
+Sitemap: https://tvx.alfidx.my.id/sitemap.xml

@@ -56,7 +56,7 @@ const ogSvg = `
     <text x="32" y="42" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="22" font-weight="600" fill="#818cf8">TRADINGVIEW FORMULA</text>
     <text x="32" y="74" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="26" font-weight="600" fill="#ffffff">IDX:BBCA*0.42 + IDX:BBRI*0.27 + IDX:TLKM*0.18 + IDX:BMRI*0.13</text>
   </g>
-  <text x="96" y="586" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="24" font-weight="500" fill="#8b8bb8">tv-weight-index.lovable.app  ·  by @alfindigital</text>
+  <text x="96" y="586" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="24" font-weight="500" fill="#8b8bb8">tvx.alfidx.my.id  ·  by @alfindigital</text>
 </svg>`;
 
 function iconSvg(size, { maskable = false } = {}) {

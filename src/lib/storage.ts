@@ -34,17 +34,11 @@ export type SortKey = "manual" | "weight" | "mcap" | "ticker";
 
 export type AppSettings = {
   weightMode: WeightModeSetting;
-  /** Per-name weight cap in percent (e.g. 10). null = no cap. */
-  capPct: number | null;
-  /** Prefix TradingView symbols with `IDX:`. */
-  usePrefix: boolean;
   sort: SortKey;
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
   weightMode: "mcap",
-  capPct: null,
-  usePrefix: true,
   sort: "manual",
 };
 
@@ -56,11 +50,6 @@ export function loadSettings(): AppSettings {
     const p = JSON.parse(raw);
     return {
       weightMode: p.weightMode === "freefloat" ? "freefloat" : "mcap",
-      capPct:
-        p.capPct == null || !isFinite(Number(p.capPct))
-          ? null
-          : Math.max(1, Math.min(100, Number(p.capPct))),
-      usePrefix: p.usePrefix !== false,
       sort: (["manual", "weight", "mcap", "ticker"] as const).includes(p.sort) ? p.sort : "manual",
     };
   } catch {

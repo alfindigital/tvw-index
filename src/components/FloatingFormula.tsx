@@ -11,12 +11,10 @@ import {
 
 type Props = {
   formula: string;
-  usePrefix: boolean;
-  onTogglePrefix: () => void;
   onShare?: () => void;
 };
 
-export function FloatingFormula({ formula, usePrefix, onTogglePrefix, onShare }: Props) {
+export function FloatingFormula({ formula, onShare }: Props) {
   const [copied, setCopied] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const empty = !formula;
@@ -34,17 +32,18 @@ export function FloatingFormula({ formula, usePrefix, onTogglePrefix, onShare }:
     <div className="w-full">
       <div className="flex w-full flex-col gap-2.5 overflow-hidden rounded-2xl border border-primary/30 bg-gradient-to-r from-[oklch(0.18_0.08_275)] via-primary to-[oklch(0.32_0.16_278)] px-4 py-3 text-primary-foreground shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.7)] ring-1 ring-primary/20 sm:flex-row sm:items-center sm:gap-3">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/70">
               TradingView Formula
             </span>
             <button
               type="button"
               onClick={() => setHelpOpen(true)}
-              className="inline-flex items-center gap-1 text-[11px] font-medium text-primary-foreground/70 underline-offset-2 hover:text-primary-foreground hover:underline"
+              aria-label="Cara pakai formula di TradingView"
+              title="Cara pakai formula di TradingView"
+              className="inline-flex items-center text-primary-foreground/70 transition-colors hover:text-primary-foreground"
             >
-              <HelpCircle className="h-3 w-3" />
-              cara pakai
+              <HelpCircle className="h-3.5 w-3.5" />
             </button>
           </div>
           <div className="truncate font-mono text-xs text-primary-foreground">
@@ -52,19 +51,6 @@ export function FloatingFormula({ formula, usePrefix, onTogglePrefix, onShare }:
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          <button
-            type="button"
-            onClick={onTogglePrefix}
-            aria-pressed={usePrefix}
-            title="Tambah prefix IDX: agar simbol pasti merujuk bursa IDX"
-            className={`inline-flex h-8 items-center rounded-lg px-2.5 font-mono text-[11px] font-semibold transition ${
-              usePrefix
-                ? "bg-primary-foreground text-primary"
-                : "bg-primary-foreground/15 text-primary-foreground hover:bg-primary-foreground/25"
-            }`}
-          >
-            IDX:
-          </button>
           {onShare ? (
             <button
               type="button"

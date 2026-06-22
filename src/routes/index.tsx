@@ -23,12 +23,11 @@ import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
-import { LastUpdated } from "@/components/LastUpdated";
 import { WeightControls } from "@/components/WeightControls";
 import { EmptyWatchlist } from "@/components/EmptyWatchlist";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
-import { WATCHLIST_LABEL, WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
+import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
 import {
   loadBasket,
   saveBasket,
@@ -45,7 +44,7 @@ import { enrichStocks, buildFormula, type WeightMode, type EnrichedStock } from 
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
-import { SITE_NAME, SHARES_AS_OF, TV_PREFIX } from "@/lib/site";
+import { TV_PREFIX } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
@@ -167,15 +166,12 @@ function IndexPage() {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
-  const [failedIds, setFailedIds] = useState<Set<string>>(new Set());
   const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
-    capPct: null,
-    usePrefix: true,
     sort: "manual",
   }));
   const didInitialFetch = useRef(false);
@@ -232,11 +228,9 @@ function IndexPage() {
     saveSettings(settings);
   }, [settings, hydrated]);
 
-  const capFraction = settings.capPct != null ? settings.capPct / 100 : null;
-
   const enriched = useMemo(
-    () => enrichStocks(stocks, { mode: settings.weightMode, cap: capFraction }),
-    [stocks, settings.weightMode, capFraction],
+    () => enrichStocks(stocks, { mode: settings.weightMode }),
+    [stocks, settings.weightMode],
   );
 
   const sortedRows = useMemo(() => {
@@ -253,10 +247,7 @@ function IndexPage() {
     }
   }, [enriched.rows, settings.sort]);
 
-  const formula = useMemo(
-    () => buildFormula(sortedRows, settings.usePrefix ? TV_PREFIX : ""),
-    [sortedRows, settings.usePrefix],
-  );
+  const formula = useMemo(() => buildFormula(sortedRows, TV_PREFIX), [sortedRows]);
 
   useEffect(() => {
     formulaRef.current = formula;
@@ -277,12 +268,6 @@ function IndexPage() {
 
     setStocks((prev) => prev.filter((s) => s.id !== id));
     setLoadingIds((prev) => {
-      const n = new Set(prev);
-      n.delete(id);
-      return n;
-    });
-    setFailedIds((prev) => {
-      if (!prev.has(id)) return prev;
       const n = new Set(prev);
       n.delete(id);
       return n;
@@ -341,7 +326,6 @@ function IndexPage() {
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());
-    setFailedIds(new Set());
     setFetchedAt({});
   }
 
@@ -511,15 +495,6 @@ function IndexPage() {
       }),
     );
     const failed = results.filter((r) => !r.ok);
-    const succeededIds = new Set(results.filter((r) => r.ok).map((r) => r.id));
-    const failedIdSet = new Set(failed.map((r) => r.id));
-
-    setFailedIds((prev) => {
-      const next = new Set(prev);
-      for (const id of succeededIds) next.delete(id);
-      for (const id of failedIdSet) next.add(id);
-      return next;
-    });
 
     if (failed.length === 0) {
       toast.success(`Berhasil memperbarui ${results.length} ticker`, { id: toastId });
@@ -545,15 +520,6 @@ function IndexPage() {
   async function refreshAll() {
     const list = stocks.filter((s) => s.ticker.trim() && !s.manualPrice);
     await refreshList(list);
-  }
-
-  async function retryFailed() {
-    const list = stocks.filter((s) => failedIds.has(s.id) && s.ticker.trim() && !s.manualPrice);
-    if (list.length === 0) {
-      toast.info("Tidak ada ticker gagal untuk dicoba ulang");
-      return;
-    }
-    await refreshList(list, { isRetry: true });
   }
 
   function loadFromTemplate(stocks: Stock[]) {
@@ -610,12 +576,7 @@ function IndexPage() {
     (weightMode: WeightMode) => setSettings((s) => ({ ...s, weightMode })),
     [],
   );
-  const setCap = useCallback((capPct: number | null) => setSettings((s) => ({ ...s, capPct })), []);
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
-  const togglePrefix = useCallback(
-    () => setSettings((s) => ({ ...s, usePrefix: !s.usePrefix })),
-    [],
-  );
 
   const hasRows = enriched.rows.length > 0;
 
@@ -663,34 +624,8 @@ function IndexPage() {
           </div>
         </section>
 
-        {/* Freshness + refresh + retry */}
-        {hasRows ? (
-          <div className="mt-4">
-            <LastUpdated
-              lastRefresh={lastRefresh}
-              loading={loadingIds.size > 0}
-              onRefresh={refreshAll}
-              failedCount={failedIds.size}
-              onRetryFailed={retryFailed}
-            />
-          </div>
-        ) : null}
-
         {/* Watchlist */}
         <section className="mt-6">
-          <div className="mb-3">
-            <h2 className="text-sm font-semibold tracking-tight text-foreground">
-              {WATCHLIST_LABEL}
-            </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Ketik ticker di bawah lalu tekan{" "}
-              <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[10px] text-foreground">
-                Enter
-              </kbd>{" "}
-              untuk langsung menambah & auto-fill harga.
-            </p>
-          </div>
-
           {/* Quick add bar */}
           <div className="mb-3">
             <QuickAddBar ref={quickAddRef} onAdd={addTicker} />
@@ -701,10 +636,10 @@ function IndexPage() {
               <WeightControls
                 mode={settings.weightMode}
                 onModeChange={setMode}
-                capPct={settings.capPct}
-                onCapChange={setCap}
                 sort={settings.sort}
                 onSortChange={setSort}
+                onRefresh={refreshAll}
+                refreshing={loadingIds.size > 0}
               />
             </div>
           ) : null}
@@ -719,7 +654,8 @@ function IndexPage() {
                 <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
                   <p className="text-sm font-medium text-foreground">Belum ada data harga</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Tekan Refresh di atas atau commit ulang ticker untuk mengambil harga terbaru.
+                    Tekan ikon refresh di atas atau commit ulang ticker untuk mengambil harga
+                    terbaru.
                   </p>
                 </div>
                 {sortedRows.map((r) => {
@@ -776,73 +712,46 @@ function IndexPage() {
           {/* Formula — inline, di bawah hasil */}
           {hasRows && (
             <div className="mt-5">
-              <FloatingFormula
-                formula={formula}
-                usePrefix={settings.usePrefix}
-                onTogglePrefix={togglePrefix}
-                onShare={shareWatchlist}
-              />
-              <p className="mt-2 px-1 text-[11px] leading-relaxed text-muted-foreground/80">
-                Bobot:{" "}
-                {settings.weightMode === "freefloat"
-                  ? "free-float adjusted market cap"
-                  : "full market cap"}
-                {settings.capPct != null ? ` · cap ${settings.capPct}% / saham` : ""}. Shares per{" "}
-                {SHARES_AS_OF}. Harga close/delayed via Yahoo Finance — bukan rekomendasi investasi.
-              </p>
+              <FloatingFormula formula={formula} onShare={shareWatchlist} />
             </div>
           )}
         </section>
 
         <footer className="mt-10 bg-transparent">
-          <div className="mx-auto flex w-full max-w-5xl flex-col items-center gap-2 px-3 py-3 text-[11px] text-muted-foreground">
-            <a
-              href="https://t.me/alfindigital"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1 font-medium text-foreground transition-colors hover:border-primary/50 hover:bg-primary/5"
-            >
-              <Send className="h-3 w-3 text-primary" />
-              Dapat kabar saat data shares & fitur diperbarui
-            </a>
-            <div className="flex items-center gap-2">
-              <span>
-                by{" "}
+          <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-2 px-3 py-3 text-[11px] text-muted-foreground">
+            <span>
+              by{" "}
+              <a
+                href="https://alfindigital.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground hover:underline"
+              >
+                @alfindigital
+              </a>
+            </span>
+            <span aria-hidden className="text-muted-foreground/40">
+              |
+            </span>
+            <nav aria-label="Sosial media" className="flex items-center gap-1">
+              {[
+                { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
+                { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
+                { href: "https://t.me/alfindigital", label: "Telegram", Icon: Send },
+                { href: "https://youtube.com/@alfindigital", label: "YouTube", Icon: Youtube },
+              ].map(({ href, label, Icon }) => (
                 <a
-                  href="https://alfindigital.com"
+                  key={label}
+                  href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-foreground hover:underline"
+                  aria-label={label}
+                  className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  @alfindigital
+                  <Icon className="h-3.5 w-3.5" strokeWidth={2} />
                 </a>
-              </span>
-              <span aria-hidden className="text-muted-foreground/40">
-                |
-              </span>
-              <nav aria-label="Sosial media" className="flex items-center gap-1">
-                {[
-                  { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
-                  { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
-                  { href: "https://t.me/alfindigital", label: "Telegram", Icon: Send },
-                  { href: "https://youtube.com/@alfindigital", label: "YouTube", Icon: Youtube },
-                ].map(({ href, label, Icon }) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={label}
-                    className="inline-flex h-6 w-6 items-center justify-center rounded text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <Icon className="h-3.5 w-3.5" strokeWidth={2} />
-                  </a>
-                ))}
-              </nav>
-            </div>
-            <span className="text-muted-foreground/70">
-              {SITE_NAME} · Data IDX bundled · Harga via Yahoo Finance
-            </span>
+              ))}
+            </nav>
           </div>
         </footer>
       </main>

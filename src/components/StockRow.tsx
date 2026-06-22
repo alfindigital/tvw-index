@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle, Hand, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { formatCompact, formatPct, formatTime } from "@/lib/format";
+import { formatCompact, formatPct } from "@/lib/format";
 import type { Stock } from "@/lib/storage";
 import type { WeightMode } from "@/lib/weight";
 import { IDX_SHARES } from "@/data/idx-shares";
@@ -33,7 +33,6 @@ function StockRowImpl({
   marketCap,
   weight,
   loading,
-  lastFetchedAt,
   weightMode = "mcap",
   onChange,
   onCommitTicker,
@@ -237,10 +236,6 @@ function StockRowImpl({
       ) : tickerDraft && !inDB && !stock.manualShares ? (
         <div className="mt-2 text-xs text-muted-foreground">
           Tidak ada di DB IDX · isi shares manual
-        </div>
-      ) : lastFetchedAt ? (
-        <div className="mt-2 text-xs text-muted-foreground">
-          Harga close · diperbarui {formatTime(lastFetchedAt)}
         </div>
       ) : null}
 
