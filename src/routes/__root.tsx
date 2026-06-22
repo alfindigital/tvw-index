@@ -2,7 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
-import { SITE_NAME, SITE_URL, SITE_DESC, OG_IMAGE, CF_BEACON_TOKEN } from "@/lib/site";
+import { SITE_NAME, SITE_URL, SITE_DESC, OG_IMAGE } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -95,16 +95,6 @@ export const Route = createRootRoute({
           url: SITE_URL,
         }),
       },
-      // Cloudflare Web Analytics — only injected when a token is configured.
-      ...(CF_BEACON_TOKEN
-        ? [
-            {
-              src: "https://static.cloudflareinsights.com/beacon.min.js",
-              defer: true,
-              "data-cf-beacon": JSON.stringify({ token: CF_BEACON_TOKEN }),
-            } as Record<string, unknown>,
-          ]
-        : []),
     ],
   }),
   shellComponent: RootShell,

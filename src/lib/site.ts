@@ -11,10 +11,6 @@ export const SITE_DESC =
 
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 
-// Cloudflare Web Analytics beacon token. Env-gated: when unset, the beacon
-// is never injected (zero tracking). Set VITE_CF_BEACON_TOKEN to activate.
-export const CF_BEACON_TOKEN: string = import.meta.env.VITE_CF_BEACON_TOKEN || "";
-
 // "As of" date for the bundled shares-outstanding dataset (src/data/idx-shares.ts).
 // Keep in sync whenever the dataset is regenerated.
 export const SHARES_AS_OF = "24 Apr 2026";
