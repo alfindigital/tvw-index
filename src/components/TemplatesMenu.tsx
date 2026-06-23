@@ -1,0 +1,250 @@
+import { useEffect, useState } from "react";
+import { Bookmark, BookmarkPlus, Trash2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { loadTemplates, saveTemplates, type Stock, type Template } from "@/lib/storage";
+import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
+import {
+  TEMPLATES_EMPTY,
+  WATCHLIST_EMPTY_TOAST,
+  TEMPLATE_NAME_MAX,
+  TEMPLATE_NAME_REQUIRED,
+  TEMPLATE_NAME_TOO_LONG,
+  TEMPLATE_NAME_DUPLICATE,
+} from "@/lib/copy";
+
+function validateName(
+  raw: string,
+  existing: Template[],
+): { ok: true; value: string } | { ok: false; message: string } {
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) return { ok: false, message: TEMPLATE_NAME_REQUIRED };
+  if (trimmed.length > TEMPLATE_NAME_MAX) {
+    return { ok: false, message: TEMPLATE_NAME_TOO_LONG(trimmed.length) };
+  }
+  const dup = existing.find((t) => t.name.trim().toLowerCase() === trimmed.toLowerCase());
+  if (dup) return { ok: false, message: TEMPLATE_NAME_DUPLICATE(trimmed) };
+  return { ok: true, value: trimmed };
+}
+
+type Props = {
+  currentStocks: Stock[];
+  onLoadTemplate: (stocks: Stock[]) => void;
+  /** External trigger to open the save dialog (e.g. via Shift+S). */
+  saveDialogTrigger?: number;
+};
+
+export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger }: Props) {
+  const [templates, setTemplates] = useState<Template[]>([]);
+  const [saveOpen, setSaveOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setTemplates(loadTemplates());
+  }, []);
+
+  useEffect(() => {
+    if (!saveDialogTrigger) return;
+    openSaveDialog();
+    // openSaveDialog only resets local form state; safe to omit from deps.
+  }, [saveDialogTrigger]);
+
+  function openSaveDialog() {
+    setName("");
+    setNameError(null);
+    setSaveOpen(true);
+  }
+
+  function handleNameChange(value: string) {
+    setName(value);
+    if (nameError) {
+      const result = validateName(value, templates);
+      setNameError(result.ok ? null : result.message);
+    }
+  }
+
+  function handleSave() {
+    if (currentStocks.length === 0) {
+      toast.error(WATCHLIST_EMPTY_TOAST);
+      return;
+    }
+    const result = validateName(name, templates);
+    if (!result.ok) {
+      setNameError(result.message);
+      toast.error(result.message);
+      return;
+    }
+    const next: Template = {
+      id: crypto.randomUUID(),
+      name: result.value,
+      createdAt: Date.now(),
+      stocks: currentStocks.map((s) => ({ ...s, error: null })),
+    };
+    const list = [next, ...loadTemplates()];
+    saveTemplates(list);
+    setTemplates(list);
+    setName("");
+    setNameError(null);
+    setSaveOpen(false);
+    toast.success("Watchlist tersimpan sebagai template", { description: result.value });
+  }
+
+  function handleLoad(t: Template) {
+    const cloned = t.stocks.map((s) => ({ ...s, id: crypto.randomUUID(), error: null }));
+    onLoadTemplate(cloned);
+    toast.success(`Template "${t.name}" dimuat`);
+  }
+
+  function handleDelete(t: Template) {
+    if (!confirm(`Hapus template "${t.name}"?`)) return;
+    const list = loadTemplates().filter((x) => x.id !== t.id);
+    saveTemplates(list);
+    setTemplates(list);
+    toast.success("Template dihapus");
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className={HEADER_ICON_BUTTON_CLASS}
+            aria-label="Watchlist templates"
+            title="Watchlist templates"
+          >
+            <Bookmark className={HEADER_ICON_CLASS} />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-72">
+          <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            Templates
+          </DropdownMenuLabel>
+          {templates.length === 0 ? (
+            <div className="px-2 py-2 text-center text-xs text-muted-foreground">
+              {TEMPLATES_EMPTY}
+            </div>
+          ) : (
+            <div className="max-h-60 overflow-auto">
+              {templates.map((t) => (
+                <DropdownMenuItem
+                  key={t.id}
+                  onSelect={(e) => e.preventDefault()}
+                  className="flex items-center gap-2"
+                >
+                  <button
+                    type="button"
+                    onClick={() => handleLoad(t)}
+                    className="min-w-0 flex-1 text-left"
+                  >
+                    <div className="truncate text-sm font-medium">{t.name}</div>
+                    <div className="text-[10px] text-muted-foreground">{t.stocks.length} saham</div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(t)}
+                    className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    aria-label="Hapus template"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </DropdownMenuItem>
+              ))}
+            </div>
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onSelect={(e) => {
+              e.preventDefault();
+              openSaveDialog();
+            }}
+          >
+            <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
+            Simpan watchlist ini
+            <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <Dialog
+        open={saveOpen}
+        onOpenChange={(open) => {
+          setSaveOpen(open);
+          if (!open) {
+            setName("");
+            setNameError(null);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Simpan sebagai template</DialogTitle>
+            <DialogDescription>
+              Watchlist saat ini ({currentStocks.length} saham) akan disimpan sebagai preset di
+              browser.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-1.5">
+            <Input
+              autoFocus
+              placeholder="cth: Banking Big 4, Energy Watchlist"
+              value={name}
+              maxLength={TEMPLATE_NAME_MAX}
+              aria-invalid={nameError ? true : undefined}
+              aria-describedby={nameError ? "tpl-name-error" : "tpl-name-hint"}
+              onChange={(e) => handleNameChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleSave();
+              }}
+              className={nameError ? "border-destructive focus-visible:ring-destructive/30" : ""}
+            />
+            {nameError ? (
+              <div
+                id="tpl-name-error"
+                role="alert"
+                className="flex items-start gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 px-2 py-1.5"
+              >
+                <AlertCircle
+                  className="mt-0.5 h-3.5 w-3.5 shrink-0 text-destructive"
+                  aria-hidden="true"
+                />
+                <p className="text-xs font-medium leading-snug text-destructive">{nameError}</p>
+              </div>
+            ) : (
+              <p id="tpl-name-hint" className="text-[11px] text-muted-foreground">
+                {name.trim().length}/{TEMPLATE_NAME_MAX} karakter
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setSaveOpen(false)}>
+              Batal
+            </Button>
+            <Button onClick={handleSave}>Simpan</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}

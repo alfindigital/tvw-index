@@ -13,11 +13,15 @@ type Props = {
 
 const ROWS: { keys: string[]; label: string }[] = [
   { keys: ["N"], label: "Fokus ke input Tambah ticker" },
-  { keys: ["Enter"], label: "Tambah ticker (saat di input) / commit field" },
+  { keys: ["A"], label: "Tambah baris kosong" },
+  { keys: ["Enter"], label: "Tambah ticker / commit field" },
   { keys: ["Tab"], label: "Pindah antar field" },
+  { keys: ["↑↓"], label: "Navigasi saran ticker (saat mengetik)" },
   { keys: ["Shift", "R"], label: "Refresh semua harga" },
+  { keys: ["Shift", "F"], label: "Ganti mode bobot (Market Cap / Free-float)" },
   { keys: ["Shift", "S"], label: "Simpan watchlist sebagai template" },
   { keys: ["Shift", "C"], label: "Copy formula TradingView" },
+  { keys: ["Shift", "E"], label: "Export watchlist (CSV)" },
   { keys: ["?"], label: "Buka daftar shortcut ini" },
   { keys: ["Esc"], label: "Tutup dialog / menu" },
 ];

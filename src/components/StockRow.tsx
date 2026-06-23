@@ -28,6 +28,13 @@ function formatSharesInput(value: number): string {
   return fixed.replace(/\.?0+$/, "");
 }
 
+// Shared typography so every field label + input renders identically.
+const LABEL_CLS =
+  "mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-wide text-foreground/80 dark:text-foreground";
+const FIELD_CLS = "h-9 w-full min-w-0 font-mono text-sm leading-5 tabular-nums";
+const SUFFIX_CLS =
+  "pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground";
+
 function StockRowImpl({
   stock,
   marketCap,
@@ -74,71 +81,44 @@ function StockRowImpl({
 
   return (
     <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
-      {import.meta.env.DEV ? (
-        <span
-          key={renderCountRef.current}
-          aria-hidden
-          title={`Render #${renderCountRef.current}`}
-          className="pointer-events-none absolute right-2 top-2 z-10 flex h-2 w-2"
-        >
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-        </span>
-      ) : null}
-      {/* Mobile: ticker+remove on one row; shares+price below.
-          Desktop: one row with ticker | shares | price | remove */}
+      {/* Mobile: ticker on row 1; shares | price | delete on row 2.
+          Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-        {/* Ticker + remove (inline on mobile, flex item on desktop) */}
-        <div className="flex items-end gap-1.5 sm:flex-1 sm:min-w-0 sm:gap-2">
-          <div className="min-w-0 flex-1">
-            <div className="mb-1 text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
-              Ticker
-            </div>
-            <div className="relative">
-              <Input
-                value={tickerDraft}
-                aria-label="Ticker saham"
-                onChange={(e) => handleTickerChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    commit();
-                    (e.target as HTMLInputElement).blur();
-                  }
-                }}
-                onBlur={() => {
-                  if (tickerDraft !== stock.ticker) commit();
-                }}
-                placeholder="TICKER"
-                autoComplete="off"
-                autoCapitalize="characters"
-                spellCheck={false}
-                title={tickerDraft || undefined}
-                className="h-9 truncate pr-9 font-mono text-[15px] font-semibold uppercase leading-5 tracking-wider sm:text-sm"
-              />
-              {loading ? (
-                <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-              ) : null}
-            </div>
+        {/* Ticker */}
+        <div className="min-w-0 sm:flex-1">
+          <div className={LABEL_CLS}>Ticker</div>
+          <div className="relative">
+            <Input
+              value={tickerDraft}
+              aria-label="Ticker saham"
+              onChange={(e) => handleTickerChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commit();
+                  (e.target as HTMLInputElement).blur();
+                }
+              }}
+              onBlur={() => {
+                if (tickerDraft !== stock.ticker) commit();
+              }}
+              placeholder="TICKER"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              title={tickerDraft || undefined}
+              className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
+            />
+            {loading ? (
+              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+            ) : null}
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onRemove}
-            className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
-            aria-label={`Hapus ${stock.ticker || "saham"}`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
 
-        {/* Shares + Price (grid on mobile, inline on sm+) */}
-        <div className="grid grid-cols-2 gap-1.5 sm:flex sm:flex-[2] sm:gap-2">
-          <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
-              Shares (Jt)
-            </span>
+        {/* Shares + Price + Delete */}
+        <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
+          <label className="block min-w-0 flex-1">
+            <span className={LABEL_CLS}>Shares (Jt)</span>
             <div className="relative w-full min-w-0">
               <Input
                 type="number"
@@ -161,17 +141,13 @@ function StockRowImpl({
                 }}
                 placeholder="0"
                 title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
-                className="h-9 w-full min-w-0 pr-7 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
+                className={`${FIELD_CLS} pr-7`}
               />
-              <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                jt{stock.manualShares ? "*" : ""}
-              </span>
+              <span className={SUFFIX_CLS}>jt{stock.manualShares ? "*" : ""}</span>
             </div>
           </label>
-          <label className="block min-w-0 sm:flex-1">
-            <span className="mb-1 block text-[11px] font-semibold uppercase leading-4 tracking-[0.08em] text-foreground/80 dark:text-foreground sm:text-xs">
-              Price (IDR)
-            </span>
+          <label className="block min-w-0 flex-1">
+            <span className={LABEL_CLS}>Price (IDR)</span>
             <div className="relative w-full min-w-0">
               <Input
                 ref={priceRef}
@@ -195,13 +171,21 @@ function StockRowImpl({
                 }}
                 placeholder="0"
                 title={stock.price ? `Rp ${stock.price.toLocaleString("id-ID")}` : undefined}
-                className="h-9 w-full min-w-0 pr-9 font-mono text-[15px] leading-5 tabular-nums sm:text-sm"
+                className={`${FIELD_CLS} pr-9`}
               />
-              <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                IDR{stock.manualPrice ? "*" : ""}
-              </span>
+              <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
             </div>
           </label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onRemove}
+            className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
+            aria-label={`Hapus ${stock.ticker || "saham"}`}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -242,7 +226,7 @@ function StockRowImpl({
       {/* Row 2: Market Cap + weight (+ free-float when in free-float mode) */}
       <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3">
         <div>
-          <div className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             Market Cap
           </div>
           <div className="font-mono text-sm font-medium text-foreground">
@@ -251,7 +235,7 @@ function StockRowImpl({
         </div>
         {showFreeFloat ? (
           <label className="flex items-center gap-1.5">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               Free-float
             </span>
             <div className="relative w-16">

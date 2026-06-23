@@ -111,10 +111,10 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
               blurTimer.current = setTimeout(() => setOpen(false), 120);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ketik ticker / cari emiten, mis. BBCA"
+            placeholder="Ketik ticker / cari emiten, mis. BRIS"
             aria-label="Tambah ticker"
             aria-invalid={shownError ? true : undefined}
-            aria-describedby={shownError ? "quickadd-error" : "quickadd-hint"}
+            aria-describedby={shownError ? "quickadd-error" : undefined}
             autoComplete="off"
             autoCapitalize="characters"
             spellCheck={false}
@@ -177,19 +177,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           <AlertCircle className="h-3 w-3 shrink-0" aria-hidden />
           {shownError}
         </p>
-      ) : (
-        <p id="quickadd-hint" className="mt-1.5 px-1 text-[11px] text-muted-foreground">
-          Tekan{" "}
-          <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px] text-foreground">
-            Enter
-          </kbd>{" "}
-          untuk menambah · tekan{" "}
-          <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px] text-foreground">
-            N
-          </kbd>{" "}
-          dari mana saja untuk fokus ke sini
-        </p>
-      )}
+      ) : null}
     </div>
   );
 });

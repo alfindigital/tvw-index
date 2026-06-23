@@ -7,6 +7,7 @@ import {
   Crown,
   AlertTriangle,
   RefreshCw,
+  Keyboard,
   Twitter,
   Facebook,
   Send,
@@ -21,10 +22,13 @@ import { StockListSkeleton } from "@/components/StockRowSkeleton";
 import { VirtualStockList } from "@/components/VirtualStockList";
 import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
+import { TemplatesMenu } from "@/components/TemplatesMenu";
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { WeightControls } from "@/components/WeightControls";
 import { EmptyWatchlist } from "@/components/EmptyWatchlist";
+import { Button } from "@/components/ui/button";
+import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
 import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
@@ -566,9 +570,20 @@ function IndexPage() {
   // Global keyboard shortcuts
   useShortcuts([
     { key: "n", handler: () => quickAddRef.current?.focus() },
+    { key: "a", handler: () => addEmpty() },
     { key: "r", shift: true, handler: () => refreshAll() },
+    {
+      key: "f",
+      shift: true,
+      handler: () =>
+        setSettings((s) => ({
+          ...s,
+          weightMode: s.weightMode === "mcap" ? "freefloat" : "mcap",
+        })),
+    },
     { key: "s", shift: true, handler: () => setSaveDialogTrigger((n) => n + 1) },
     { key: "c", shift: true, allowInInput: true, handler: () => copyFormula() },
+    { key: "e", shift: true, handler: () => downloadCsv(sortedRows, settings.weightMode) },
     { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
   ]);
 
@@ -585,18 +600,33 @@ function IndexPage() {
       <Toaster position="top-center" richColors />
       <AppHeader
         actions={
-          <SettingsMenu
-            currentStocks={stocks}
-            loadingCount={loadingIds.size}
-            onRefreshAll={refreshAll}
-            onAddEmpty={addEmpty}
-            onReset={resetWatchlist}
-            onLoadTemplate={loadFromTemplate}
-            onAfterImport={reloadFromStorage}
-            onOpenShortcuts={() => setShortcutsOpen(true)}
-            onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
-            saveDialogTrigger={saveDialogTrigger}
-          />
+          <>
+            <TemplatesMenu
+              currentStocks={stocks}
+              onLoadTemplate={loadFromTemplate}
+              saveDialogTrigger={saveDialogTrigger}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={HEADER_ICON_BUTTON_CLASS}
+              aria-label="Bantuan & keyboard shortcut"
+              title="Bantuan & keyboard shortcut"
+              onClick={() => setShortcutsOpen(true)}
+            >
+              <Keyboard className={HEADER_ICON_CLASS} />
+            </Button>
+            <SettingsMenu
+              currentStocks={stocks}
+              loadingCount={loadingIds.size}
+              onRefreshAll={refreshAll}
+              onAddEmpty={addEmpty}
+              onReset={resetWatchlist}
+              onAfterImport={reloadFromStorage}
+              onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
+            />
+          </>
         }
       />
 
@@ -737,7 +767,7 @@ function IndexPage() {
               {[
                 { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
                 { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
-                { href: "https://t.me/alfindigital", label: "Telegram", Icon: Send },
+                { href: "https://t.me/alfidx", label: "Telegram", Icon: Send },
                 { href: "https://youtube.com/@alfindigital", label: "YouTube", Icon: Youtube },
               ].map(({ href, label, Icon }) => (
                 <a
