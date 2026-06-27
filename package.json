@@ -74,11 +74,15 @@
   },
   "overrides": {
     "undici": "^8.5.0",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "postcss": "^8.5.6",
+    "js-yaml": "^4.1.0"
   },
   "resolutions": {
     "undici": "^8.5.0",
-    "ws": "^8.21.0"
+    "ws": "^8.21.0",
+    "postcss": "^8.5.6",
+    "js-yaml": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
