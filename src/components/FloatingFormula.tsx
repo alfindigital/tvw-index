@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HelpCircle, Share2, Check, Copy } from "lucide-react";
+import { HelpCircle, Share2, Check, Copy, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -11,20 +11,21 @@ import {
 
 type Props = {
   formula: string;
+  pineScript?: string;
   onShare?: () => void;
 };
 
-export function FloatingFormula({ formula, onShare }: Props) {
-  const [copied, setCopied] = useState(false);
+export function FloatingFormula({ formula, pineScript, onShare }: Props) {
+  const [copied, setCopied] = useState<"formula" | "pine" | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const empty = !formula;
 
-  function copy() {
-    if (!formula) return;
-    navigator.clipboard.writeText(formula).then(() => {
-      setCopied(true);
-      toast.success("Formula disalin");
-      setTimeout(() => setCopied(false), 1500);
+  function copyText(text: string, kind: "formula" | "pine", label: string) {
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(kind);
+      toast.success(`${label} disalin`);
+      setTimeout(() => setCopied(null), 1500);
     });
   }
 
@@ -63,14 +64,26 @@ export function FloatingFormula({ formula, onShare }: Props) {
               <span className="hidden sm:inline">Share</span>
             </button>
           ) : null}
+          {pineScript ? (
+            <button
+              type="button"
+              onClick={() => copyText(pineScript, "pine", "Pine Script")}
+              disabled={empty}
+              title="Salin sebagai Pine Script v5 (untuk basket besar)"
+              className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground/15 px-2.5 text-xs font-medium text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
+            >
+              {copied === "pine" ? <Check className="h-3.5 w-3.5" /> : <FileCode2 className="h-3.5 w-3.5" />}
+              <span className="hidden sm:inline">{copied === "pine" ? "Tersalin" : "Pine"}</span>
+            </button>
+          ) : null}
           <button
             type="button"
-            onClick={copy}
+            onClick={() => copyText(formula, "formula", "Formula")}
             disabled={empty}
             className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground px-3 text-xs font-medium text-primary transition hover:opacity-90 disabled:opacity-40"
           >
-            {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied ? "Tersalin" : "Copy"}
+            {copied === "formula" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+            {copied === "formula" ? "Tersalin" : "Copy"}
           </button>
         </div>
       </div>
