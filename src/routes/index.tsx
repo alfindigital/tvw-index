@@ -291,6 +291,11 @@ function IndexPage() {
       const { [id]: _, ...rest } = prev;
       return rest;
     });
+    setDailyChanges((prev) => {
+      if (!(id in prev)) return prev;
+      const { [id]: _, ...rest } = prev;
+      return rest;
+    });
     rowHandlersRef.current.delete(id);
 
     if (removed) {
