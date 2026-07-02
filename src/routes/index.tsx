@@ -597,6 +597,49 @@ function IndexPage() {
     await refreshList(list);
   }
 
+  // Auto-refresh loop: fires every AUTO_REFRESH_INTERVAL_MS while enabled AND
+  // the tab is visible. Skips when a refresh is already in-flight so we never
+  // stack concurrent basket refreshes.
+  useEffect(() => {
+    if (!hydrated || !settings.autoRefresh) return;
+    let cancelled = false;
+    const tick = async () => {
+      if (cancelled || document.hidden) return;
+      if (loadingIds.size > 0) return;
+      const list = stocksRef.current.filter((s) => s.ticker.trim() && !s.manualPrice);
+      if (list.length === 0) return;
+      const results = await Promise.all(
+        list.map((s) =>
+          fetchTickerRef.current(s.id, s.ticker.trim().toUpperCase(), { silent: true }),
+        ),
+      );
+      if (!cancelled && import.meta.env.DEV) {
+        console.debug("[auto-refresh] tick", { updated: results.length });
+      }
+    };
+    const id = setInterval(tick, AUTO_REFRESH_INTERVAL_MS);
+    const onVis = () => {
+      if (!document.hidden) tick();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+    // loadingIds intentionally omitted — the guard reads it via closure freshness
+    // on the next tick, and including it would restart the interval too often.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, settings.autoRefresh]);
+
+  const toggleAutoRefresh = useCallback(() => {
+    setSettings((s) => {
+      const next = !s.autoRefresh;
+      toast.success(next ? "Auto-refresh 60 detik: ON" : "Auto-refresh: OFF");
+      return { ...s, autoRefresh: next };
+    });
+  }, []);
+
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
     setTimeout(() => {
@@ -691,11 +734,14 @@ function IndexPage() {
             <SettingsMenu
               currentStocks={stocks}
               loadingCount={loadingIds.size}
+              autoRefresh={settings.autoRefresh}
+              onToggleAutoRefresh={toggleAutoRefresh}
               onRefreshAll={refreshAll}
               onAddEmpty={addEmpty}
               onReset={resetWatchlist}
               onAfterImport={reloadFromStorage}
               onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
+              onShareLink={shareWatchlist}
             />
           </>
         }
