@@ -9,6 +9,8 @@ import {
   RotateCcw,
   Sun,
   Moon,
+  Timer,
+  Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,21 +40,27 @@ import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 type Props = {
   currentStocks: Stock[];
   loadingCount: number;
+  autoRefresh: boolean;
+  onToggleAutoRefresh: () => void;
   onRefreshAll: () => void;
   onAddEmpty: () => void;
   onReset: () => void;
   onAfterImport: () => void;
   onExportCsv: () => void;
+  onShareLink: () => void;
 };
 
 export function SettingsMenu({
   currentStocks,
   loadingCount,
+  autoRefresh,
+  onToggleAutoRefresh,
   onRefreshAll,
   onAddEmpty,
   onReset,
   onAfterImport,
   onExportCsv,
+  onShareLink,
 }: Props) {
   const [resetOpen, setResetOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
