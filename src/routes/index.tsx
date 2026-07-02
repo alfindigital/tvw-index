@@ -44,7 +44,7 @@ import {
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
-import { enrichStocks, buildFormula, type WeightMode, type EnrichedStock } from "@/lib/weight";
+import { enrichStocks, buildFormula, buildPineScript, type WeightMode, type EnrichedStock } from "@/lib/weight";
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
@@ -117,9 +117,16 @@ function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void 
 type Quote = {
   symbol: string;
   price: number | null;
+  previousClose: number | null;
   currency: string | null;
   error?: string;
 };
+
+// After this many ms without a successful refresh, we treat a row's price as
+// "stale" in the UI (small gray badge). Chosen to match the trader mental model
+// of "refresh at least every 5 minutes if you care about live prices".
+const STALE_AFTER_MS = 5 * 60 * 1000;
+const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 
 function humanError(err: string | undefined): string {
   if (!err) return "Gagal ambil harga";
@@ -171,12 +178,15 @@ function IndexPage() {
   const [lastRefresh, setLastRefresh] = useState<number | null>(null);
   const [loadingIds, setLoadingIds] = useState<Set<string>>(new Set());
   const [fetchedAt, setFetchedAt] = useState<Record<string, number>>({});
+  const [dailyChanges, setDailyChanges] = useState<Record<string, number>>({});
+  const [nowTick, setNowTick] = useState(() => Date.now());
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
     sort: "manual",
+    autoRefresh: false,
   }));
   const didInitialFetch = useRef(false);
   const didConsumeList = useRef(false);
@@ -252,10 +262,60 @@ function IndexPage() {
   }, [enriched.rows, settings.sort]);
 
   const formula = useMemo(() => buildFormula(sortedRows, TV_PREFIX), [sortedRows]);
+  const pineScript = useMemo(() => buildPineScript(sortedRows, { prefix: TV_PREFIX }), [sortedRows]);
+
+  // Basket-level daily change: weight × per-name % change, summed. Only names
+  // with a known previousClose contribute (weight of the rest is treated as 0),
+  // so the number is "conservative" while any row is still loading.
+  const totalDailyChange = useMemo(() => {
+    let s = 0;
+    for (const r of sortedRows) {
+      const c = dailyChanges[r.id];
+      if (c != null && isFinite(c)) s += r.weight * c;
+    }
+    return s;
+  }, [sortedRows, dailyChanges]);
+
+  // Which rows are "stale" (last fetch older than the threshold) — recomputed
+  // whenever the periodic tick or fetch times change.
+  const staleIds = useMemo(() => {
+    const s = new Set<string>();
+    for (const [id, ts] of Object.entries(fetchedAt)) {
+      if (nowTick - ts > STALE_AFTER_MS) s.add(id);
+    }
+    return s;
+  }, [fetchedAt, nowTick]);
 
   useEffect(() => {
     formulaRef.current = formula;
   }, [formula]);
+
+  // Tick every 30s so "stale" badges and relative timestamps stay honest
+  // without needing per-second re-renders. Pauses when the tab is hidden.
+  useEffect(() => {
+    let id: ReturnType<typeof setInterval> | null = null;
+    const start = () => {
+      if (id != null) return;
+      id = setInterval(() => setNowTick(Date.now()), 30_000);
+    };
+    const stop = () => {
+      if (id != null) clearInterval(id);
+      id = null;
+    };
+    const onVis = () => {
+      if (document.hidden) stop();
+      else {
+        setNowTick(Date.now());
+        start();
+      }
+    };
+    start();
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
 
   const update = useCallback((id: string, patch: Partial<Stock>) => {
     setStocks((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
@@ -277,6 +337,11 @@ function IndexPage() {
       return n;
     });
     setFetchedAt((prev) => {
+      if (!(id in prev)) return prev;
+      const { [id]: _, ...rest } = prev;
+      return rest;
+    });
+    setDailyChanges((prev) => {
       if (!(id in prev)) return prev;
       const { [id]: _, ...rest } = prev;
       return rest;
@@ -331,6 +396,7 @@ function IndexPage() {
     setLastRefresh(null);
     setLoadingIds(new Set());
     setFetchedAt({});
+    setDailyChanges({});
   }
 
   async function fetchTickerForRow(
@@ -367,6 +433,11 @@ function IndexPage() {
         const now = Date.now();
         setLastRefresh(now);
         setFetchedAt((prev) => ({ ...prev, [id]: now }));
+        // Track daily % change vs. previous close, if provider returned it.
+        if (q.previousClose != null && q.previousClose > 0) {
+          const pct = (Number(q.price) - Number(q.previousClose)) / Number(q.previousClose);
+          setDailyChanges((prev) => ({ ...prev, [id]: pct }));
+        }
         return { ok: true, ticker };
       }
       const msg = humanError(q.error);
@@ -526,6 +597,49 @@ function IndexPage() {
     await refreshList(list);
   }
 
+  // Auto-refresh loop: fires every AUTO_REFRESH_INTERVAL_MS while enabled AND
+  // the tab is visible. Skips when a refresh is already in-flight so we never
+  // stack concurrent basket refreshes.
+  useEffect(() => {
+    if (!hydrated || !settings.autoRefresh) return;
+    let cancelled = false;
+    const tick = async () => {
+      if (cancelled || document.hidden) return;
+      if (loadingIds.size > 0) return;
+      const list = stocksRef.current.filter((s) => s.ticker.trim() && !s.manualPrice);
+      if (list.length === 0) return;
+      const results = await Promise.all(
+        list.map((s) =>
+          fetchTickerRef.current(s.id, s.ticker.trim().toUpperCase(), { silent: true }),
+        ),
+      );
+      if (!cancelled && import.meta.env.DEV) {
+        console.debug("[auto-refresh] tick", { updated: results.length });
+      }
+    };
+    const id = setInterval(tick, AUTO_REFRESH_INTERVAL_MS);
+    const onVis = () => {
+      if (!document.hidden) tick();
+    };
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+    // loadingIds intentionally omitted — the guard reads it via closure freshness
+    // on the next tick, and including it would restart the interval too often.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated, settings.autoRefresh]);
+
+  const toggleAutoRefresh = useCallback(() => {
+    setSettings((s) => {
+      const next = !s.autoRefresh;
+      toast.success(next ? "Auto-refresh 60 detik: ON" : "Auto-refresh: OFF");
+      return { ...s, autoRefresh: next };
+    });
+  }, []);
+
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
     setTimeout(() => {
@@ -620,11 +734,14 @@ function IndexPage() {
             <SettingsMenu
               currentStocks={stocks}
               loadingCount={loadingIds.size}
+              autoRefresh={settings.autoRefresh}
+              onToggleAutoRefresh={toggleAutoRefresh}
               onRefreshAll={refreshAll}
               onAddEmpty={addEmpty}
               onReset={resetWatchlist}
               onAfterImport={reloadFromStorage}
               onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
+              onShareLink={shareWatchlist}
             />
           </>
         }
@@ -635,11 +752,21 @@ function IndexPage() {
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
             <StatCard
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
               icon={TrendingUp}
+            />
+            <StatCard
+              label="Perubahan Hari Ini"
+              icon={totalDailyChange >= 0 ? TrendingUp : Crown}
+              value={
+                Object.keys(dailyChanges).length === 0
+                  ? "—"
+                  : `${totalDailyChange >= 0 ? "+" : ""}${(totalDailyChange * 100).toFixed(2)}%`
+              }
+              sub="bobot × change"
             />
             <StatCard
               label="Bobot Terbesar"
@@ -699,6 +826,8 @@ function IndexPage() {
                       loading={loadingIds.has(r.id)}
                       lastFetchedAt={fetchedAt[r.id] ?? null}
                       weightMode={settings.weightMode}
+                      dailyChange={dailyChanges[r.id] ?? null}
+                      stale={staleIds.has(r.id)}
                       onChange={h.onChange}
                       onCommitTicker={h.onCommitTicker}
                       onRemove={h.onRemove}
@@ -714,6 +843,8 @@ function IndexPage() {
                 loadingIds={loadingIds}
                 fetchedAt={fetchedAt}
                 weightMode={settings.weightMode}
+                dailyChanges={dailyChanges}
+                staleIds={staleIds}
                 getRowHandlers={getRowHandlers}
               />
             ) : (
@@ -728,6 +859,8 @@ function IndexPage() {
                     loading={loadingIds.has(r.id)}
                     lastFetchedAt={fetchedAt[r.id] ?? null}
                     weightMode={settings.weightMode}
+                    dailyChange={dailyChanges[r.id] ?? null}
+                    stale={staleIds.has(r.id)}
                     onChange={h.onChange}
                     onCommitTicker={h.onCommitTicker}
                     onRemove={h.onRemove}
@@ -742,7 +875,11 @@ function IndexPage() {
           {/* Formula — inline, di bawah hasil */}
           {hasRows && (
             <div className="mt-5">
-              <FloatingFormula formula={formula} onShare={shareWatchlist} />
+              <FloatingFormula
+                formula={formula}
+                pineScript={pineScript}
+                onShare={shareWatchlist}
+              />
             </div>
           )}
         </section>

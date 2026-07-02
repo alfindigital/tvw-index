@@ -17,6 +17,8 @@ type Props = {
   loadingIds: Set<string>;
   fetchedAt: Record<string, number>;
   weightMode?: WeightMode;
+  dailyChanges?: Record<string, number>;
+  staleIds?: Set<string>;
   getRowHandlers: (id: string) => RowHandlers;
 };
 
@@ -25,6 +27,8 @@ export function VirtualStockList({
   loadingIds,
   fetchedAt,
   weightMode,
+  dailyChanges,
+  staleIds,
   getRowHandlers,
 }: Props) {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -77,6 +81,8 @@ export function VirtualStockList({
                 loading={loadingIds.has(r.id)}
                 lastFetchedAt={fetchedAt[r.id] ?? null}
                 weightMode={weightMode}
+                dailyChange={dailyChanges?.[r.id] ?? null}
+                stale={staleIds?.has(r.id) ?? false}
                 onChange={h.onChange}
                 onCommitTicker={h.onCommitTicker}
                 onRemove={h.onRemove}
