@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Loader2, Trash2, AlertCircle, Hand, Zap } from "lucide-react";
+import { Loader2, Trash2, AlertCircle, Hand, Zap, TrendingUp, TrendingDown, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCompact, formatPct } from "@/lib/format";
@@ -14,6 +14,10 @@ type Props = {
   loading: boolean;
   lastFetchedAt?: number | null;
   weightMode?: WeightMode;
+  /** Daily change as a fraction (0.0123 = +1.23%). null when not available. */
+  dailyChange?: number | null;
+  /** true when the last fetch is older than the stale threshold (default 5m). */
+  stale?: boolean;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void;
   onRemove: () => void;
@@ -41,6 +45,8 @@ function StockRowImpl({
   weight,
   loading,
   weightMode = "mcap",
+  dailyChange = null,
+  stale = false,
   onChange,
   onCommitTicker,
   onRemove,
