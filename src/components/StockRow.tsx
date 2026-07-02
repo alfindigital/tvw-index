@@ -235,8 +235,35 @@ function StockRowImpl({
           <div className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             Market Cap
           </div>
-          <div className="font-mono text-sm font-medium text-foreground">
-            {formatCompact(marketCap)}
+          <div className="flex items-center gap-1.5 font-mono text-sm font-medium text-foreground">
+            <span>{formatCompact(marketCap)}</span>
+            {dailyChange != null ? (
+              <span
+                className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-semibold tabular-nums ${
+                  dailyChange >= 0
+                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                    : "bg-rose-500/10 text-rose-700 dark:text-rose-400"
+                }`}
+                title="Perubahan vs. previous close"
+              >
+                {dailyChange >= 0 ? (
+                  <TrendingUp className="h-2.5 w-2.5" />
+                ) : (
+                  <TrendingDown className="h-2.5 w-2.5" />
+                )}
+                {dailyChange >= 0 ? "+" : ""}
+                {(dailyChange * 100).toFixed(2)}%
+              </span>
+            ) : null}
+            {stale ? (
+              <span
+                className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground"
+                title="Data harga sudah lebih dari 5 menit"
+              >
+                <Clock className="h-2.5 w-2.5" />
+                Stale
+              </span>
+            ) : null}
           </div>
         </div>
         {showFreeFloat ? (
