@@ -153,6 +153,7 @@ export async function fetchQuotes(tickers: string[]): Promise<QuoteResult[]> {
       bySymbol.get(sym) ?? {
         symbol: sym,
         price: null,
+        previousClose: null,
         currency: null,
         error: "no result",
       },
