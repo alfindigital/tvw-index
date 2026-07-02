@@ -44,7 +44,7 @@ import {
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
-import { enrichStocks, buildFormula, type WeightMode, type EnrichedStock } from "@/lib/weight";
+import { enrichStocks, buildFormula, buildPineScript, type WeightMode, type EnrichedStock } from "@/lib/weight";
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
@@ -117,9 +117,16 @@ function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void 
 type Quote = {
   symbol: string;
   price: number | null;
+  previousClose: number | null;
   currency: string | null;
   error?: string;
 };
+
+// After this many ms without a successful refresh, we treat a row's price as
+// "stale" in the UI (small gray badge). Chosen to match the trader mental model
+// of "refresh at least every 5 minutes if you care about live prices".
+const STALE_AFTER_MS = 5 * 60 * 1000;
+const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 
 function humanError(err: string | undefined): string {
   if (!err) return "Gagal ambil harga";
