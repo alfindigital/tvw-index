@@ -752,11 +752,21 @@ function IndexPage() {
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
             <StatCard
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
               icon={TrendingUp}
+            />
+            <StatCard
+              label="Perubahan Hari Ini"
+              icon={totalDailyChange >= 0 ? TrendingUp : Crown}
+              value={
+                Object.keys(dailyChanges).length === 0
+                  ? "—"
+                  : `${totalDailyChange >= 0 ? "+" : ""}${(totalDailyChange * 100).toFixed(2)}%`
+              }
+              sub="bobot × change"
             />
             <StatCard
               label="Bobot Terbesar"
@@ -816,6 +826,8 @@ function IndexPage() {
                       loading={loadingIds.has(r.id)}
                       lastFetchedAt={fetchedAt[r.id] ?? null}
                       weightMode={settings.weightMode}
+                      dailyChange={dailyChanges[r.id] ?? null}
+                      stale={staleIds.has(r.id)}
                       onChange={h.onChange}
                       onCommitTicker={h.onCommitTicker}
                       onRemove={h.onRemove}
@@ -831,6 +843,8 @@ function IndexPage() {
                 loadingIds={loadingIds}
                 fetchedAt={fetchedAt}
                 weightMode={settings.weightMode}
+                dailyChanges={dailyChanges}
+                staleIds={staleIds}
                 getRowHandlers={getRowHandlers}
               />
             ) : (
@@ -845,6 +859,8 @@ function IndexPage() {
                     loading={loadingIds.has(r.id)}
                     lastFetchedAt={fetchedAt[r.id] ?? null}
                     weightMode={settings.weightMode}
+                    dailyChange={dailyChanges[r.id] ?? null}
+                    stale={staleIds.has(r.id)}
                     onChange={h.onChange}
                     onCommitTicker={h.onCommitTicker}
                     onRemove={h.onRemove}
@@ -859,7 +875,11 @@ function IndexPage() {
           {/* Formula — inline, di bawah hasil */}
           {hasRows && (
             <div className="mt-5">
-              <FloatingFormula formula={formula} onShare={shareWatchlist} />
+              <FloatingFormula
+                formula={formula}
+                pineScript={pineScript}
+                onShare={shareWatchlist}
+              />
             </div>
           )}
         </section>
