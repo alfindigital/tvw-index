@@ -341,6 +341,7 @@ function IndexPage() {
     setLastRefresh(null);
     setLoadingIds(new Set());
     setFetchedAt({});
+    setDailyChanges({});
   }
 
   async function fetchTickerForRow(
@@ -377,6 +378,11 @@ function IndexPage() {
         const now = Date.now();
         setLastRefresh(now);
         setFetchedAt((prev) => ({ ...prev, [id]: now }));
+        // Track daily % change vs. previous close, if provider returned it.
+        if (q.previousClose != null && q.previousClose > 0) {
+          const pct = (Number(q.price) - Number(q.previousClose)) / Number(q.previousClose);
+          setDailyChanges((prev) => ({ ...prev, [id]: pct }));
+        }
         return { ok: true, ticker };
       }
       const msg = humanError(q.error);
