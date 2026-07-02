@@ -262,10 +262,60 @@ function IndexPage() {
   }, [enriched.rows, settings.sort]);
 
   const formula = useMemo(() => buildFormula(sortedRows, TV_PREFIX), [sortedRows]);
+  const pineScript = useMemo(() => buildPineScript(sortedRows, { prefix: TV_PREFIX }), [sortedRows]);
+
+  // Basket-level daily change: weight × per-name % change, summed. Only names
+  // with a known previousClose contribute (weight of the rest is treated as 0),
+  // so the number is "conservative" while any row is still loading.
+  const totalDailyChange = useMemo(() => {
+    let s = 0;
+    for (const r of sortedRows) {
+      const c = dailyChanges[r.id];
+      if (c != null && isFinite(c)) s += r.weight * c;
+    }
+    return s;
+  }, [sortedRows, dailyChanges]);
+
+  // Which rows are "stale" (last fetch older than the threshold) — recomputed
+  // whenever the periodic tick or fetch times change.
+  const staleIds = useMemo(() => {
+    const s = new Set<string>();
+    for (const [id, ts] of Object.entries(fetchedAt)) {
+      if (nowTick - ts > STALE_AFTER_MS) s.add(id);
+    }
+    return s;
+  }, [fetchedAt, nowTick]);
 
   useEffect(() => {
     formulaRef.current = formula;
   }, [formula]);
+
+  // Tick every 30s so "stale" badges and relative timestamps stay honest
+  // without needing per-second re-renders. Pauses when the tab is hidden.
+  useEffect(() => {
+    let id: ReturnType<typeof setInterval> | null = null;
+    const start = () => {
+      if (id != null) return;
+      id = setInterval(() => setNowTick(Date.now()), 30_000);
+    };
+    const stop = () => {
+      if (id != null) clearInterval(id);
+      id = null;
+    };
+    const onVis = () => {
+      if (document.hidden) stop();
+      else {
+        setNowTick(Date.now());
+        start();
+      }
+    };
+    start();
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, []);
 
   const update = useCallback((id: string, patch: Partial<Stock>) => {
     setStocks((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
