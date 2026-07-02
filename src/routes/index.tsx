@@ -177,6 +177,7 @@ function IndexPage() {
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
     sort: "manual",
+    autoRefresh: false,
   }));
   const didInitialFetch = useRef(false);
   const didConsumeList = useRef(false);
