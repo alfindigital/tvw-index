@@ -130,3 +130,32 @@ export function buildFormula(rows: { ticker: string; weight: number }[], prefix 
     })
     .join(" + ");
 }
+
+/**
+ * Build a Pine Script v5 indicator that plots the weighted basket value.
+ * Use this when the inline TradingView formula bar (~500 char) isn't enough —
+ * Pine indicators have no such limit and can hold 30+ symbols comfortably.
+ */
+export function buildPineScript(
+  rows: { ticker: string; weight: number }[],
+  opts: { prefix?: string; name?: string } = {},
+): string {
+  const prefix = opts.prefix ?? "IDX:";
+  const name = (opts.name ?? "IndexW Basket").replace(/"/g, "'");
+  const clean = rows.filter((r) => r.ticker && r.weight > 0);
+  if (clean.length === 0) {
+    return `//@version=5\nindicator("${name}", overlay=false)\n// Watchlist kosong — tambah saham dulu.`;
+  }
+  const lines: string[] = [];
+  lines.push(`//@version=5`);
+  lines.push(`indicator("${name}", overlay=false, precision=2)`);
+  clean.forEach((r, i) => {
+    const sym = r.ticker.replace(/\.JK$/i, "").toUpperCase();
+    lines.push(`w${i} = ${r.weight.toFixed(6)}`);
+    lines.push(`s${i} = request.security("${prefix}${sym}", timeframe.period, close)`);
+  });
+  const sum = clean.map((_, i) => `w${i}*s${i}`).join(" + ");
+  lines.push(`basket = ${sum}`);
+  lines.push(`plot(basket, "Basket", color=color.new(color.blue, 0), linewidth=2)`);
+  return lines.join("\n");
+}
