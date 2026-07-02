@@ -1,9 +1,11 @@
 export type QuoteResult = {
   symbol: string;
   price: number | null;
+  previousClose: number | null;
   currency: string | null;
   error?: string;
 };
+
 
 const TIMEOUT_MS = 8000;
 const CACHE_TTL_S = 45; // edge-cache quotes briefly, shared across all users
@@ -28,7 +30,13 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
     });
 
     if (!res.ok) {
-      return { symbol, price: null, currency: null, error: `HTTP ${res.status}` };
+      return {
+        symbol,
+        price: null,
+        previousClose: null,
+        currency: null,
+        error: `HTTP ${res.status}`,
+      };
     }
 
     const data = (await res.json()) as {
@@ -37,20 +45,29 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
           meta?: {
             regularMarketPrice?: number;
             previousClose?: number;
+            chartPreviousClose?: number;
             currency?: string;
           };
         }>;
       };
     };
     const result = data?.chart?.result?.[0];
-    const price = result?.meta?.regularMarketPrice ?? result?.meta?.previousClose ?? null;
-    const currency = result?.meta?.currency ?? null;
+    const meta = result?.meta;
+    const price = meta?.regularMarketPrice ?? meta?.previousClose ?? null;
+    const previousClose =
+      meta?.chartPreviousClose ?? meta?.previousClose ?? null;
+    const currency = meta?.currency ?? null;
 
     if (price == null) {
-      return { symbol, price: null, currency, error: "no price" };
+      return { symbol, price: null, previousClose, currency, error: "no price" };
     }
 
-    return { symbol, price: Number(price), currency };
+    return {
+      symbol,
+      price: Number(price),
+      previousClose: previousClose != null ? Number(previousClose) : null,
+      currency,
+    };
   } catch (error) {
     const msg =
       error instanceof Error
@@ -58,7 +75,7 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
           ? "timeout"
           : error.message
         : "fetch failed";
-    return { symbol, price: null, currency: null, error: msg };
+    return { symbol, price: null, previousClose: null, currency: null, error: msg };
   }
 }
 
