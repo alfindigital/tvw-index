@@ -6,9 +6,9 @@ type Props = {
 };
 
 const STEPS = [
-  { icon: Plus, text: "Tambah saham IDX ke watchlist" },
-  { icon: Copy, text: "Salin formula TradingView yang dibobotin otomatis" },
-  { icon: LineChart, text: "Tempel di TradingView → chart index custom-mu" },
+  { icon: Plus, text: "Add IDX stocks to watchlist" },
+  { icon: Copy, text: "Copy auto-weighted TradingView formula" },
+  { icon: LineChart, text: "Paste in TradingView → your custom index chart" },
 ];
 
 export function EmptyWatchlist({ onLoadPreset }: Props) {
@@ -18,10 +18,10 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
         <Plus className="h-5 w-5" />
       </div>
       <p className="mt-3 text-base font-semibold text-foreground">
-        Bangun index saham IDX-mu sendiri
+        Build your own IDX stock index
       </p>
       <p className="mt-1 text-sm text-muted-foreground">
-        Pilih starter pack di bawah, atau ketik ticker di kotak Quick Add.
+        Pick a starter pack below, or type a ticker in the Quick Add box.
       </p>
 
       {/* How it works */}
@@ -42,7 +42,7 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
       {/* Presets */}
       <div className="mt-6">
         <div className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Coba starter pack
+          Try a starter pack
         </div>
         <div className="mx-auto flex max-w-xl flex-wrap justify-center gap-2">
           {PRESETS.map((p) => (
@@ -64,7 +64,7 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
 
       <p className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/80">
         <Keyboard className="h-3.5 w-3.5" />
-        Tip: tekan <span className="font-mono text-foreground">N</span> dari mana saja untuk fokus
+        Tip: press <span className="font-mono text-foreground">N</span> dari mana saja untuk fokus
         ke Quick Add.
       </p>
     </div>

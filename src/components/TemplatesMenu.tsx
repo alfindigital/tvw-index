@@ -105,21 +105,21 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setName("");
     setNameError(null);
     setSaveOpen(false);
-    toast.success("Watchlist tersimpan sebagai template", { description: result.value });
+    toast.success("Watchlist saved as template", { description: result.value });
   }
 
   function handleLoad(t: Template) {
     const cloned = t.stocks.map((s) => ({ ...s, id: crypto.randomUUID(), error: null }));
     onLoadTemplate(cloned);
-    toast.success(`Template "${t.name}" dimuat`);
+    toast.success(`Template "${t.name}" loaded`);
   }
 
   function handleDelete(t: Template) {
-    if (!confirm(`Hapus template "${t.name}"?`)) return;
+    if (!confirm(`Delete template "${t.name}"?`)) return;
     const list = loadTemplates().filter((x) => x.id !== t.id);
     saveTemplates(list);
     setTemplates(list);
-    toast.success("Template dihapus");
+    toast.success("Template deleted");
   }
 
   return (
@@ -159,13 +159,13 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
                     className="min-w-0 flex-1 text-left"
                   >
                     <div className="truncate text-sm font-medium">{t.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{t.stocks.length} saham</div>
+                    <div className="text-[10px] text-muted-foreground">{t.stocks.length} stocks</div>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(t)}
                     className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    aria-label="Hapus template"
+                    aria-label="Delete template"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -181,7 +181,7 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
             }}
           >
             <BookmarkPlus className="mr-2 h-3.5 w-3.5" />
-            Simpan watchlist ini
+            Save this watchlist
             <DropdownMenuShortcut>⇧S</DropdownMenuShortcut>
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -199,16 +199,16 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Simpan sebagai template</DialogTitle>
+            <DialogTitle>Save as template</DialogTitle>
             <DialogDescription>
-              Watchlist saat ini ({currentStocks.length} saham) akan disimpan sebagai preset di
+              Current watchlist ({currentStocks.length} stocks) akan disimpan sebagai preset di
               browser.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-1.5">
             <Input
               autoFocus
-              placeholder="cth: Banking Big 4, Energy Watchlist"
+              placeholder="e.g. Banking Big 4, Energy Watchlist"
               value={name}
               maxLength={TEMPLATE_NAME_MAX}
               aria-invalid={nameError ? true : undefined}
@@ -239,9 +239,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setSaveOpen(false)}>
-              Batal
+              Cancel
             </Button>
-            <Button onClick={handleSave}>Simpan</Button>
+            <Button onClick={handleSave}>Save</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

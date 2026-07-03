@@ -27,13 +27,13 @@ export function formatTime(ts: number | null): string {
   });
 }
 
-/** Human "x menit lalu" relative time. Shared by LastUpdated + per-row stamps. */
+/** Human "x minutes ago" relative time. Shared by LastUpdated + per-row stamps. */
 export function relativeTime(ts: number | null, now: number = Date.now()): string {
-  if (!ts) return "belum ada data";
+  if (!ts) return "no data yet";
   const diff = Math.max(0, Math.floor((now - ts) / 1000));
-  if (diff < 5) return "baru saja";
-  if (diff < 60) return `${diff} detik lalu`;
-  if (diff < 3600) return `${Math.floor(diff / 60)} menit lalu`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
-  return `${Math.floor(diff / 86400)} hari lalu`;
+  if (diff < 5) return "just now";
+  if (diff < 60) return `${diff} seconds ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+  return `${Math.floor(diff / 86400)} days ago`;
 }

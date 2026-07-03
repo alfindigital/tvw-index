@@ -16,24 +16,24 @@ export function normalizeTicker(raw: string): string {
 export function validateTicker(raw: string): TickerValidation {
   const ticker = normalizeTicker(raw);
   if (!ticker) {
-    return { ok: false, error: "Ticker tidak boleh kosong" };
+    return { ok: false, error: "Ticker cannot be empty" };
   }
   if (ticker.length > 8) {
-    return { ok: false, error: "Ticker terlalu panjang (maks 8 karakter)" };
+    return { ok: false, error: "Ticker too long (max 8 characters)" };
   }
   if (/\s/.test(ticker)) {
-    return { ok: false, error: "Ticker tidak boleh mengandung spasi" };
+    return { ok: false, error: "Ticker cannot contain spaces" };
   }
   if (!/^[A-Z0-9.]+$/.test(ticker)) {
     return {
       ok: false,
-      error: "Ticker hanya boleh huruf A–Z (mis. BBCA)",
+      error: "Ticker must be A–Z letters only (e.g. BBCA)",
     };
   }
   if (!TICKER_RE.test(ticker)) {
     return {
       ok: false,
-      error: "Format ticker IDX salah. Contoh: BBCA atau BBCA.JK",
+      error: "Invalid IDX ticker format. Example: BBCA or BBCA.JK",
     };
   }
   return { ok: true, ticker };

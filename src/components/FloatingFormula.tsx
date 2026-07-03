@@ -40,15 +40,15 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
             <button
               type="button"
               onClick={() => setHelpOpen(true)}
-              aria-label="Cara pakai formula di TradingView"
-              title="Cara pakai formula di TradingView"
+              aria-label="How to use formula in TradingView"
+              title="How to use formula in TradingView"
               className="inline-flex items-center text-primary-foreground/70 transition-colors hover:text-primary-foreground"
             >
               <HelpCircle className="h-3.5 w-3.5" />
             </button>
           </div>
           <div className="truncate font-mono text-xs text-primary-foreground">
-            {formula || "Tambah saham untuk generate formula"}
+            {formula || "Add stocks to generate formula"}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
@@ -57,7 +57,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               type="button"
               onClick={onShare}
               disabled={empty}
-              title="Salin link watchlist"
+              title="Copy watchlist link"
               className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground/15 px-2.5 text-xs font-medium text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
             >
               <Share2 className="h-3.5 w-3.5" />
@@ -69,11 +69,11 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               type="button"
               onClick={() => copyText(pineScript, "pine", "Pine Script")}
               disabled={empty}
-              title="Salin sebagai Pine Script v5 (untuk basket besar)"
+              title="Copy as Pine Script v5 (for large baskets)"
               className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground/15 px-2.5 text-xs font-medium text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
             >
               {copied === "pine" ? <Check className="h-3.5 w-3.5" /> : <FileCode2 className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{copied === "pine" ? "Tersalin" : "Pine"}</span>
+              <span className="hidden sm:inline">{copied === "pine" ? "Copied" : "Pine"}</span>
             </button>
           ) : null}
           <button
@@ -83,7 +83,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
             className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground px-3 text-xs font-medium text-primary transition hover:opacity-90 disabled:opacity-40"
           >
             {copied === "formula" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied === "formula" ? "Tersalin" : "Copy"}
+            {copied === "formula" ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
@@ -91,9 +91,9 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Cara pakai formula di TradingView</DialogTitle>
+            <DialogTitle>How to use formula in TradingView</DialogTitle>
             <DialogDescription>
-              Formula ini menggabungkan beberapa saham jadi satu index custom berbobot.
+              This formula combines multiple stocks into one weighted custom index.
             </DialogDescription>
           </DialogHeader>
           <ol className="space-y-3 text-sm text-foreground">

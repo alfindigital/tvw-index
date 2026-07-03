@@ -13,25 +13,25 @@ export type Preset = {
 const RAW_PRESETS: Preset[] = [
   {
     id: "big4-banks",
-    name: "4 Bank Besar",
+    name: "4 Big Banks",
     desc: "BBCA · BBRI · BMRI · BBNI",
     tickers: ["BBCA", "BBRI", "BMRI", "BBNI"],
   },
   {
     id: "bluechip-10",
     name: "Blue Chip 10",
-    desc: "10 emiten kapitalisasi besar lintas sektor",
+    desc: "10 large-cap cross-sector issuers",
     tickers: ["BBCA", "BBRI", "BMRI", "TLKM", "ASII", "BBNI", "UNTR", "ICBP", "KLBF", "ADRO"],
   },
   {
     id: "energy",
-    name: "Energi & Batu Bara",
+    name: "Energy & Coal",
     desc: "ADRO · PTBA · ITMG · INDY · HRUM",
     tickers: ["ADRO", "PTBA", "ITMG", "INDY", "HRUM"],
   },
   {
     id: "consumer",
-    name: "Konsumer",
+    name: "Consumer",
     desc: "ICBP · INDF · UNVR · MYOR · AMRT",
     tickers: ["ICBP", "INDF", "UNVR", "MYOR", "AMRT"],
   },

@@ -36,7 +36,7 @@ export function WeightControls({
       <div
         className="flex rounded-lg border border-border bg-background p-0.5"
         role="group"
-        aria-label="Mode bobot"
+        aria-label="Weight mode"
       >
         <button
           type="button"
@@ -54,7 +54,7 @@ export function WeightControls({
           type="button"
           aria-pressed={mode === "freefloat"}
           onClick={() => onModeChange("freefloat")}
-          title="Bobot berbasis free-float adjusted market cap (lebih dekat metodologi index IDX)"
+          title="Free-float adjusted market cap weighting (closer to IDX index methodology)"
           className={`${MODE_BTN} ${
             mode === "freefloat"
               ? "bg-primary text-primary-foreground"
@@ -73,19 +73,19 @@ export function WeightControls({
           size="icon"
           onClick={onRefresh}
           disabled={refreshing}
-          aria-label="Perbarui harga"
-          title="Perbarui harga"
+          aria-label="Refresh prices"
+          title="Refresh prices"
           className="h-7 w-7"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
         </Button>
         <Select value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
-          <SelectTrigger className="h-7 w-[130px] text-xs" aria-label="Urutkan watchlist">
+          <SelectTrigger className="h-7 w-[130px] text-xs" aria-label="Sort watchlist">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="manual">Urutan input</SelectItem>
-            <SelectItem value="weight">Bobot ↓</SelectItem>
+            <SelectItem value="manual">Input order</SelectItem>
+            <SelectItem value="weight">Weight ↓</SelectItem>
             <SelectItem value="mcap">Market cap ↓</SelectItem>
             <SelectItem value="ticker">Ticker A–Z</SelectItem>
           </SelectContent>
