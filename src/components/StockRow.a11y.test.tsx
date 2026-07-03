@@ -89,7 +89,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setDarkMode(dark);
         const { getByLabelText } = renderRow();
         // aria-label is specific to the row's ticker for clearer SR output.
-        const removeBtn = getByLabelText("Hapus BBCA") as HTMLButtonElement;
+        const removeBtn = getByLabelText("Remove BBCA") as HTMLButtonElement;
         expect(removeBtn.tagName).toBe("BUTTON");
         // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
         expect(removeBtn.className).toMatch(/h-10|h-9/);
