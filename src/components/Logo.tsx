@@ -17,14 +17,15 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
   return (
     <div className={`flex min-w-0 items-center gap-2.5 ${className}`}>
       <div
-        className={`${box} relative flex shrink-0 items-center justify-center bg-white/10 text-white ring-1 ring-inset ring-white/25 backdrop-blur-sm shadow-[0_6px_18px_-6px_oklch(0.10_0.03_275_/_0.6)]`}
+        className={`${box} relative flex shrink-0 items-center justify-center bg-gradient-to-br from-primary to-[oklch(0.32_0.14_275)] text-primary-foreground shadow-[0_6px_18px_-6px_oklch(0.52_0.22_277_/_0.45)] dark:to-[oklch(0.42_0.18_278)]`}
         aria-hidden
       >
         <StackMark className={icon} />
+        <span className="absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/20" />
       </div>
       {showWord ? (
-        <span className="truncate text-[15px] font-bold leading-none tracking-[-0.01em] text-white sm:text-base">
-          Stack<span className="text-[#5eead4]">Cap</span>
+        <span className="truncate text-[15px] font-bold leading-none tracking-[-0.01em] text-foreground sm:text-base">
+          Stack<span className="text-primary">Cap</span>
         </span>
       ) : null}
     </div>
