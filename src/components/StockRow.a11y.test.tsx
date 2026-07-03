@@ -75,7 +75,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setViewport(vp.width);
         setDarkMode(dark);
         const { getByText } = renderRow();
-        for (const label of ["Ticker", "Shares (Jt)", "Price (IDR)"]) {
+        for (const label of ["Ticker", "Shares (M)", "Price (IDR)"]) {
           const el = getByText(label);
           // Tailwind class encodes the floor: text-[11px] leading-4
           expect(el.className).toMatch(/text-\[11px\]|text-xs/);
