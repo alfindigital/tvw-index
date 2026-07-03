@@ -647,7 +647,7 @@ function IndexPage() {
     },
     { key: "s", shift: true, handler: () => setSaveDialogTrigger((n) => n + 1) },
     { key: "c", shift: true, allowInInput: true, handler: () => copyFormula() },
-    { key: "e", shift: true, handler: () => downloadCsv(sortedRows, settings.weightMode) },
+    { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
     { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
   ]);
 
