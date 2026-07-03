@@ -36,7 +36,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
           <div className="flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5 text-primary-foreground/90" />
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground/90">
-              Your TradingView Formula
+              Result
             </span>
             <button
               type="button"
