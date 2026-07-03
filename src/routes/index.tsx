@@ -809,8 +809,7 @@ function IndexPage() {
                 <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
                   <p className="text-sm font-medium text-foreground">No price data yet</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Tekan ikon refresh di atas atau commit ulang ticker untuk mengambil harga
-                    terbaru.
+                    Press the refresh icon above or re-commit ticker to fetch the latest price.
                   </p>
                 </div>
                 {sortedRows.map((r) => {

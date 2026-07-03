@@ -146,7 +146,7 @@ function StockRowImpl({
                   }
                 }}
                 placeholder="0"
-                title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
+                title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
                 className={`${FIELD_CLS} pr-7`}
               />
               <span className={SUFFIX_CLS}>jt{stock.manualShares ? "*" : ""}</span>

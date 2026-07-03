@@ -91,7 +91,7 @@ function EmitenPage() {
               {sharesM != null ? formatCompact(sharesM * 1_000_000) : "—"}
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
-              {sharesM != null ? `per ${SHARES_AS_OF}` : "belum ada di DB"}
+              {sharesM != null ? `as of ${SHARES_AS_OF}` : "not in DB"}
             </div>
           </div>
           <div className="rounded-2xl border border-border bg-card p-4">
@@ -112,7 +112,7 @@ function EmitenPage() {
             <div className="mt-1 font-mono text-lg font-semibold text-foreground">
               {marketCap != null ? formatIDR(marketCap) : "—"}
             </div>
-            <div className="mt-0.5 text-[11px] text-muted-foreground">shares × harga</div>
+            <div className="mt-0.5 text-[11px] text-muted-foreground">shares × price</div>
           </div>
         </section>
 

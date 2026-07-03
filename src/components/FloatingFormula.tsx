@@ -130,8 +130,8 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
                 4
               </span>
               <span>
-                Chart index gabungan muncul. Prefix <span className="font-mono">IDX:</span>{" "}
-                memastikan tiap simbol merujuk ke bursa Indonesia.
+                A combined index chart appears. The <span className="font-mono">IDX:</span>{" "}
+                prefix ensures each symbol resolves to the Indonesia exchange.
               </span>
             </li>
           </ol>

@@ -201,7 +201,7 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
           <DialogHeader>
             <DialogTitle>Save as template</DialogTitle>
             <DialogDescription>
-              Current watchlist ({currentStocks.length} stocks) akan disimpan sebagai preset di
+              Current watchlist ({currentStocks.length} stocks) will be saved as a preset in the
               browser.
             </DialogDescription>
           </DialogHeader>
