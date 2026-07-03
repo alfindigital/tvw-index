@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { HelpCircle, Share2, Check, Copy, FileCode2 } from "lucide-react";
+import { HelpCircle, Share2, Check, Copy, FileCode2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
