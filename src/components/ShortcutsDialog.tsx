@@ -13,7 +13,6 @@ type Props = {
 
 const ROWS: { keys: string[]; label: string }[] = [
   { keys: ["N"], label: "Focus add ticker input" },
-  { keys: ["A"], label: "Add empty row" },
   { keys: ["Enter"], label: "Add ticker / commit field" },
   { keys: ["Tab"], label: "Move between fields" },
   { keys: ["↑↓"], label: "Navigate ticker suggestions (while typing)" },

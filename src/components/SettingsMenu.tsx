@@ -5,7 +5,6 @@ import {
   Upload,
   Settings as SettingsIcon,
   RefreshCw,
-  Plus,
   RotateCcw,
   Sun,
   Moon,
@@ -43,7 +42,6 @@ type Props = {
   autoRefresh: boolean;
   onToggleAutoRefresh: () => void;
   onRefreshAll: () => void;
-  onAddEmpty: () => void;
   onReset: () => void;
   onAfterImport: () => void;
   onExportCsv: () => void;
@@ -56,7 +54,6 @@ export function SettingsMenu({
   autoRefresh,
   onToggleAutoRefresh,
   onRefreshAll,
-  onAddEmpty,
   onReset,
   onAfterImport,
   onExportCsv,

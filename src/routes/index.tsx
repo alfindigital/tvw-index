@@ -319,10 +319,6 @@ function IndexPage() {
     setStocks((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }, []);
 
-  function addEmpty() {
-    setStocks((prev) => [...prev, newStock()]);
-  }
-
   const remove = useCallback((id: string) => {
     const prevStocks = stocksRef.current;
     const idx = prevStocks.findIndex((s) => s.id === id);
@@ -735,7 +731,6 @@ function IndexPage() {
               autoRefresh={settings.autoRefresh}
               onToggleAutoRefresh={toggleAutoRefresh}
               onRefreshAll={refreshAll}
-              onAddEmpty={addEmpty}
               onReset={resetWatchlist}
               onAfterImport={reloadFromStorage}
               onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
