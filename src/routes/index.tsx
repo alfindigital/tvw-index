@@ -901,9 +901,7 @@ function IndexPage() {
             <nav aria-label="Sosial media" className="flex items-center gap-1">
               {[
                 { href: "https://x.com/alfindigital", label: "X (Twitter)", Icon: Twitter },
-                { href: "https://facebook.com/alfindigital", label: "Facebook", Icon: Facebook },
                 { href: "https://t.me/alfidx", label: "Telegram", Icon: Send },
-                { href: "https://youtube.com/@alfindigital", label: "YouTube", Icon: Youtube },
               ].map(({ href, label, Icon }) => (
                 <a
                   key={label}
