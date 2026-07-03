@@ -46,7 +46,7 @@ import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
-import { TV_PREFIX } from "@/lib/site";
+
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
