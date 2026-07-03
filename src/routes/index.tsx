@@ -134,39 +134,6 @@ function humanError(err: string | undefined): string {
   return "Failed to fetch price";
 }
 
-function downloadCsv(rows: EnrichedStock[], mode: WeightMode) {
-  const header = [
-    "ticker",
-    "shares_juta",
-    "price_idr",
-    "market_cap_idr",
-    "free_float_pct",
-    "weight_pct",
-  ];
-  const lines = rows
-    .filter((r) => r.ticker)
-    .map((r) =>
-      [
-        r.ticker,
-        r.shares ?? 0,
-        r.price ?? 0,
-        Math.round(r.marketCap),
-        mode === "freefloat" ? (r.freeFloat ?? 100) : "",
-        (r.weight * 100).toFixed(4),
-      ].join(","),
-    );
-  const csv = [header.join(","), ...lines].join("\n");
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `indexw-watchlist-${new Date().toISOString().slice(0, 10)}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  toast.success("Watchlist exported to CSV");
-}
 
 function IndexPage() {
   const search = Route.useSearch();
