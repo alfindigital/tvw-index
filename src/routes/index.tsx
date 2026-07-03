@@ -682,7 +682,7 @@ function IndexPage() {
   // Global keyboard shortcuts
   useShortcuts([
     { key: "n", handler: () => quickAddRef.current?.focus() },
-    { key: "a", handler: () => addEmpty() },
+    
     { key: "r", shift: true, handler: () => refreshAll() },
     {
       key: "f",
