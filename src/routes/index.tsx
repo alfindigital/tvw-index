@@ -750,21 +750,11 @@ function IndexPage() {
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-4 sm:divide-x sm:divide-y-0">
+          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
             <StatCard
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
               icon={TrendingUp}
-            />
-            <StatCard
-              label="Today's Change"
-              icon={totalDailyChange >= 0 ? TrendingUp : Crown}
-              value={
-                Object.keys(dailyChanges).length === 0
-                  ? "—"
-                  : `${totalDailyChange >= 0 ? "+" : ""}${(totalDailyChange * 100).toFixed(2)}%`
-              }
-              sub="weight × change"
             />
             <StatCard
               label="Largest Weight"
