@@ -750,7 +750,7 @@ function IndexPage() {
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
-          <div className="grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-4 sm:divide-y-0">
+          <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-4 sm:divide-x sm:divide-y-0">
             <StatCard
               label="Total Market Cap"
               value={formatIDR(enriched.total)}
