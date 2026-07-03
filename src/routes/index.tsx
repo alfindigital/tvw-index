@@ -625,10 +625,6 @@ function IndexPage() {
     [],
   );
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
-  const setPrefix = useCallback(
-    (prefix: import("@/lib/storage").TickerPrefix) => setSettings((s) => ({ ...s, prefix })),
-    [],
-  );
 
 
   const hasRows = enriched.rows.length > 0;
