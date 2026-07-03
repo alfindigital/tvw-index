@@ -128,7 +128,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         const buttons = focusable.filter((el) => el.tagName === "BUTTON");
         expect(inputs).toHaveLength(3);
         expect(buttons).toHaveLength(1);
-        expect(buttons[0]?.getAttribute("aria-label")).toBe("Hapus BBCA");
+        expect(buttons[0]?.getAttribute("aria-label")).toBe("Remove BBCA");
         // No positive tabindex (would break natural order)
         for (const el of focusable) {
           const ti = el.getAttribute("tabindex");
