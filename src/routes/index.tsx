@@ -686,7 +686,6 @@ function IndexPage() {
               onRefreshAll={refreshAll}
               onReset={resetWatchlist}
               onAfterImport={reloadFromStorage}
-              onExportCsv={() => downloadCsv(sortedRows, settings.weightMode)}
               onShareLink={shareWatchlist}
             />
           </>
