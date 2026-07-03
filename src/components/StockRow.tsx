@@ -124,7 +124,7 @@ function StockRowImpl({
         {/* Shares + Price + Delete */}
         <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
           <label className="block min-w-0 flex-1">
-            <span className={LABEL_CLS}>Shares (Jt)</span>
+            <span className={LABEL_CLS}>Shares (M)</span>
             <div className="relative w-full min-w-0">
               <Input
                 type="number"
