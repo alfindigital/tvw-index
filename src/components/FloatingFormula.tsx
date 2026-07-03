@@ -80,7 +80,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
             onClick={() => copyText(formula, "formula", "Formula")}
             disabled={empty}
             title={copied === "formula" ? "Copied" : "Copy formula"}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-foreground text-primary transition hover:opacity-90 disabled:opacity-40"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-foreground text-primary shadow-sm transition hover:opacity-90 disabled:opacity-40"
           >
             {copied === "formula" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </button>
