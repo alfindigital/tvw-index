@@ -111,7 +111,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
               blurTimer.current = setTimeout(() => setOpen(false), 120);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Type ticker / search issuer, e.g. BRIS"
+            placeholder="e.g. BRIS"
             aria-label="Add ticker"
             aria-invalid={shownError ? true : undefined}
             aria-describedby={shownError ? "quickadd-error" : undefined}
