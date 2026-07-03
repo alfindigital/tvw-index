@@ -25,7 +25,8 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col gap-3 overflow-hidden rounded-2xl border-2 border-primary bg-card px-4 py-3.5 shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--primary)_25%,transparent)] sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:py-4">
+      <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl bg-primary/[0.03] px-4 py-3.5 ring-1 ring-primary/15 sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:py-4 dark:bg-primary/[0.07]">
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
         <button
           type="button"
           onClick={() => copyText(formula, "formula", "Formula")}
@@ -36,7 +37,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
           {formulaText}
         </button>
 
-        <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">
+        <div className="flex shrink-0 items-center justify-center gap-1.5 sm:justify-start">
           {onShare ? (
             <IconBtn
               onClick={onShare}
