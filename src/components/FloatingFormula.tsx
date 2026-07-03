@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Share2, FileCode2, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
 
 type Props = {
@@ -24,40 +25,54 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-border bg-card px-4 py-3.5 sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:py-4">
+      <div className="flex w-full flex-col gap-3 overflow-hidden rounded-2xl border-2 border-primary bg-card px-4 py-3.5 shadow-[0_8px_24px_-8px_color-mix(in_oklab,var(--primary)_25%,transparent)] sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:py-4">
         <button
           type="button"
           onClick={() => copyText(formula, "formula", "Formula")}
           disabled={empty}
-          className="min-w-0 flex-1 text-left font-mono text-sm font-semibold tracking-tight text-foreground disabled:opacity-40 sm:text-base"
+          className="line-clamp-2 min-w-0 flex-1 break-all text-left font-mono text-sm font-semibold leading-snug tracking-tight text-foreground disabled:opacity-40 sm:text-base"
           title="Click to copy"
         >
           {formulaText}
         </button>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">
           {onShare ? (
-            <ActionBtn
+            <IconBtn
               onClick={onShare}
               disabled={empty}
-              active={false}
-              label="Share"
+              title="Share watchlist"
+              icon={<Share2 className="h-4 w-4" />}
             />
           ) : null}
           {pineScript ? (
-            <ActionBtn
+            <IconBtn
               onClick={() => copyText(pineScript, "pine", "Pine Script")}
               disabled={empty}
               active={copied === "pine"}
-              label={copied === "pine" ? "Copied" : "Pine"}
+              title="Copy Pine Script"
+              icon={
+                copied === "pine" ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <FileCode2 className="h-4 w-4" />
+                )
+              }
             />
           ) : null}
-          <ActionBtn
+          <IconBtn
             onClick={() => copyText(formula, "formula", "Formula")}
             disabled={empty}
             active={copied === "formula"}
             primary
-            label={copied === "formula" ? "Copied" : "Copy"}
+            title="Copy formula"
+            icon={
+              copied === "formula" ? (
+                <Check className="h-4 w-4" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )
+            }
           />
         </div>
       </div>
@@ -65,25 +80,28 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   );
 }
 
-function ActionBtn({
+function IconBtn({
   onClick,
   disabled,
   active,
   primary,
-  label,
+  title,
+  icon,
 }: {
   onClick: () => void;
   disabled?: boolean;
   active?: boolean;
   primary?: boolean;
-  label: string;
+  title: string;
+  icon: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`inline-flex h-8 items-center justify-center rounded-lg px-3 text-xs font-semibold transition ${
+      title={title}
+      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg transition ${
         primary
           ? "bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40"
           : active
@@ -91,7 +109,7 @@ function ActionBtn({
             : "border border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground disabled:opacity-40"
       }`}
     >
-      {label}
+      {icon}
     </button>
   );
 }
