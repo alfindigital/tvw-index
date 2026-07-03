@@ -104,7 +104,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         expect(inputs.length).toBeGreaterThanOrEqual(3);
         const sharesInput = inputs[1] as HTMLInputElement;
         const priceInput = inputs[2] as HTMLInputElement;
-        expect(sharesInput.getAttribute("title")).toContain("juta");
+        expect(sharesInput.getAttribute("title")).toContain("million");
         expect(priceInput.getAttribute("title")).toContain("Rp");
         // Numeric inputs must NOT truncate — clipping digits hides the value the
         // user is editing. Full value stays reachable via the `title` tooltip.
