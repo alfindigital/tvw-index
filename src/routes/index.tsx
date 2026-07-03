@@ -42,7 +42,7 @@ import {
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
-import { enrichStocks, buildFormula, buildPineScript, type WeightMode, type EnrichedStock } from "@/lib/weight";
+import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/lib/weight";
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
