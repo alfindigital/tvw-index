@@ -648,7 +648,6 @@ function IndexPage() {
     { key: "s", shift: true, handler: () => setSaveDialogTrigger((n) => n + 1) },
     { key: "c", shift: true, allowInInput: true, handler: () => copyFormula() },
     { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
-    { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
   ]);
 
   const setMode = useCallback(
