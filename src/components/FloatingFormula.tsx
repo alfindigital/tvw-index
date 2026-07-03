@@ -31,7 +31,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex w-full flex-col gap-2.5 overflow-hidden rounded-2xl border border-border bg-card px-4 py-3 text-card-foreground shadow-[0_8px_24px_-16px_oklch(0.10_0.03_275_/_0.35)] sm:flex-row sm:items-center sm:gap-3">
+      <div className="relative flex w-full flex-col gap-2.5 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.08] via-card to-card px-4 py-3 text-card-foreground shadow-[0_12px_36px_-18px_oklch(0.55_0.18_278_/_0.45)] ring-1 ring-inset ring-primary/10 sm:flex-row sm:items-center sm:gap-3 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary/40 before:to-transparent">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
