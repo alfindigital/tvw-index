@@ -24,7 +24,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
     if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
       setCopied(kind);
-      toast.success(`${label} disalin`);
+      toast.success(`${label} copied`);
       setTimeout(() => setCopied(null), 1500);
     });
   }

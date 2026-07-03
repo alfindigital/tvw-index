@@ -237,8 +237,8 @@ export function SettingsMenu({
           <AlertDialogHeader>
             <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
             <AlertDialogDescription>
-              Semua stocks di watchlist saat ini akan removed. Template tersimpan tidak terpengaruh.
-              Tindakan ini tidak bisa dibatalkan.
+              All stocks in the current watchlist will be removed. Saved templates are unaffected.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
