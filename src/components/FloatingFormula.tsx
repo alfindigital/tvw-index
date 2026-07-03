@@ -31,11 +31,11 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
 
   return (
     <div className="w-full">
-      <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/[0.10] via-primary/[0.03] to-card px-5 py-4 text-card-foreground shadow-[0_20px_50px_-20px_oklch(0.55_0.18_278_/_0.55)] ring-1 ring-inset ring-primary/15 sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-gradient-to-r before:from-transparent before:via-primary/80 before:to-transparent">
+      <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-primary/30 bg-primary px-5 py-4 text-primary-foreground shadow-[0_20px_50px_-20px_oklch(0.45_0.18_278_/_0.60)] sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-primary-foreground/30">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-3.5 w-3.5 text-primary" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary">
+            <Sparkles className="h-3.5 w-3.5 text-primary-foreground/90" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground/90">
               Your TradingView Formula
             </span>
             <button
@@ -43,12 +43,12 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={() => setHelpOpen(true)}
               aria-label="How to use formula in TradingView"
               title="How to use formula in TradingView"
-              className="inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center text-primary-foreground/60 transition-colors hover:text-primary-foreground"
             >
               <HelpCircle className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="mt-1 truncate font-mono text-sm font-medium text-foreground">
+          <div className="mt-1 truncate font-mono text-sm font-medium text-primary-foreground">
             {formula || "Add stocks to generate formula"}
           </div>
         </div>
@@ -59,7 +59,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={onShare}
               disabled={empty}
               title="Copy watchlist link"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground transition hover:bg-accent hover:text-accent-foreground disabled:opacity-40"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground/80 transition hover:bg-primary-foreground/20 hover:text-primary-foreground disabled:opacity-40"
             >
               <Share2 className="h-4 w-4" />
             </button>
@@ -70,7 +70,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={() => copyText(pineScript, "pine", "Pine Script")}
               disabled={empty}
               title="Copy as Pine Script v5 (for large baskets)"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-muted-foreground transition hover:bg-accent hover:text-accent-foreground disabled:opacity-40"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground/80 transition hover:bg-primary-foreground/20 hover:text-primary-foreground disabled:opacity-40"
             >
               {copied === "pine" ? <Check className="h-4 w-4" /> : <FileCode2 className="h-4 w-4" />}
             </button>
@@ -80,7 +80,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
             onClick={() => copyText(formula, "formula", "Formula")}
             disabled={empty}
             title={copied === "formula" ? "Copied" : "Copy formula"}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition hover:opacity-90 disabled:opacity-40"
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-foreground text-primary transition hover:opacity-90 disabled:opacity-40"
           >
             {copied === "formula" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
           </button>
