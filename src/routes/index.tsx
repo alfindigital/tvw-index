@@ -779,9 +779,9 @@ function IndexPage() {
             )}
           </div>
 
-          {/* Formula — inline, di bawah hasil */}
+          {/* Formula — grand total output */}
           {hasRows && (
-            <div className="mt-5">
+            <div className="mt-8">
               <FloatingFormula
                 formula={formula}
                 pineScript={pineScript}
