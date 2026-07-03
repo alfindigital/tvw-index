@@ -11,12 +11,6 @@ export function AppHeader({ actions }: Props) {
       <div className="mx-auto flex h-14 w-full max-w-5xl items-center gap-2 px-3 sm:h-16 sm:px-5">
         <div className="flex min-w-0 flex-1 items-center">
           <Logo />
-          <span
-            className="ml-3 hidden text-[11px] font-medium uppercase tracking-[0.18em] text-primary-foreground/60 md:inline"
-            aria-hidden
-          >
-            · Saham IDX
-          </span>
         </div>
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
           {actions}
