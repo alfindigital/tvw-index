@@ -20,7 +20,7 @@ type Props = {
 };
 
 const MODE_BTN =
-  "flex-1 rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors sm:flex-none";
+  "flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors sm:flex-none";
 
 export function WeightControls({
   mode,
