@@ -34,8 +34,8 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
       <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border-2 border-primary bg-card px-5 py-4 text-foreground shadow-[0_12px_30px_-12px_oklch(0.45_0.18_278_/_0.20)] sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-3.5 w-3.5 text-primary-foreground/90" />
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground/90">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground">
               Your TradingView Formula
             </span>
             <button
@@ -43,12 +43,12 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={() => setHelpOpen(true)}
               aria-label="How to use formula in TradingView"
               title="How to use formula in TradingView"
-              className="inline-flex items-center text-primary-foreground/60 transition-colors hover:text-primary-foreground"
+              className="inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
             >
               <HelpCircle className="h-3.5 w-3.5" />
             </button>
           </div>
-          <div className="mt-1 truncate font-mono text-sm font-medium text-primary-foreground">
+          <div className="mt-1 truncate font-mono text-sm font-medium text-foreground">
             {formula || "Add stocks to generate formula"}
           </div>
         </div>
