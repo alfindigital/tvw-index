@@ -68,7 +68,7 @@ export function WeightControls({
 
 
       {/* Refresh + sort */}
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
         <Button
           type="button"
           variant="outline"
@@ -77,12 +77,12 @@ export function WeightControls({
           disabled={refreshing}
           aria-label="Refresh prices"
           title="Refresh prices"
-          className="h-7 w-7"
+          className="h-7 w-7 shrink-0"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
         </Button>
         <Select value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
-          <SelectTrigger className="h-7 w-[130px] text-xs" aria-label="Sort watchlist">
+          <SelectTrigger className="h-7 w-[112px] shrink-0 text-xs sm:w-[130px]" aria-label="Sort watchlist">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
