@@ -40,7 +40,6 @@ type Props = {
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
-  onExportCsv: () => void;
   onShareLink: () => void;
 };
 
@@ -50,7 +49,6 @@ export function SettingsMenu({
   onRefreshAll,
   onReset,
   onAfterImport,
-  onExportCsv,
   onShareLink,
 }: Props) {
   const [resetOpen, setResetOpen] = useState(false);
