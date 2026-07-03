@@ -70,7 +70,10 @@ export function WeightControls({
       </div>
 
       {/* Ticker prefix */}
-      <Select value={prefix} onValueChange={(v) => onPrefixChange(v as TickerPrefix)}>
+      <Select
+        value={prefix === "" ? "__none__" : prefix}
+        onValueChange={(v) => onPrefixChange((v === "__none__" ? "" : v) as TickerPrefix)}
+      >
         <SelectTrigger
           className="h-7 w-[110px] text-xs"
           aria-label="Ticker prefix"
@@ -81,7 +84,7 @@ export function WeightControls({
         <SelectContent>
           <SelectItem value="IDX:">IDX:</SelectItem>
           <SelectItem value="BINANCE:">BINANCE:</SelectItem>
-          <SelectItem value="">No prefix</SelectItem>
+          <SelectItem value="__none__">No prefix</SelectItem>
         </SelectContent>
       </Select>
 
