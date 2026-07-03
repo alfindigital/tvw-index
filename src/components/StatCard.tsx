@@ -43,7 +43,7 @@ export function StatCard({ label, value, sub, icon: Icon }: Props) {
       </div>
 
       {/* Mobile: value on the right */}
-      <div className="min-w-0 shrink-0 text-right sm:hidden">
+      <div className="min-w-0 max-w-[60%] text-right sm:hidden">
         <div className="truncate font-mono text-sm font-semibold tabular-nums tracking-tight text-foreground">
           {value}
         </div>
