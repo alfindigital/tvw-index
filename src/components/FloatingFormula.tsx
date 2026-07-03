@@ -129,10 +129,9 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
                 4
               </span>
               <span>
-                A combined index chart appears. Pick a symbol prefix (e.g.{" "}
-                <span className="font-mono">IDX:</span> or{" "}
-                <span className="font-mono">BINANCE:</span>) above to route symbols to
-                the right exchange, or leave it empty for generic tickers.
+                Symbols are automatically prefixed with{" "}
+                <span className="font-mono">IDX:</span> for the Indonesia Stock
+                Exchange.
               </span>
             </li>
 
