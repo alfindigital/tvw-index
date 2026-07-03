@@ -1,63 +1,46 @@
-# Rebrand → IndexW
+# Rebrand → StackCap
 
-## Identitas baru
-- **Nama**: IndexW (sebelumnya "Index Builder / TV Weight Index")
-- **Tagline**: "Watchlist saham IDX, dibobotin market cap."
-- **Palette**: Midnight Indigo — `#0a0a1a` (bg dark), `#141432` (surface), `#1e1e5a` (deep), `#4f46e5` (indigo aksen)
-- **Typography**: Plus Jakarta Sans (heading + body), JetBrains Mono untuk angka/ticker/formula (biar tidak terasa generic dan angka tetap monospace rapi)
-- **Logo mark**: ikon timbangan (scale) custom SVG inline + monogram "W" sebagai favicon
-- **Tone**: tenang, presisi, fintech-grade — bukan AI-generic
+## New identity
+- **Name**: StackCap (replaces "IndexW" everywhere)
+- **Tagline**: "IDX watchlist, stacked by market cap."
+- **Logo mark**: three offset cylindrical layers (stacked coins) forming an abstract "S", viewed at a slight isometric angle. Indigo base, teal rim-light on the top layer.
+- **Palette**: keep existing Midnight Indigo base; add teal accent `oklch(0.78 0.14 195)` (~`#5eead4`) reserved for the logo rim-light and small brand highlights (favicon, OG). No sweeping palette change — indigo primary stays.
+- **Fonts**: unchanged (Plus Jakarta Sans + JetBrains Mono).
 
-## Yang akan diubah
+## Files to change
 
-### 1. Design tokens (`src/styles.css`)
-- Ganti palet light & dark ke Midnight Indigo (oklch ekuivalen dari hex di atas)
-- Primary = indigo `#4f46e5`, surface dark = `#0a0a1a`/`#141432`
-- Tambah token `--font-sans` (Plus Jakarta Sans) dan `--font-mono` (JetBrains Mono)
-- Import Google Fonts (Plus Jakarta Sans 400/500/600/700 + JetBrains Mono 500)
-- Hapus bias warna navy lama, samakan chart colors ke skala indigo
+### 1. Brand assets (new SVG-first, then generate PNGs)
+- `public/favicon.svg` — rewrite: rounded indigo tile, 3 stacked cylinder layers (ellipse-top + side rectangle), each offset ~2px, top layer with teal rim stroke.
+- `scripts/generate-og.mjs` — update `scaleGlyph()` → `stackGlyph()` (new cylinder-stack SVG), replace wordmark "IndexW" with "StackCap", update tagline text, regenerate:
+  - `public/og-image.png` (1200×630)
+  - `public/icon-192.png`, `public/icon-512.png`, `public/apple-touch-icon.png`
+- Run the script once after edits (documented one-off with ad-hoc `sharp` install per its header comment).
 
-### 2. Meta & SEO (`src/routes/__root.tsx`, `src/routes/index.tsx`, `sitemap.xml.ts`)
-- `og:site_name` = "IndexW"
-- Title default & index: "IndexW — Watchlist Saham IDX Bobot Market Cap"
-- Update JSON-LD WebSite/Organization → name "IndexW"
-- Favicon & apple-touch-icon baru (monogram "W" indigo)
+### 2. Logo component
+- `src/components/Logo.tsx` — replace `<Scale>` lucide icon with an inline SVG of the stacked-cylinder mark (small, self-contained, ~18×18 viewBox). Wordmark becomes `Stack<span class="text-primary-foreground/70">Cap</span>`.
 
-### 3. Logo & header (`src/components/AppHeader.tsx`)
-- Komponen `Logo` baru: ikon timbangan (Lucide `Scale`) di kotak indigo gradient + wordmark "IndexW"
-- Header: sticky, blur backdrop, padding mobile-friendly
-- Actions tetap (SettingsMenu) tapi spacing dirapikan untuk layar sempit
+### 3. Copy & identity strings
+- `src/lib/site.ts` — `SITE_NAME = "StackCap"`, `SITE_TAGLINE`, `SITE_DESC` updated to English StackCap copy.
+- `src/lib/copy.ts` — `APP_NAME = "StackCap"`, `APP_TAGLINE` updated.
+- `public/manifest.webmanifest` — `name`, `short_name`, `description`, `lang: "en"`.
+- `public/llms.txt` — rewrite header and description in English, StackCap branding.
+- `public/robots.txt` — update sitemap comment if it references the old name (verify).
+- `src/routes/__root.tsx` — title template already uses `SITE_NAME`; verify no hardcoded "IndexW" remains.
+- `src/routes/index.tsx` and `src/routes/saham.$ticker.tsx` — replace any hardcoded "IndexW" mentions in headings, meta, JSON-LD.
+- `src/routes/sitemap[.]xml.ts` — update if it embeds the name.
 
-### 4. Aset visual
-- `public/favicon.svg` baru (monogram W indigo)
-- `public/apple-touch-icon.png` (192×192) generated
-- `public/og-image.png` (1200×630) bermerek IndexW
+### 4. Theme token (small addition)
+- `src/styles.css` — add a single `--brand-accent` teal token used only by the logo SVG rim-light. No changes to primary/background/foreground.
 
-### 5. Konsistensi tipografi di komponen
-- StockRow, StatCard, QuickAddBar, FloatingFormula: angka & ticker pakai `font-mono` (JetBrains Mono), label & heading pakai sans default
-- Hapus penggunaan `font-mono` ad-hoc Tailwind default; pakai token
+## What stays the same
+- Route structure, server functions, storage, shortcuts, quotes fetching, watchlist logic.
+- Typography stack (Plus Jakarta Sans + JetBrains Mono).
+- Dark theme, primary indigo, layout, mobile responsive work already shipped.
+- No new npm dependencies (sharp remains ad-hoc for OG regen only).
 
-### 6. Mobile responsiveness pass
-- AppHeader: logo + actions stack rapi <380px, wordmark tetap visible
-- StatCard grid: sudah 1-col mobile (oke), perketat padding di <360px
-- StockRow: pastikan field ticker/shares/price tidak overflow, tombol hapus tetap tappable (min 40px)
-- QuickAddBar: full-width sticky-feel di mobile
-- FloatingFormula: bottom sheet style di mobile, panel di desktop (sudah ada — tinjau ulang spacing)
-- Footer & main padding: `px-4` mobile, `px-6` ≥sm, tetap `max-w-5xl` desktop
+## Verification
+- `bun run typecheck`
+- Manual: view `/` and `/saham/BBCA` at 390px + 1280px, confirm header logo + wordmark render, favicon updates, OG image renders new mark.
+- Grep for leftover "IndexW" / "Index Builder" / Indonesian tagline strings — must be zero.
 
-### 7. Copy
-- `src/lib/copy.ts`: ganti nama produk → IndexW di empty state, toast, dialog
-- Footer: "IndexW · Data IDX bundled · Harga via Yahoo Finance"
-
-## Detail teknis
-- Font loading via `<link>` preconnect + stylesheet di `__root.tsx` head (bukan @import CSS, biar tidak block render)
-- Tailwind v4: register `--font-sans` & `--font-mono` di `@theme inline` agar utility `font-sans` / `font-mono` otomatis pakai font baru
-- Tidak menyentuh logic (storage, quotes server fn, shortcuts) — murni branding + responsive polish
-- Tidak menambah dependensi npm
-
-## Yang TIDAK diubah
-- Logika fetch harga, perhitungan market cap & weight, storage, shortcuts
-- Struktur route dan server functions
-- Konten data IDX
-
-Setelah implement, saya akan QA cepat di viewport mobile 390px + desktop 1280px lewat preview.
+Two-step delivery: after you approve, I implement the code + copy changes first, then regenerate the PNG assets via the OG script.

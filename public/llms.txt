@@ -1,12 +1,12 @@
-# IndexW
+# StackCap
 
-> Bangun watchlist saham IDX, hitung bobot market cap (opsi free-float), dan dapatkan formula TradingView siap salin.
+> Build an IDX stock watchlist, stack market-cap weights (optional free-float), and get a ready-to-copy TradingView formula.
 
-IndexW adalah alat web indie untuk investor IDX: susun watchlist saham Indonesia, hitung bobot index custom berbasis kapitalisasi pasar (atau free-float adjusted), pantau market cap, lalu ekspor formula TradingView (mis. `IDX:BBCA*0.45 + IDX:TLKM*0.23`) untuk men-chart index buatanmu sendiri.
+StackCap is an indie web tool for IDX investors: assemble a watchlist of Indonesian stocks, compute a custom index weighted by market cap (or free-float adjusted), monitor market caps, then export a TradingView formula (e.g. `IDX:BBCA*0.45 + IDX:TLKM*0.23`) to chart your own index.
 
-Catatan data: harga diambil dari Yahoo Finance (harga close/delayed, bukan real-time). Data jumlah saham beredar di-bundle dari rilis IDX dan punya tanggal "as of" — cek di footer aplikasi.
+Data notes: prices are pulled from Yahoo Finance (close/delayed, not real-time). Shares-outstanding data is bundled from IDX releases and has an "as of" date — check the app footer.
 
 ## Pages
 
-- [Home](/): Watchlist saham IDX + kalkulator bobot index + formula TradingView.
-- [Saham](/saham/BBCA): Halaman per-emiten (mis. /saham/BBCA) dengan jumlah saham beredar dan tombol tambah ke watchlist.
+- [Home](/): IDX stock watchlist + market-cap weight calculator + TradingView formula.
+- [Stock](/saham/BBCA): Per-issuer page (e.g. /saham/BBCA) with shares outstanding and an "add to watchlist" button.

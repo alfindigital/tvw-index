@@ -6,15 +6,20 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="14" fill="url(#g)"/>
-  <!-- Scale / timbangan glyph -->
-  <g fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M32 14v36"/>
-    <path d="M20 50h24"/>
-    <!-- left pan -->
-    <path d="M14 26l-6 10h12z"/>
-    <!-- right pan -->
-    <path d="M50 26l-6 10h12z"/>
-    <!-- beam -->
-    <path d="M14 26h36"/>
+  <!-- Stacked-coin glyph: three offset elliptical cylinders, top layer rim-lit teal -->
+  <g fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Bottom layer -->
+    <ellipse cx="32" cy="48" rx="18" ry="5.5"/>
+    <path d="M14 48v-5M50 48v-5"/>
+    <path d="M14 43c0 3 8 5.5 18 5.5s18-2.5 18-5.5" opacity="0.6"/>
+    <!-- Middle layer -->
+    <ellipse cx="32" cy="36" rx="18" ry="5.5"/>
+    <path d="M14 36v-5M50 36v-5"/>
+  </g>
+  <!-- Top layer with teal rim-light -->
+  <g fill="none" stroke="#5eead4" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="32" cy="24" rx="18" ry="5.5"/>
+    <path d="M14 24v-5M50 24v-5"/>
+    <ellipse cx="32" cy="19" rx="18" ry="5.5"/>
   </g>
 </svg>
