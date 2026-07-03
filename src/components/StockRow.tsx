@@ -272,7 +272,7 @@ function StockRowImpl({
                   });
                 }}
                 placeholder="100"
-                aria-label={`Free-float persen ${stock.ticker}`}
+                aria-label={`Free-float percent ${stock.ticker}`}
                 className="h-7 w-full pr-5 text-center font-mono text-xs tabular-nums"
               />
               <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
