@@ -185,16 +185,6 @@ export function SettingsMenu({
             Copy watchlist link
           </DropdownMenuItem>
           <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              onAddEmpty();
-            }}
-          >
-            <Plus className="mr-2 h-3.5 w-3.5" />
-            Add empty row
-            <DropdownMenuShortcut>A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
             disabled={currentStocks.length === 0}
             onSelect={(e) => {
               e.preventDefault();
