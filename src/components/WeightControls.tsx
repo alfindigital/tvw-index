@@ -65,24 +65,7 @@ export function WeightControls({
         </button>
       </div>
 
-      {/* Ticker prefix */}
-      <Select
-        value={prefix === "" ? "__none__" : prefix}
-        onValueChange={(v) => onPrefixChange((v === "__none__" ? "" : v) as TickerPrefix)}
-      >
-        <SelectTrigger
-          className="h-7 w-[110px] text-xs"
-          aria-label="Ticker prefix"
-          title="Symbol prefix for TradingView formula"
-        >
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="IDX:">IDX:</SelectItem>
-          <SelectItem value="BINANCE:">BINANCE:</SelectItem>
-          <SelectItem value="__none__">No prefix</SelectItem>
-        </SelectContent>
-      </Select>
+
 
       {/* Refresh + sort */}
       <div className="ml-auto flex items-center gap-2">
