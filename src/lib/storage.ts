@@ -203,7 +203,7 @@ export function applyImport(raw: string, mode: "replace" | "merge" = "replace"):
   try {
     const data = JSON.parse(raw);
     if (!data || data.type !== "idx-basket-export") {
-      return { ok: false, error: "File tidak valid" };
+      return { ok: false, error: "Invalid file" };
     }
     const basket: BasketState = {
       stocks: Array.isArray(data.basket?.stocks) ? data.basket.stocks.map(normalizeStock) : [],

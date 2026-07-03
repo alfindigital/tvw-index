@@ -54,17 +54,17 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: "IndexW — Watchlist Saham IDX Bobot Market Cap" },
+      { title: "IndexW — IDX Stock Watchlist Market Cap Weighted" },
       {
         name: "description",
         content:
-          "Bikin watchlist saham IDX yang dibobotin market cap. Database 957+ emiten built-in, harga otomatis dari Yahoo Finance, formula TradingView siap salin.",
+          "Build an IDX stock watchlist weighted by market cap. 957+ built-in issuers, auto-prices from Yahoo Finance, ready-to-copy TradingView formula.",
       },
-      { property: "og:title", content: "IndexW — Watchlist Saham IDX" },
+      { property: "og:title", content: "IndexW — IDX Stock Watchlist" },
       {
         property: "og:description",
         content:
-          "Ketik ticker → Enter → langsung dapat market cap, weight, dan formula TradingView. Tools indie untuk investor IDX.",
+          "Type ticker → Enter → instantly get market cap, weight, and TradingView formula. Indie tool for IDX investors.",
       },
     ],
   }),
@@ -80,9 +80,9 @@ function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void 
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
           <AlertTriangle className="h-8 w-8 text-destructive" />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">Gagal memuat halaman</h1>
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Failed to load page</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Terjadi kesalahan saat memuat watchlist. Coba muat ulang halaman.
+          An error occurred while loading the watchlist. Try reloading the page.
         </p>
         {import.meta.env.DEV && error?.message && (
           <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive">
@@ -98,13 +98,13 @@ function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void 
             className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             <RefreshCw className="h-4 w-4" />
-            Coba lagi
+            Try again
           </button>
           <button
             onClick={() => window.location.reload()}
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Muat ulang
+            Reload
           </button>
         </div>
       </div>
@@ -127,12 +127,12 @@ const STALE_AFTER_MS = 5 * 60 * 1000;
 const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 
 function humanError(err: string | undefined): string {
-  if (!err) return "Gagal ambil harga";
+  if (!err) return "Failed to fetch price";
   const e = err.toLowerCase();
-  if (e.includes("404") || e.includes("not found")) return "Ticker tidak ditemukan";
-  if (e.includes("no price")) return "Tidak ada data harga";
-  if (e.includes("timeout") || e.includes("network") || e.includes("fetch")) return "Koneksi gagal";
-  return "Gagal ambil harga";
+  if (e.includes("404") || e.includes("not found")) return "Ticker not found";
+  if (e.includes("no price")) return "No price data";
+  if (e.includes("timeout") || e.includes("network") || e.includes("fetch")) return "Connection failed";
+  return "Failed to fetch price";
 }
 
 function downloadCsv(rows: EnrichedStock[], mode: WeightMode) {
@@ -166,7 +166,7 @@ function downloadCsv(rows: EnrichedStock[], mode: WeightMode) {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  toast.success("Watchlist di-export ke CSV");
+  toast.success("Watchlist exported to CSV");
 }
 
 function IndexPage() {
@@ -347,9 +347,9 @@ function IndexPage() {
     rowHandlersRef.current.delete(id);
 
     if (removed) {
-      toast.success(`${removed.ticker || "Saham"} dihapus`, {
+      toast.success(`${removed.ticker || "Saham"} removed`, {
         action: {
-          label: "Urungkan",
+          label: "Undo",
           onClick: () => {
             setStocks((cur) => {
               const copy = cur.slice();
@@ -405,7 +405,7 @@ function IndexPage() {
     const v = validateTicker(ticker);
     if (!v.ok) {
       update(id, { error: v.error });
-      if (!opts.silent) toast.error(`${ticker || "(kosong)"}: ${v.error}`);
+      if (!opts.silent) toast.error(`${ticker || "(empty)"}: ${v.error}`);
       return { ok: false, ticker, error: v.error };
     }
     const cleanTicker = v.ticker;
@@ -416,7 +416,7 @@ function IndexPage() {
       });
       const q = data.quotes[0];
       if (!q) {
-        const msg = "Tidak ada respons";
+        const msg = "No response";
         update(id, { error: msg });
         if (!opts.silent) toast.error(`${ticker}: ${msg}`);
         return { ok: false, ticker, error: msg };
@@ -467,14 +467,14 @@ function IndexPage() {
     const ticker = result.ticker;
     const existing = stocksRef.current.find((s) => s.ticker.trim().toUpperCase() === ticker);
     if (existing) {
-      toast.info(`${ticker} sudah ada di watchlist`);
+      toast.info(`${ticker} already in watchlist`);
       if (!existing.manualPrice) fetchTickerForRow(existing.id, ticker, { silent: true });
       return;
     }
     const id = crypto.randomUUID();
     const sharesFromDb = IDX_SHARES[ticker];
     if (sharesFromDb == null) {
-      toast.warning(`${ticker} tidak ada di database shares IDX — isi manual ya.`);
+      toast.warning(`${ticker} not in IDX shares database — fill manually.`);
     }
     const stock: Stock = {
       id,
@@ -505,7 +505,7 @@ function IndexPage() {
     setTimeout(() => {
       fresh.forEach((s) => fetchTickerForRow(s.id, s.ticker, { silent: true }));
     }, 0);
-    toast.success(`${fresh.length} saham dimuat`);
+    toast.success(`${fresh.length} stocks loaded`);
   }
 
   // Auto-fetch all on first mount
@@ -548,7 +548,7 @@ function IndexPage() {
       setTimeout(() => {
         additions.forEach((s) => fetchTickerForRow(s.id, s.ticker, { silent: true }));
       }, 0);
-      toast.success(`Ditambahkan dari link: ${additions.length} saham`);
+      toast.success(`Added from link: ${additions.length} stocks`);
     }
     navigate({ to: "/", search: {}, replace: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -559,7 +559,7 @@ function IndexPage() {
       toast.info(WATCHLIST_NO_TICKER_TOAST);
       return;
     }
-    const label = opts.isRetry ? "Mencoba ulang" : "Memperbarui";
+    const label = opts.isRetry ? "Retrying" : "Updating";
     const toastId = toast.loading(`${label} ${list.length} ticker…`);
     const results = await Promise.all(
       list.map(async (s) => {
@@ -570,9 +570,9 @@ function IndexPage() {
     const failed = results.filter((r) => !r.ok);
 
     if (failed.length === 0) {
-      toast.success(`Berhasil memperbarui ${results.length} ticker`, { id: toastId });
+      toast.success(`Successfully updated ${results.length} ticker`, { id: toastId });
     } else if (failed.length === results.length) {
-      toast.error(`Gagal memperbarui semua ticker (${failed.length})`, {
+      toast.error(`Failed to update all tickers (${failed.length})`, {
         id: toastId,
         description: failed
           .slice(0, 3)
@@ -580,7 +580,7 @@ function IndexPage() {
           .join(" · "),
       });
     } else {
-      toast.warning(`${results.length - failed.length} berhasil, ${failed.length} gagal`, {
+      toast.warning(`${results.length - failed.length} succeeded, ${failed.length} failed`, {
         id: toastId,
         description: failed
           .slice(0, 3)
@@ -633,7 +633,7 @@ function IndexPage() {
   const toggleAutoRefresh = useCallback(() => {
     setSettings((s) => {
       const next = !s.autoRefresh;
-      toast.success(next ? "Auto-refresh 60 detik: ON" : "Auto-refresh: OFF");
+      toast.success(next ? "Auto-refresh 60s: ON" : "Auto-refresh: OFF");
       return { ...s, autoRefresh: next };
     });
   }, []);
@@ -657,26 +657,26 @@ function IndexPage() {
   function copyFormula() {
     const f = formulaRef.current;
     if (!f) {
-      toast.info("Belum ada formula untuk disalin");
+      toast.info("No formula to copy yet");
       return;
     }
     navigator.clipboard
       .writeText(f)
-      .then(() => toast.success("Formula disalin"))
-      .catch(() => toast.error("Gagal menyalin"));
+      .then(() => toast.success("Formula copied"))
+      .catch(() => toast.error("Failed to copy"));
   }
 
   function shareWatchlist() {
     const withTicker = stocks.filter((s) => s.ticker.trim());
     if (withTicker.length === 0) {
-      toast.info("Tambah saham dulu sebelum membagikan");
+      toast.info("Add stocks first before sharing");
       return;
     }
     const url = buildShareUrl(withTicker);
     navigator.clipboard
       .writeText(url)
-      .then(() => toast.success("Link watchlist disalin", { description: url }))
-      .catch(() => toast.error("Gagal menyalin link"));
+      .then(() => toast.success("Watchlist link copied", { description: url }))
+      .catch(() => toast.error("Failed to copy link"));
   }
 
   // Global keyboard shortcuts
@@ -723,8 +723,8 @@ function IndexPage() {
               variant="ghost"
               size="icon"
               className={HEADER_ICON_BUTTON_CLASS}
-              aria-label="Bantuan & keyboard shortcut"
-              title="Bantuan & keyboard shortcut"
+              aria-label="Help & keyboard shortcuts"
+              title="Help & keyboard shortcuts"
               onClick={() => setShortcutsOpen(true)}
             >
               <Keyboard className={HEADER_ICON_CLASS} />
@@ -746,7 +746,7 @@ function IndexPage() {
       />
 
       <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pt-8">
-        <h1 className="sr-only">IndexW — Kalkulator Bobot Index Saham IDX untuk TradingView</h1>
+        <h1 className="sr-only">IndexW — IDX Stock Index Weight Calculator for TradingView</h1>
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">
@@ -757,17 +757,17 @@ function IndexPage() {
               icon={TrendingUp}
             />
             <StatCard
-              label="Perubahan Hari Ini"
+              label="Today's Change"
               icon={totalDailyChange >= 0 ? TrendingUp : Crown}
               value={
                 Object.keys(dailyChanges).length === 0
                   ? "—"
                   : `${totalDailyChange >= 0 ? "+" : ""}${(totalDailyChange * 100).toFixed(2)}%`
               }
-              sub="bobot × change"
+              sub="weight × change"
             />
             <StatCard
-              label="Bobot Terbesar"
+              label="Largest Weight"
               icon={Crown}
               value={
                 enriched.largest.weight > 0
@@ -775,7 +775,7 @@ function IndexPage() {
                   : "—"
               }
             />
-            <StatCard label="Komponen" icon={Layers} value={String(stocks.length)} />
+            <StatCard label="Components" icon={Layers} value={String(stocks.length)} />
           </div>
         </section>
 
@@ -807,10 +807,9 @@ function IndexPage() {
             ) : enriched.total === 0 && loadingIds.size === 0 ? (
               <>
                 <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4 text-center">
-                  <p className="text-sm font-medium text-foreground">Belum ada data harga</p>
+                  <p className="text-sm font-medium text-foreground">No price data yet</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Tekan ikon refresh di atas atau commit ulang ticker untuk mengambil harga
-                    terbaru.
+                    Press the refresh icon above or re-commit ticker to fetch the latest price.
                   </p>
                 </div>
                 {sortedRows.map((r) => {

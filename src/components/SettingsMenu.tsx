@@ -80,7 +80,7 @@ export function SettingsMenu({
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    toast.success("Data di-export");
+    toast.success("Data exported");
   }
 
   function handleImportClick() {
@@ -94,11 +94,11 @@ export function SettingsMenu({
     const text = await file.text();
     const result = applyImport(text, "replace");
     if (!result.ok) {
-      toast.error(result.error || "Gagal import");
+      toast.error(result.error || "Import failed");
       return;
     }
     onAfterImport();
-    toast.success(`Import sukses · ${result.basketCount} saham · ${result.templateCount} template`);
+    toast.success(`Import successful · ${result.basketCount} stocks · ${result.templateCount} template`);
   }
 
   return (
@@ -124,9 +124,9 @@ export function SettingsMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
-          {/* Tampilan */}
+          {/* Appearance */}
           <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            Tampilan
+            Appearance
           </DropdownMenuLabel>
           <DropdownMenuItem
             onSelect={(e) => {
@@ -156,7 +156,7 @@ export function SettingsMenu({
             }}
           >
             <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`} />
-            Refresh harga
+            Refresh prices
             <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -185,7 +185,7 @@ export function SettingsMenu({
             }}
           >
             <Link2 className="mr-2 h-3.5 w-3.5" />
-            Salin link watchlist
+            Copy watchlist link
           </DropdownMenuItem>
           <DropdownMenuItem
             onSelect={(e) => {
@@ -194,7 +194,7 @@ export function SettingsMenu({
             }}
           >
             <Plus className="mr-2 h-3.5 w-3.5" />
-            Tambah baris kosong
+            Add empty row
             <DropdownMenuShortcut>A</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -237,17 +237,17 @@ export function SettingsMenu({
           <AlertDialogHeader>
             <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
             <AlertDialogDescription>
-              Semua saham di watchlist saat ini akan dihapus. Template tersimpan tidak terpengaruh.
-              Tindakan ini tidak bisa dibatalkan.
+              All stocks in the current watchlist will be removed. Saved templates are unaffected.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 onReset();
                 setResetOpen(false);
-                toast.success("Watchlist direset");
+                toast.success("Watchlist reset");
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >

@@ -1,28 +1,28 @@
 // Centralized user-facing copy for watchlist states so heading,
 // empty messages, and toasts stay in sync across the UI.
 export const APP_NAME = "IndexW";
-export const APP_TAGLINE = "Watchlist saham IDX, dibobotin market cap.";
+export const APP_TAGLINE = "IDX stock watchlist, weighted by market cap.";
 
 export const WATCHLIST_LABEL = "Watchlist";
 
-export const WATCHLIST_EMPTY_TITLE = "Watchlist masih kosong";
+export const WATCHLIST_EMPTY_TITLE = "Watchlist is empty";
 export const WATCHLIST_EMPTY_HINT =
-  "Ketik ticker di atas (mis. BBCA) lalu tekan Enter untuk menambah saham pertama.";
+  "Type a ticker above (e.g. BBCA) then press Enter to add your first stock.";
 
 // Used when an action (refresh, save template) needs the watchlist to have items.
-export const WATCHLIST_EMPTY_TOAST = "Watchlist masih kosong";
+export const WATCHLIST_EMPTY_TOAST = "Watchlist is empty";
 export const WATCHLIST_NO_TICKER_TOAST =
-  "Watchlist masih kosong — belum ada ticker untuk di-refresh.";
+  "Watchlist is empty — no tickers to refresh yet.";
 
-export const TEMPLATES_EMPTY = "Belum ada template tersimpan";
+export const TEMPLATES_EMPTY = "No saved templates yet";
 
 // Template name validation
 export const TEMPLATE_NAME_MAX = 60;
 export const TEMPLATE_NAME_REQUIRED =
-  "Nama template tidak boleh kosong. Yuk, beri nama yang mudah kamu ingat.";
+  "Template name cannot be empty. Give it a memorable name.";
 export const TEMPLATE_NAME_TOO_LONG = (length: number) =>
-  `Nama template terlalu panjang (${length}/${TEMPLATE_NAME_MAX} karakter). Coba persingkat ya.`;
+  `Template name too long (${length}/${TEMPLATE_NAME_MAX} chars). Try shortening it.`;
 export const TEMPLATE_NAME_DUPLICATE = (name: string) =>
-  `Sudah ada template bernama "${name}". Pakai nama lain atau hapus template lama dulu.`;
+  `A template named "${name}" already exists. Use another name or delete the old one first.`;
 export const TEMPLATE_NAME_INVALID_FALLBACK =
-  "Nama template tidak valid. Coba periksa kembali.";
+  "Template name invalid. Please check again.";

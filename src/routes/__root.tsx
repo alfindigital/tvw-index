@@ -9,16 +9,16 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold tracking-tight text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Halaman tidak ditemukan</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Sepertinya halaman yang kamu cari sudah dipindah atau tidak pernah ada.
+          The page you're looking for seems to have been moved or never existed.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Kembali ke beranda
+            Back to home
           </Link>
         </div>
       </div>
@@ -34,7 +34,7 @@ export const Route = createRootRoute({
       // Dynamic status-bar color per color scheme.
       { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#f5f5fb" },
       { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0a0a1a" },
-      { title: `${SITE_NAME} — Watchlist Saham IDX Bobot Market Cap` },
+      { title: `${SITE_NAME} — IDX Stock Watchlist Market Cap Weighted` },
       { name: "description", content: SITE_DESC },
       { name: "author", content: SITE_NAME },
       { name: "application-name", content: SITE_NAME },
@@ -43,7 +43,7 @@ export const Route = createRootRoute({
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "mobile-web-app-capable", content: "yes" },
       // Open Graph
-      { property: "og:title", content: `${SITE_NAME} — Watchlist Saham IDX` },
+      { property: "og:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
       { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: SITE_NAME },
@@ -51,11 +51,11 @@ export const Route = createRootRoute({
       { property: "og:image", content: OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: `${SITE_NAME} — kalkulator bobot index saham IDX` },
-      { property: "og:locale", content: "id_ID" },
+      { property: "og:image:alt", content: `${SITE_NAME} — IDX stock index weight calculator` },
+      { property: "og:locale", content: "en_US" },
       // Twitter
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: `${SITE_NAME} — Watchlist Saham IDX` },
+      { name: "twitter:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
       { name: "twitter:description", content: SITE_DESC },
       { name: "twitter:image", content: OG_IMAGE },
     ],
@@ -82,7 +82,7 @@ export const Route = createRootRoute({
           description: SITE_DESC,
           applicationCategory: "FinanceApplication",
           operatingSystem: "Web",
-          inLanguage: "id-ID",
+          inLanguage: "en-US",
           offers: { "@type": "Offer", price: "0", priceCurrency: "IDR" },
         }),
       },
@@ -104,7 +104,7 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

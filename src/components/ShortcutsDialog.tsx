@@ -12,18 +12,18 @@ type Props = {
 };
 
 const ROWS: { keys: string[]; label: string }[] = [
-  { keys: ["N"], label: "Fokus ke input Tambah ticker" },
-  { keys: ["A"], label: "Tambah baris kosong" },
-  { keys: ["Enter"], label: "Tambah ticker / commit field" },
-  { keys: ["Tab"], label: "Pindah antar field" },
-  { keys: ["↑↓"], label: "Navigasi saran ticker (saat mengetik)" },
-  { keys: ["Shift", "R"], label: "Refresh semua harga" },
-  { keys: ["Shift", "F"], label: "Ganti mode bobot (Market Cap / Free-float)" },
-  { keys: ["Shift", "S"], label: "Simpan watchlist sebagai template" },
-  { keys: ["Shift", "C"], label: "Copy formula TradingView" },
+  { keys: ["N"], label: "Focus add ticker input" },
+  { keys: ["A"], label: "Add empty row" },
+  { keys: ["Enter"], label: "Add ticker / commit field" },
+  { keys: ["Tab"], label: "Move between fields" },
+  { keys: ["↑↓"], label: "Navigate ticker suggestions (while typing)" },
+  { keys: ["Shift", "R"], label: "Refresh all prices" },
+  { keys: ["Shift", "F"], label: "Toggle weight mode (Market Cap / Free-float)" },
+  { keys: ["Shift", "S"], label: "Save watchlist as template" },
+  { keys: ["Shift", "C"], label: "Copy TradingView formula" },
   { keys: ["Shift", "E"], label: "Export watchlist (CSV)" },
-  { keys: ["?"], label: "Buka daftar shortcut ini" },
-  { keys: ["Esc"], label: "Tutup dialog / menu" },
+  { keys: ["?"], label: "Open this shortcut list" },
+  { keys: ["Esc"], label: "Close dialog / menu" },
 ];
 
 function Kbd({ children }: { children: React.ReactNode }) {
@@ -40,7 +40,7 @@ export function ShortcutsDialog({ open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>Operasikan IndexW lebih cepat tanpa mouse.</DialogDescription>
+          <DialogDescription>Operate IndexW faster without a mouse.</DialogDescription>
         </DialogHeader>
         <div className="divide-y divide-border rounded-lg border border-border">
           {ROWS.map((r) => (

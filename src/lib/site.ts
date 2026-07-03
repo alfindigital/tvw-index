@@ -5,9 +5,9 @@ const DEFAULT_URL = "https://tvx.alfidx.my.id";
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
 export const SITE_NAME = "IndexW";
-export const SITE_TAGLINE = "Watchlist saham IDX, dibobotin market cap.";
+export const SITE_TAGLINE = "IDX stock watchlist, weighted by market cap.";
 export const SITE_DESC =
-  "IndexW — bangun watchlist saham IDX, hitung bobot market cap, dan dapatkan formula TradingView siap pakai.";
+  "IndexW — build an IDX stock watchlist, calculate market cap weights, and get a ready-to-use TradingView formula.";
 
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 

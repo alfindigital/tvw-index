@@ -111,8 +111,8 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
               blurTimer.current = setTimeout(() => setOpen(false), 120);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ketik ticker / cari emiten, mis. BRIS"
-            aria-label="Tambah ticker"
+            placeholder="Type ticker / search issuer, e.g. BRIS"
+            aria-label="Add ticker"
             aria-invalid={shownError ? true : undefined}
             aria-describedby={shownError ? "quickadd-error" : undefined}
             autoComplete="off"
@@ -165,7 +165,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           className="h-10 shrink-0 gap-1.5 px-3 sm:px-4"
         >
           <Plus className="h-4 w-4" />
-          <span className="hidden sm:inline">Tambah</span>
+          <span className="hidden sm:inline">Add</span>
         </Button>
       </div>
       {shownError ? (

@@ -96,7 +96,7 @@ function StockRowImpl({
           <div className="relative">
             <Input
               value={tickerDraft}
-              aria-label="Ticker saham"
+              aria-label="Stock ticker"
               onChange={(e) => handleTickerChange(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -146,7 +146,7 @@ function StockRowImpl({
                   }
                 }}
                 placeholder="0"
-                title={stock.shares ? `${formatSharesInput(stock.shares)} juta lembar` : undefined}
+                title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
                 className={`${FIELD_CLS} pr-7`}
               />
               <span className={SUFFIX_CLS}>jt{stock.manualShares ? "*" : ""}</span>
@@ -159,7 +159,7 @@ function StockRowImpl({
                 ref={priceRef}
                 type="text"
                 inputMode="numeric"
-                value={stock.price ? stock.price.toLocaleString("id-ID") : ""}
+                value={stock.price ? stock.price.toLocaleString("en-US") : ""}
                 onChange={(e) => {
                   const raw = e.target.value.replace(/\D/g, "");
                   const num = Math.min(Number(raw) || 0, 999999999999);
@@ -176,7 +176,7 @@ function StockRowImpl({
                   }
                 }}
                 placeholder="0"
-                title={stock.price ? `Rp ${stock.price.toLocaleString("id-ID")}` : undefined}
+                title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
                 className={`${FIELD_CLS} pr-9`}
               />
               <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
@@ -188,7 +188,7 @@ function StockRowImpl({
             size="icon"
             onClick={onRemove}
             className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
-            aria-label={`Hapus ${stock.ticker || "saham"}`}
+            aria-label={`Remove ${stock.ticker || "stock"}`}
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -199,7 +199,7 @@ function StockRowImpl({
       {loading ? (
         <div className="mt-2 flex items-center gap-1 text-xs text-primary">
           <Loader2 className="h-3 w-3 animate-spin" />
-          <span>Mengambil harga…</span>
+          <span>Fetching price…</span>
         </div>
       ) : stock.error ? (
         <div className="mt-2 flex items-start gap-1 text-xs text-destructive">
@@ -210,7 +210,7 @@ function StockRowImpl({
         <div className="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
           <span className="flex items-center gap-1">
             <Hand className="h-3 w-3" />
-            Harga manual
+            Manual price
           </span>
           {onEnableAuto ? (
             <button
@@ -219,13 +219,13 @@ function StockRowImpl({
               className="inline-flex items-center gap-1 rounded text-[11px] font-semibold text-primary underline-offset-2 hover:underline"
             >
               <Zap className="h-3 w-3" />
-              Pakai harga auto
+              Use auto price
             </button>
           ) : null}
         </div>
       ) : tickerDraft && !inDB && !stock.manualShares ? (
         <div className="mt-2 text-xs text-muted-foreground">
-          Tidak ada di DB IDX · isi shares manual
+          Not in IDX DB · fill shares manually
         </div>
       ) : null}
 
@@ -244,7 +244,7 @@ function StockRowImpl({
                     ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                     : "bg-rose-500/10 text-rose-700 dark:text-rose-400"
                 }`}
-                title="Perubahan vs. previous close"
+                title="Change vs. previous close"
               >
                 {dailyChange >= 0 ? (
                   <TrendingUp className="h-2.5 w-2.5" />
@@ -258,7 +258,7 @@ function StockRowImpl({
             {stale ? (
               <span
                 className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground"
-                title="Data harga sudah lebih dari 5 menit"
+                title="Price data is older than 5 minutes"
               >
                 <Clock className="h-2.5 w-2.5" />
                 Stale
