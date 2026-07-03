@@ -100,7 +100,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
                 1
               </span>
               <span>
-                Klik <strong>Copy</strong> untuk menyalin formula.
+                Click <strong>Copy</strong> to copy the formula.
               </span>
             </li>
             <li className="flex gap-3">
@@ -108,7 +108,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
                 2
               </span>
               <span>
-                Di TradingView, buka chart dan klik kolom <strong>simbol</strong> (pojok kiri-atas).
+                In TradingView, open a chart and click the <strong>symbol</strong> field (top-left corner).
               </span>
             </li>
             <li className="flex gap-3">
@@ -116,7 +116,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
                 3
               </span>
               <span>
-                <strong>Tempel</strong> formula sebagai expression, lalu tekan{" "}
+                <strong>Paste</strong> the formula as the expression, then press{" "}
                 <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">
                   Enter
                 </kbd>
