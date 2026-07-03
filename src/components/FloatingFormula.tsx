@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { HelpCircle, Share2, Check, Copy, FileCode2, Sparkles } from "lucide-react";
+import { Share2, Check, Copy, FileCode2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 type Props = {
   formula: string;
@@ -17,7 +10,6 @@ type Props = {
 
 export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   const [copied, setCopied] = useState<"formula" | "pine" | null>(null);
-  const [helpOpen, setHelpOpen] = useState(false);
   const empty = !formula;
 
   function copyText(text: string, kind: "formula" | "pine", label: string) {
@@ -36,17 +28,8 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
           <div className="flex items-center gap-2">
             <Sparkles className="h-3.5 w-3.5 text-primary" />
             <span className="text-xs font-bold uppercase tracking-[0.2em] text-foreground">
-              Your TradingView Formula
+              Result
             </span>
-            <button
-              type="button"
-              onClick={() => setHelpOpen(true)}
-              aria-label="How to use formula in TradingView"
-              title="How to use formula in TradingView"
-              className="inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
-            >
-              <HelpCircle className="h-3.5 w-3.5" />
-            </button>
           </div>
           <div className="mt-1 truncate font-mono text-sm font-medium text-foreground">
             {formula || "Add stocks to generate formula"}
@@ -87,57 +70,6 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
         </div>
       </div>
 
-      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>How to use formula in TradingView</DialogTitle>
-            <DialogDescription>
-              This formula combines multiple stocks into one weighted custom index.
-            </DialogDescription>
-          </DialogHeader>
-          <ol className="space-y-3 text-sm text-foreground">
-            <li className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                1
-              </span>
-              <span>
-                Click <strong>Copy</strong> to copy the formula.
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                2
-              </span>
-              <span>
-                In TradingView, open a chart and click the <strong>symbol</strong> field (top-left corner).
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                3
-              </span>
-              <span>
-                <strong>Paste</strong> the formula as the expression, then press{" "}
-                <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">
-                  Enter
-                </kbd>
-                .
-              </span>
-            </li>
-            <li className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
-                4
-              </span>
-              <span>
-                Symbols are automatically prefixed with{" "}
-                <span className="font-mono">IDX:</span> for the Indonesia Stock
-                Exchange.
-              </span>
-            </li>
-
-          </ol>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
