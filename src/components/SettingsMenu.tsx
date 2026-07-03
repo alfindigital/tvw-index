@@ -38,8 +38,6 @@ import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 type Props = {
   currentStocks: Stock[];
   loadingCount: number;
-  autoRefresh: boolean;
-  onToggleAutoRefresh: () => void;
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
@@ -50,8 +48,6 @@ type Props = {
 export function SettingsMenu({
   currentStocks,
   loadingCount,
-  autoRefresh,
-  onToggleAutoRefresh,
   onRefreshAll,
   onReset,
   onAfterImport,
@@ -154,24 +150,6 @@ export function SettingsMenu({
             <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`} />
             Refresh prices
             <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            onSelect={(e) => {
-              e.preventDefault();
-              onToggleAutoRefresh();
-            }}
-          >
-            <Timer className={`mr-2 h-3.5 w-3.5 ${autoRefresh ? "text-primary" : ""}`} />
-            <span className="flex-1">Auto-refresh 60s</span>
-            <span
-              className={`ml-2 rounded px-1.5 py-0.5 text-[10px] font-semibold ${
-                autoRefresh
-                  ? "bg-primary/15 text-primary"
-                  : "bg-muted text-muted-foreground"
-              }`}
-            >
-              {autoRefresh ? "ON" : "OFF"}
-            </span>
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={currentStocks.length === 0}
