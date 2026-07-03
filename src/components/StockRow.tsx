@@ -149,7 +149,7 @@ function StockRowImpl({
                 title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
                 className={`${FIELD_CLS} pr-7`}
               />
-              <span className={SUFFIX_CLS}>jt{stock.manualShares ? "*" : ""}</span>
+              <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
             </div>
           </label>
           <label className="block min-w-0 flex-1">
