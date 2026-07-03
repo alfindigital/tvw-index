@@ -1,12 +1,12 @@
-import { RefreshCw } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { RefreshCw, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import type { WeightMode } from "@/lib/weight";
 import type { SortKey } from "@/lib/storage";
 
@@ -48,7 +48,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Market Cap
+          Mcap
         </button>
         <button
           type="button"
@@ -61,7 +61,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Free-float
+          Ffloat
         </button>
       </div>
 
@@ -81,17 +81,28 @@ export function WeightControls({
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
         </Button>
-        <Select value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
-          <SelectTrigger className="h-7 w-[112px] shrink-0 text-xs sm:w-[130px]" aria-label="Sort watchlist">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="manual">Input order</SelectItem>
-            <SelectItem value="weight">Weight ↓</SelectItem>
-            <SelectItem value="mcap">Market cap ↓</SelectItem>
-            <SelectItem value="ticker">Ticker A–Z</SelectItem>
-          </SelectContent>
-        </Select>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              aria-label="Sort watchlist"
+              title="Sort watchlist"
+              className="h-7 w-7 shrink-0"
+            >
+              <ArrowUpDown className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuRadioGroup value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
+              <DropdownMenuRadioItem value="manual">Input order</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="weight">Weight ↓</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="mcap">Market cap ↓</DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="ticker">Ticker A–Z</DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
