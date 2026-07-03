@@ -58,10 +58,9 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={onShare}
               disabled={empty}
               title="Copy watchlist link"
-              className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground/15 px-2.5 text-xs font-medium text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15 text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
             >
               <Share2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Share</span>
             </button>
           ) : null}
           {pineScript ? (
@@ -70,20 +69,19 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={() => copyText(pineScript, "pine", "Pine Script")}
               disabled={empty}
               title="Copy as Pine Script v5 (for large baskets)"
-              className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground/15 px-2.5 text-xs font-medium text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
+              className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground/15 text-primary-foreground transition hover:bg-primary-foreground/25 disabled:opacity-40"
             >
               {copied === "pine" ? <Check className="h-3.5 w-3.5" /> : <FileCode2 className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{copied === "pine" ? "Copied" : "Pine"}</span>
             </button>
           ) : null}
           <button
             type="button"
             onClick={() => copyText(formula, "formula", "Formula")}
             disabled={empty}
-            className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg bg-primary-foreground px-3 text-xs font-medium text-primary transition hover:opacity-90 disabled:opacity-40"
+            title={copied === "formula" ? "Copied" : "Copy formula"}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-foreground text-primary transition hover:opacity-90 disabled:opacity-40"
           >
             {copied === "formula" ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copied === "formula" ? "Copied" : "Copy"}
           </button>
         </div>
       </div>
