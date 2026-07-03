@@ -701,11 +701,10 @@ function IndexPage() {
                 onModeChange={setMode}
                 sort={settings.sort}
                 onSortChange={setSort}
-                prefix={settings.prefix}
-                onPrefixChange={setPrefix}
                 onRefresh={refreshAll}
                 refreshing={loadingIds.size > 0}
               />
+
 
             </div>
           ) : null}
