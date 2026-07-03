@@ -25,57 +25,58 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
 
   return (
     <div className="w-full">
-      <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl bg-primary/[0.03] px-4 py-3.5 ring-1 ring-primary/15 sm:flex-row sm:items-center sm:gap-4 sm:px-5 sm:py-4 dark:bg-primary/[0.07]">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      {/* Formula box */}
+      <div className="relative overflow-hidden rounded-xl border border-primary/15 bg-primary/[0.04] dark:bg-primary/[0.08]">
         <button
           type="button"
           onClick={() => copyText(formula, "formula", "Formula")}
           disabled={empty}
-          className="line-clamp-2 min-w-0 flex-1 break-all text-left font-mono text-sm font-semibold leading-snug tracking-tight text-foreground disabled:opacity-40 sm:text-base"
-          title="Click to copy"
+          className="block w-full px-4 py-3.5 text-left font-mono text-sm font-medium leading-snug tracking-tight text-foreground disabled:opacity-40 sm:px-5 sm:py-4 sm:text-base"
+          title="Click to copy formula"
         >
-          {formulaText}
+          <span className="line-clamp-2 break-all">{formulaText}</span>
         </button>
+      </div>
 
-        <div className="flex shrink-0 items-center justify-center gap-1.5 sm:justify-start">
-          {onShare ? (
-            <IconBtn
-              onClick={onShare}
-              disabled={empty}
-              title="Share watchlist"
-              icon={<Share2 className="h-4 w-4" />}
-            />
-          ) : null}
-          {pineScript ? (
-            <IconBtn
-              onClick={() => copyText(pineScript, "pine", "Pine Script")}
-              disabled={empty}
-              active={copied === "pine"}
-              title="Copy Pine Script"
-              icon={
-                copied === "pine" ? (
-                  <Check className="h-4 w-4" />
-                ) : (
-                  <FileCode2 className="h-4 w-4" />
-                )
-              }
-            />
-          ) : null}
+      {/* Action toolbar */}
+      <div className="mt-2 flex items-center gap-2">
+        {onShare ? (
           <IconBtn
-            onClick={() => copyText(formula, "formula", "Formula")}
+            onClick={onShare}
             disabled={empty}
-            active={copied === "formula"}
-            primary
-            title="Copy formula"
+            title="Share watchlist"
+            icon={<Share2 className="h-4 w-4" />}
+          />
+        ) : null}
+        {pineScript ? (
+          <IconBtn
+            onClick={() => copyText(pineScript, "pine", "Pine Script")}
+            disabled={empty}
+            active={copied === "pine"}
+            title="Copy Pine Script"
             icon={
-              copied === "formula" ? (
+              copied === "pine" ? (
                 <Check className="h-4 w-4" />
               ) : (
-                <Copy className="h-4 w-4" />
+                <FileCode2 className="h-4 w-4" />
               )
             }
           />
-        </div>
+        ) : null}
+        <IconBtn
+          onClick={() => copyText(formula, "formula", "Formula")}
+          disabled={empty}
+          active={copied === "formula"}
+          primary
+          title="Copy formula"
+          icon={
+            copied === "formula" ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Copy className="h-4 w-4" />
+            )
+          }
+        />
       </div>
     </div>
   );
