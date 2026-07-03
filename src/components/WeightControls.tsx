@@ -61,7 +61,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Free-float
+          Ffloat
         </button>
       </div>
 
