@@ -33,9 +33,8 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
 }
 
 /**
- * Stacked-coin brand mark. Three offset elliptical cylinders viewed
- * slightly from above; top layer carries a teal rim-light for contrast
- * against the indigo tile in both light and dark modes.
+ * StackCap brand mark: clean outline of three stacked layers.
+ * Single-weight stroke, no fill, minimal and readable at all sizes.
  */
 function StackMark({ className = "" }: { className?: string }) {
   return (
@@ -49,17 +48,12 @@ function StackMark({ className = "" }: { className?: string }) {
       strokeLinejoin="round"
       aria-hidden
     >
-      {/* Bottom layer */}
-      <ellipse cx="12" cy="18" rx="7" ry="2.2" />
-      <path d="M5 18v-2M19 18v-2" />
-      <path d="M5 16c0 1.21 3.13 2.2 7 2.2s7-.99 7-2.2" opacity="0.7" />
+      {/* Top layer */}
+      <rect x="6" y="5" width="12" height="3.5" rx="1.5" />
       {/* Middle layer */}
-      <ellipse cx="12" cy="13.5" rx="7" ry="2.2" />
-      <path d="M5 13.5v-2M19 13.5v-2" />
-      {/* Top layer with teal rim-light */}
-      <ellipse cx="12" cy="9" rx="7" ry="2.2" stroke="#5eead4" strokeWidth="2" />
-      <path d="M5 9v-2M19 9v-2" stroke="#5eead4" strokeWidth="2" />
-      <ellipse cx="12" cy="7" rx="7" ry="2.2" stroke="#5eead4" strokeWidth="2" />
+      <rect x="5" y="10.25" width="14" height="3.5" rx="1.5" />
+      {/* Bottom layer */}
+      <rect x="4" y="15.5" width="16" height="3.5" rx="1.5" />
     </svg>
   );
 }
