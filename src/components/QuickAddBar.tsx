@@ -118,7 +118,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
             autoComplete="off"
             autoCapitalize="characters"
             spellCheck={false}
-            className={`h-10 w-full font-mono text-base font-semibold uppercase tracking-wider sm:text-sm ${
+            className={`h-10 w-full rounded-lg font-mono text-base font-semibold uppercase tracking-wider sm:text-sm ${
               shownError ? "border-destructive focus-visible:ring-destructive" : ""
             }`}
           />
@@ -162,7 +162,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           type="button"
           onClick={commit}
           disabled={!canAdd}
-          className="h-10 shrink-0 gap-1.5 px-3 sm:px-4"
+          className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
         >
           <Plus className="h-4 w-4" />
           <span className="hidden sm:inline">Add</span>

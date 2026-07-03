@@ -187,7 +187,7 @@ function StockRowImpl({
             variant="ghost"
             size="icon"
             onClick={onRemove}
-            className="h-10 w-10 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
+            className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
             aria-label={`Remove ${stock.ticker || "stock"}`}
           >
             <Trash2 className="h-4 w-4" />
