@@ -625,10 +625,6 @@ function IndexPage() {
     [],
   );
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
-  const setPrefix = useCallback(
-    (prefix: import("@/lib/storage").TickerPrefix) => setSettings((s) => ({ ...s, prefix })),
-    [],
-  );
 
 
   const hasRows = enriched.rows.length > 0;
@@ -705,11 +701,10 @@ function IndexPage() {
                 onModeChange={setMode}
                 sort={settings.sort}
                 onSortChange={setSort}
-                prefix={settings.prefix}
-                onPrefixChange={setPrefix}
                 onRefresh={refreshAll}
                 refreshing={loadingIds.size > 0}
               />
+
 
             </div>
           ) : null}
