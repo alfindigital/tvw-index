@@ -266,7 +266,7 @@ function StockRowImpl({
             <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
               Free-float
             </span>
-            <div className="relative w-16">
+            <div className="relative w-20">
               <Input
                 type="number"
                 inputMode="decimal"
