@@ -1,5 +1,5 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { Loader2, Trash2, AlertCircle, Hand, Zap, Clock } from "lucide-react";
+import { Loader2, Trash2, AlertCircle, Hand, Zap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCompact, formatPct } from "@/lib/format";
@@ -248,15 +248,6 @@ function StockRowImpl({
               >
                 {dailyChange >= 0 ? "+" : "−"}
                 {(Math.abs(dailyChange) * 100).toFixed(2)}%
-              </span>
-            ) : null}
-            {stale ? (
-              <span
-                className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground"
-                title="Price data is older than 5 minutes"
-              >
-                <Clock className="h-2.5 w-2.5" />
-                Stale
               </span>
             ) : null}
           </div>
