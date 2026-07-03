@@ -246,13 +246,8 @@ function StockRowImpl({
                 }`}
                 title="Change vs. previous close"
               >
-                {dailyChange >= 0 ? (
-                  <TrendingUp className="h-2.5 w-2.5" />
-                ) : (
-                  <TrendingDown className="h-2.5 w-2.5" />
-                )}
-                {dailyChange >= 0 ? "+" : ""}
-                {(dailyChange * 100).toFixed(2)}%
+                {dailyChange >= 0 ? "+" : "−"}
+                {(Math.abs(dailyChange) * 100).toFixed(2)}%
               </span>
             ) : null}
             {stale ? (
