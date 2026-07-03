@@ -21,6 +21,7 @@ import { VirtualStockList } from "@/components/VirtualStockList";
 import { FloatingFormula } from "@/components/FloatingFormula";
 import { SettingsMenu } from "@/components/SettingsMenu";
 import { TemplatesMenu } from "@/components/TemplatesMenu";
+
 import { QuickAddBar } from "@/components/QuickAddBar";
 import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { WeightControls } from "@/components/WeightControls";
