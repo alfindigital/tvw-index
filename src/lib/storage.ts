@@ -31,15 +31,18 @@ const SETTINGS_KEY = "idx-settings-v1";
 
 export type WeightModeSetting = "mcap" | "freefloat";
 export type SortKey = "manual" | "weight" | "mcap" | "ticker";
+export type TickerPrefix = "IDX:" | "BINANCE:" | "";
 
 export type AppSettings = {
   weightMode: WeightModeSetting;
   sort: SortKey;
+  prefix: TickerPrefix;
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
   weightMode: "mcap",
   sort: "manual",
+  prefix: "IDX:",
 };
 
 export function loadSettings(): AppSettings {
@@ -51,7 +54,9 @@ export function loadSettings(): AppSettings {
     return {
       weightMode: p.weightMode === "freefloat" ? "freefloat" : "mcap",
       sort: (["manual", "weight", "mcap", "ticker"] as const).includes(p.sort) ? p.sort : "manual",
+      prefix: (["IDX:", "BINANCE:", ""] as const).includes(p.prefix) ? p.prefix : "IDX:",
     };
+
   } catch {
     return { ...DEFAULT_SETTINGS };
   }
