@@ -64,8 +64,7 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
 
       <p className="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground/80">
         <Keyboard className="h-3.5 w-3.5" />
-        Tip: press <span className="font-mono text-foreground">N</span> dari mana saja untuk fokus
-        ke Quick Add.
+        Tip: press <span className="font-mono text-foreground">N</span> anywhere to focus Quick Add.
       </p>
     </div>
   );
