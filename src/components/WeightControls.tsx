@@ -48,7 +48,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Market Cap
+          Mcap
         </button>
         <button
           type="button"
