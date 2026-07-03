@@ -52,7 +52,7 @@ export const Route = createRootRoute({
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
       { property: "og:image:alt", content: `${SITE_NAME} — IDX stock index weight calculator` },
-      { property: "og:locale", content: "id_ID" },
+      { property: "og:locale", content: "en_US" },
       // Twitter
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
@@ -82,7 +82,7 @@ export const Route = createRootRoute({
           description: SITE_DESC,
           applicationCategory: "FinanceApplication",
           operatingSystem: "Web",
-          inLanguage: "id-ID",
+          inLanguage: "en-US",
           offers: { "@type": "Offer", price: "0", priceCurrency: "IDR" },
         }),
       },
@@ -104,7 +104,7 @@ export const Route = createRootRoute({
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

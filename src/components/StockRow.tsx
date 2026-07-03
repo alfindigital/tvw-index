@@ -159,7 +159,7 @@ function StockRowImpl({
                 ref={priceRef}
                 type="text"
                 inputMode="numeric"
-                value={stock.price ? stock.price.toLocaleString("id-ID") : ""}
+                value={stock.price ? stock.price.toLocaleString("en-US") : ""}
                 onChange={(e) => {
                   const raw = e.target.value.replace(/\D/g, "");
                   const num = Math.min(Number(raw) || 0, 999999999999);
@@ -176,7 +176,7 @@ function StockRowImpl({
                   }
                 }}
                 placeholder="0"
-                title={stock.price ? `Rp ${stock.price.toLocaleString("id-ID")}` : undefined}
+                title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
                 className={`${FIELD_CLS} pr-9`}
               />
               <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>

@@ -3,7 +3,7 @@ export function formatIDR(value: number): string {
   if (value >= 1e12) return `IDR ${(value / 1e12).toFixed(2)}T`;
   if (value >= 1e9) return `IDR ${(value / 1e9).toFixed(2)}M`;
   if (value >= 1e6) return `IDR ${(value / 1e6).toFixed(2)}Jt`;
-  return `IDR ${value.toLocaleString("id-ID")}`;
+  return `IDR ${value.toLocaleString("en-US")}`;
 }
 
 export function formatCompact(value: number): string {
@@ -11,7 +11,7 @@ export function formatCompact(value: number): string {
   if (value >= 1e12) return `${(value / 1e12).toFixed(2)}T`;
   if (value >= 1e9) return `${(value / 1e9).toFixed(2)}M`;
   if (value >= 1e6) return `${(value / 1e6).toFixed(2)}Jt`;
-  return value.toLocaleString("id-ID");
+  return value.toLocaleString("en-US");
 }
 
 export function formatPct(value: number): string {
@@ -21,7 +21,7 @@ export function formatPct(value: number): string {
 
 export function formatTime(ts: number | null): string {
   if (!ts) return "—";
-  return new Date(ts).toLocaleTimeString("id-ID", {
+  return new Date(ts).toLocaleTimeString("en-US", {
     hour: "2-digit",
     minute: "2-digit",
   });

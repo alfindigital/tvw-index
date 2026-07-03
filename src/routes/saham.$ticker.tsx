@@ -99,7 +99,7 @@ function EmitenPage() {
               Harga Terakhir
             </div>
             <div className="mt-1 font-mono text-lg font-semibold text-foreground">
-              {loading ? "…" : price != null ? `Rp ${price.toLocaleString("id-ID")}` : "—"}
+              {loading ? "…" : price != null ? `Rp ${price.toLocaleString("en-US")}` : "—"}
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
               Yahoo Finance · close/delayed
