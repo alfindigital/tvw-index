@@ -207,7 +207,7 @@ function StockRowImpl({
           <span className="break-words">{stock.error}</span>
         </div>
       ) : stock.manualPrice ? (
-        <div className="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+        <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
           <span className="flex items-center gap-1">
             <Hand className="h-3 w-3" />
             Manual price
@@ -238,11 +238,11 @@ function StockRowImpl({
           <div className="flex items-center gap-1.5 font-mono text-sm font-medium text-foreground">
             <span>{formatCompact(marketCap)}</span>
             {dailyChange != null ? (
-              <span
+            <span
                 className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-semibold tabular-nums ${
                   dailyChange >= 0
-                    ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
-                    : "bg-rose-500/10 text-rose-700 dark:text-rose-400"
+                    ? "bg-primary/10 text-primary"
+                    : "bg-destructive/10 text-destructive"
                 }`}
                 title="Change vs. previous close"
               >
