@@ -8,15 +8,13 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import type { WeightMode } from "@/lib/weight";
-import type { SortKey, TickerPrefix } from "@/lib/storage";
+import type { SortKey } from "@/lib/storage";
 
 type Props = {
   mode: WeightMode;
   onModeChange: (m: WeightMode) => void;
   sort: SortKey;
   onSortChange: (s: SortKey) => void;
-  prefix: TickerPrefix;
-  onPrefixChange: (p: TickerPrefix) => void;
   onRefresh: () => void;
   refreshing?: boolean;
 };
@@ -29,8 +27,6 @@ export function WeightControls({
   onModeChange,
   sort,
   onSortChange,
-  prefix,
-  onPrefixChange,
   onRefresh,
   refreshing,
 }: Props) {
