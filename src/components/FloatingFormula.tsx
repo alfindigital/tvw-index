@@ -52,7 +52,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
             {formula || "Add stocks to generate formula"}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">
           {onShare ? (
             <button
               type="button"
