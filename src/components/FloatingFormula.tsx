@@ -70,7 +70,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
               onClick={() => copyText(pineScript, "pine", "Pine Script")}
               disabled={empty}
               title="Copy as Pine Script v5 (for large baskets)"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground/80 transition hover:bg-primary-foreground/20 hover:text-primary-foreground disabled:opacity-40"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-foreground transition hover:bg-primary/10 hover:text-primary disabled:opacity-40"
             >
               {copied === "pine" ? <Check className="h-4 w-4" /> : <FileCode2 className="h-4 w-4" />}
             </button>
