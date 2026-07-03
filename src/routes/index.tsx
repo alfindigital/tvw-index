@@ -882,7 +882,7 @@ function IndexPage() {
           )}
         </section>
 
-        <footer className="mt-10 bg-transparent">
+        <footer className="mt-20 bg-transparent">
           <div className="mx-auto flex w-full max-w-5xl items-center justify-center gap-2 px-3 py-3 text-[11px] text-muted-foreground">
             <span>
               by{" "}
