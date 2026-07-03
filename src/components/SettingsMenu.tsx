@@ -8,7 +8,6 @@ import {
   RotateCcw,
   Sun,
   Moon,
-  Timer,
   Link2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";

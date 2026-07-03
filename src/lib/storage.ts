@@ -35,13 +35,11 @@ export type SortKey = "manual" | "weight" | "mcap" | "ticker";
 export type AppSettings = {
   weightMode: WeightModeSetting;
   sort: SortKey;
-  autoRefresh: boolean;
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
   weightMode: "mcap",
   sort: "manual",
-  autoRefresh: false,
 };
 
 export function loadSettings(): AppSettings {
@@ -53,7 +51,6 @@ export function loadSettings(): AppSettings {
     return {
       weightMode: p.weightMode === "freefloat" ? "freefloat" : "mcap",
       sort: (["manual", "weight", "mcap", "ticker"] as const).includes(p.sort) ? p.sort : "manual",
-      autoRefresh: Boolean(p.autoRefresh),
     };
   } catch {
     return { ...DEFAULT_SETTINGS };
