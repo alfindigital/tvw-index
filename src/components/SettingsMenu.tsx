@@ -180,11 +180,6 @@ export function SettingsMenu({
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
           </DropdownMenuItem>
-          <DropdownMenuItem disabled={currentStocks.length === 0} onSelect={onExportCsv}>
-            <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
-            Export watchlist (.csv)
-            <DropdownMenuShortcut>⇧E</DropdownMenuShortcut>
-          </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleImportClick}>
             <Upload className="mr-2 h-3.5 w-3.5" />
             Import data (.json)
