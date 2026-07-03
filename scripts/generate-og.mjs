@@ -12,16 +12,22 @@ const PUBLIC = resolve(process.cwd(), "public");
 const INDIGO = "#4f46e5";
 const DEEP = "#1e1e5a";
 const NIGHT = "#0a0a1a";
+const TEAL = "#5eead4";
 
-// Scale / timbangan glyph (matches favicon.svg), drawn in a 64-box viewBox.
-function scaleGlyph(stroke = "#ffffff", w = 3.2) {
+// Stacked-coin glyph (matches favicon.svg), drawn in a 64-box viewBox.
+function stackGlyph({ white = "#ffffff", teal = TEAL, w = 3 } = {}) {
   return `
-    <g fill="none" stroke="${stroke}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M32 14v36"/>
-      <path d="M20 50h24"/>
-      <path d="M14 26l-6 10h12z"/>
-      <path d="M50 26l-6 10h12z"/>
-      <path d="M14 26h36"/>
+    <g fill="none" stroke="${white}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="32" cy="48" rx="18" ry="5.5"/>
+      <path d="M14 48v-5M50 48v-5"/>
+      <path d="M14 43c0 3 8 5.5 18 5.5s18-2.5 18-5.5" opacity="0.6"/>
+      <ellipse cx="32" cy="36" rx="18" ry="5.5"/>
+      <path d="M14 36v-5M50 36v-5"/>
+    </g>
+    <g fill="none" stroke="${teal}" stroke-width="${w + 0.2}" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="32" cy="24" rx="18" ry="5.5"/>
+      <path d="M14 24v-5M50 24v-5"/>
+      <ellipse cx="32" cy="19" rx="18" ry="5.5"/>
     </g>`;
 }
 
@@ -42,14 +48,14 @@ const ogSvg = `
   <!-- logo tile -->
   <g transform="translate(96,96)">
     <rect width="132" height="132" rx="30" fill="url(#tile)" stroke="#ffffff" stroke-opacity="0.18" stroke-width="2"/>
-    <g transform="translate(20,20) scale(1.4)">${scaleGlyph("#ffffff", 3.4)}</g>
+    <g transform="translate(20,20) scale(1.4)">${stackGlyph({ w: 3.2 })}</g>
   </g>
   <!-- wordmark -->
-  <text x="250" y="150" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="92" font-weight="800" fill="#ffffff" letter-spacing="-2">Index<tspan fill="#c7d2fe">W</tspan></text>
-  <text x="252" y="205" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="30" font-weight="600" fill="#c7d2fe" letter-spacing="2">SAHAM IDX</text>
+  <text x="250" y="150" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="92" font-weight="800" fill="#ffffff" letter-spacing="-2">Stack<tspan fill="${TEAL}">Cap</tspan></text>
+  <text x="252" y="205" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="30" font-weight="600" fill="#c7d2fe" letter-spacing="2">IDX WATCHLIST</text>
   <!-- tagline -->
-  <text x="96" y="320" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="46" font-weight="700" fill="#ffffff">Watchlist saham IDX, dibobotin market cap.</text>
-  <text x="96" y="372" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="28" font-weight="400" fill="#a5b4fc">Ketik ticker &#8594; dapat market cap, bobot, &amp; formula TradingView.</text>
+  <text x="96" y="320" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="46" font-weight="700" fill="#ffffff">IDX watchlist, stacked by market cap.</text>
+  <text x="96" y="372" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="28" font-weight="400" fill="#a5b4fc">Type ticker &#8594; get market cap, weight, &amp; TradingView formula.</text>
   <!-- formula chip -->
   <g transform="translate(96,430)">
     <rect width="1008" height="92" rx="18" fill="#ffffff" fill-opacity="0.06" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2"/>
@@ -60,8 +66,6 @@ const ogSvg = `
 </svg>`;
 
 function iconSvg(size, { maskable = false } = {}) {
-  // Full-bleed rounded square (no transparent corners) so the icon works as
-  // both "any" and "maskable". Maskable keeps the glyph inside the safe zone.
   const pad = maskable ? 0.14 : 0.08;
   const inner = 1 - pad * 2;
   const radius = size * 0.2;
@@ -75,7 +79,7 @@ function iconSvg(size, { maskable = false } = {}) {
   </defs>
   <rect width="${size}" height="${size}" rx="${radius}" fill="url(#g)"/>
   <g transform="translate(${size * (0.5 - inner * 0.5)}, ${size * (0.5 - inner * 0.5)}) scale(${(size / 64) * inner})">
-    ${scaleGlyph("#ffffff", 3.6)}
+    ${stackGlyph({ w: 3.4 })}
   </g>
 </svg>`;
 }

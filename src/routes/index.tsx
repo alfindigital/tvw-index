@@ -54,13 +54,13 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: "IndexW — IDX Stock Watchlist Market Cap Weighted" },
+      { title: "StackCap — IDX Stock Watchlist Stacked by Market Cap" },
       {
         name: "description",
         content:
-          "Build an IDX stock watchlist weighted by market cap. 957+ built-in issuers, auto-prices from Yahoo Finance, ready-to-copy TradingView formula.",
+          "Build an IDX stock watchlist stacked by market cap. 957+ built-in issuers, auto-prices from Yahoo Finance, ready-to-copy TradingView formula.",
       },
-      { property: "og:title", content: "IndexW — IDX Stock Watchlist" },
+      { property: "og:title", content: "StackCap — IDX Stock Watchlist" },
       {
         property: "og:description",
         content:
@@ -695,7 +695,7 @@ function IndexPage() {
       />
 
       <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pt-8">
-        <h1 className="sr-only">IndexW — IDX Stock Index Weight Calculator for TradingView</h1>
+        <h1 className="sr-only">StackCap — IDX Stock Index Weight Calculator for TradingView</h1>
 
         {/* Stats */}
         <section className="overflow-hidden rounded-2xl border border-border bg-card">

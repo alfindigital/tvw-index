@@ -23,7 +23,7 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
     )}?interval=1d&range=1d`;
     const res = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; IndexW/1.0; +https://tvx.alfidx.my.id)",
+        "User-Agent": "Mozilla/5.0 (compatible; StackCap/1.0; +https://tvx.alfidx.my.id)",
         Accept: "application/json",
       },
       signal: AbortSignal.timeout(TIMEOUT_MS),
