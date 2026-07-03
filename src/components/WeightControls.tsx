@@ -8,13 +8,15 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import type { WeightMode } from "@/lib/weight";
-import type { SortKey } from "@/lib/storage";
+import type { SortKey, TickerPrefix } from "@/lib/storage";
 
 type Props = {
   mode: WeightMode;
   onModeChange: (m: WeightMode) => void;
   sort: SortKey;
   onSortChange: (s: SortKey) => void;
+  prefix: TickerPrefix;
+  onPrefixChange: (p: TickerPrefix) => void;
   onRefresh: () => void;
   refreshing?: boolean;
 };
@@ -27,6 +29,8 @@ export function WeightControls({
   onModeChange,
   sort,
   onSortChange,
+  prefix,
+  onPrefixChange,
   onRefresh,
   refreshing,
 }: Props) {
@@ -65,6 +69,22 @@ export function WeightControls({
         </button>
       </div>
 
+      {/* Ticker prefix */}
+      <Select value={prefix} onValueChange={(v) => onPrefixChange(v as TickerPrefix)}>
+        <SelectTrigger
+          className="h-7 w-[110px] text-xs"
+          aria-label="Ticker prefix"
+          title="Symbol prefix for TradingView formula"
+        >
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="IDX:">IDX:</SelectItem>
+          <SelectItem value="BINANCE:">BINANCE:</SelectItem>
+          <SelectItem value="">No prefix</SelectItem>
+        </SelectContent>
+      </Select>
+
       {/* Refresh + sort */}
       <div className="ml-auto flex items-center gap-2">
         <Button
@@ -94,3 +114,4 @@ export function WeightControls({
     </div>
   );
 }
+

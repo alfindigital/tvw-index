@@ -46,7 +46,7 @@ import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
-import { TV_PREFIX } from "@/lib/site";
+
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
@@ -150,7 +150,9 @@ function IndexPage() {
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
     sort: "manual",
+    prefix: "IDX:",
   }));
+
   const didInitialFetch = useRef(false);
   const didConsumeList = useRef(false);
   const quickAddRef = useRef<HTMLInputElement>(null);
@@ -224,8 +226,9 @@ function IndexPage() {
     }
   }, [enriched.rows, settings.sort]);
 
-  const formula = useMemo(() => buildFormula(sortedRows, TV_PREFIX), [sortedRows]);
-  const pineScript = useMemo(() => buildPineScript(sortedRows, { prefix: TV_PREFIX }), [sortedRows]);
+  const formula = useMemo(() => buildFormula(sortedRows, settings.prefix), [sortedRows, settings.prefix]);
+  const pineScript = useMemo(() => buildPineScript(sortedRows, { prefix: settings.prefix }), [sortedRows, settings.prefix]);
+
 
   // Basket-level daily change: weight × per-name % change, summed. Only names
   // with a known previousClose contribute (weight of the rest is treated as 0),
@@ -622,6 +625,11 @@ function IndexPage() {
     [],
   );
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
+  const setPrefix = useCallback(
+    (prefix: import("@/lib/storage").TickerPrefix) => setSettings((s) => ({ ...s, prefix })),
+    [],
+  );
+
 
   const hasRows = enriched.rows.length > 0;
 
@@ -697,9 +705,12 @@ function IndexPage() {
                 onModeChange={setMode}
                 sort={settings.sort}
                 onSortChange={setSort}
+                prefix={settings.prefix}
+                onPrefixChange={setPrefix}
                 onRefresh={refreshAll}
                 refreshing={loadingIds.size > 0}
               />
+
             </div>
           ) : null}
 
