@@ -75,7 +75,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setViewport(vp.width);
         setDarkMode(dark);
         const { getByText } = renderRow();
-        for (const label of ["Ticker", "Shares (Jt)", "Price (IDR)"]) {
+        for (const label of ["Ticker", "Shares (M)", "Price (IDR)"]) {
           const el = getByText(label);
           // Tailwind class encodes the floor: text-[11px] leading-4
           expect(el.className).toMatch(/text-\[11px\]|text-xs/);
@@ -89,7 +89,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         setDarkMode(dark);
         const { getByLabelText } = renderRow();
         // aria-label is specific to the row's ticker for clearer SR output.
-        const removeBtn = getByLabelText("Hapus BBCA") as HTMLButtonElement;
+        const removeBtn = getByLabelText("Remove BBCA") as HTMLButtonElement;
         expect(removeBtn.tagName).toBe("BUTTON");
         // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
         expect(removeBtn.className).toMatch(/h-10|h-9/);
@@ -104,7 +104,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         expect(inputs.length).toBeGreaterThanOrEqual(3);
         const sharesInput = inputs[1] as HTMLInputElement;
         const priceInput = inputs[2] as HTMLInputElement;
-        expect(sharesInput.getAttribute("title")).toContain("juta");
+        expect(sharesInput.getAttribute("title")).toContain("million");
         expect(priceInput.getAttribute("title")).toContain("Rp");
         // Numeric inputs must NOT truncate — clipping digits hides the value the
         // user is editing. Full value stays reachable via the `title` tooltip.
@@ -128,7 +128,7 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         const buttons = focusable.filter((el) => el.tagName === "BUTTON");
         expect(inputs).toHaveLength(3);
         expect(buttons).toHaveLength(1);
-        expect(buttons[0]?.getAttribute("aria-label")).toBe("Hapus BBCA");
+        expect(buttons[0]?.getAttribute("aria-label")).toBe("Remove BBCA");
         // No positive tabindex (would break natural order)
         for (const el of focusable) {
           const ti = el.getAttribute("tabindex");

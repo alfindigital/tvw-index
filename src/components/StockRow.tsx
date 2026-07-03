@@ -124,7 +124,7 @@ function StockRowImpl({
         {/* Shares + Price + Delete */}
         <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
           <label className="block min-w-0 flex-1">
-            <span className={LABEL_CLS}>Shares (Jt)</span>
+            <span className={LABEL_CLS}>Shares (M)</span>
             <div className="relative w-full min-w-0">
               <Input
                 type="number"
@@ -149,7 +149,7 @@ function StockRowImpl({
                 title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
                 className={`${FIELD_CLS} pr-7`}
               />
-              <span className={SUFFIX_CLS}>jt{stock.manualShares ? "*" : ""}</span>
+              <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
             </div>
           </label>
           <label className="block min-w-0 flex-1">
@@ -272,7 +272,7 @@ function StockRowImpl({
                   });
                 }}
                 placeholder="100"
-                aria-label={`Free-float persen ${stock.ticker}`}
+                aria-label={`Free-float percent ${stock.ticker}`}
                 className="h-7 w-full pr-5 text-center font-mono text-xs tabular-nums"
               />
               <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
