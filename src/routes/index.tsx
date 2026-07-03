@@ -124,7 +124,6 @@ type Quote = {
 // "stale" in the UI (small gray badge). Chosen to match the trader mental model
 // of "refresh at least every 5 minutes if you care about live prices".
 const STALE_AFTER_MS = 5 * 60 * 1000;
-const AUTO_REFRESH_INTERVAL_MS = 60 * 1000;
 
 function humanError(err: string | undefined): string {
   if (!err) return "Failed to fetch price";
