@@ -31,7 +31,7 @@ export function WeightControls({
   refreshing,
 }: Props) {
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card/60 p-2 sm:gap-3 sm:px-3">
+    <div className="flex flex-nowrap items-center gap-2 rounded-xl border border-border bg-card/60 p-2 sm:gap-3 sm:px-3">
       {/* Weighting mode */}
       <div
         className="flex rounded-lg border border-border bg-background p-0.5"
