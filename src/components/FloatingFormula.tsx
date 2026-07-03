@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { Share2, FileCode2, Copy, Check } from "lucide-react";
+import { HelpCircle, Share2, Check, Copy, FileCode2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 type Props = {
   formula: string;
@@ -10,6 +17,7 @@ type Props = {
 
 export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   const [copied, setCopied] = useState<"formula" | "pine" | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
   const empty = !formula;
 
   function copyText(text: string, kind: "formula" | "pine", label: string) {
@@ -21,97 +29,115 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
     });
   }
 
-  const formulaText = formula || "Add stocks to generate formula";
-
   return (
     <div className="w-full">
-      {/* Formula box */}
-      <div className="relative overflow-hidden rounded-xl border border-primary/15 bg-primary/[0.04] dark:bg-primary/[0.08]">
-        <button
-          type="button"
-          onClick={() => copyText(formula, "formula", "Formula")}
-          disabled={empty}
-          className="block w-full px-4 py-3.5 text-left font-mono text-sm font-medium leading-snug tracking-tight text-foreground disabled:opacity-40 sm:px-5 sm:py-4 sm:text-base"
-          title="Click to copy formula"
-        >
-          <span className="line-clamp-2 break-all">{formulaText}</span>
-        </button>
+      <div className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-primary/30 bg-primary px-5 py-4 text-primary-foreground shadow-[0_20px_50px_-20px_oklch(0.45_0.18_278_/_0.60)] sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-primary-foreground/30">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-3.5 w-3.5 text-primary-foreground/90" />
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary-foreground/90">
+              Your TradingView Formula
+            </span>
+            <button
+              type="button"
+              onClick={() => setHelpOpen(true)}
+              aria-label="How to use formula in TradingView"
+              title="How to use formula in TradingView"
+              className="inline-flex items-center text-primary-foreground/60 transition-colors hover:text-primary-foreground"
+            >
+              <HelpCircle className="h-3.5 w-3.5" />
+            </button>
+          </div>
+          <div className="mt-1 truncate font-mono text-sm font-medium text-primary-foreground">
+            {formula || "Add stocks to generate formula"}
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">
+          {onShare ? (
+            <button
+              type="button"
+              onClick={onShare}
+              disabled={empty}
+              title="Copy watchlist link"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground/80 transition hover:bg-primary-foreground/20 hover:text-primary-foreground disabled:opacity-40"
+            >
+              <Share2 className="h-4 w-4" />
+            </button>
+          ) : null}
+          {pineScript ? (
+            <button
+              type="button"
+              onClick={() => copyText(pineScript, "pine", "Pine Script")}
+              disabled={empty}
+              title="Copy as Pine Script v5 (for large baskets)"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary-foreground/20 bg-primary-foreground/10 text-primary-foreground/80 transition hover:bg-primary-foreground/20 hover:text-primary-foreground disabled:opacity-40"
+            >
+              {copied === "pine" ? <Check className="h-4 w-4" /> : <FileCode2 className="h-4 w-4" />}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => copyText(formula, "formula", "Formula")}
+            disabled={empty}
+            title={copied === "formula" ? "Copied" : "Copy formula"}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-foreground text-primary transition hover:opacity-90 disabled:opacity-40"
+          >
+            {copied === "formula" ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
 
-      {/* Action toolbar */}
-      <div className="mt-2 flex items-center gap-2">
-        {onShare ? (
-          <IconBtn
-            onClick={onShare}
-            disabled={empty}
-            title="Share watchlist"
-            icon={<Share2 className="h-4 w-4" />}
-          />
-        ) : null}
-        {pineScript ? (
-          <IconBtn
-            onClick={() => copyText(pineScript, "pine", "Pine Script")}
-            disabled={empty}
-            active={copied === "pine"}
-            title="Copy Pine Script"
-            icon={
-              copied === "pine" ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <FileCode2 className="h-4 w-4" />
-              )
-            }
-          />
-        ) : null}
-        <IconBtn
-          onClick={() => copyText(formula, "formula", "Formula")}
-          disabled={empty}
-          active={copied === "formula"}
-          primary
-          title="Copy formula"
-          icon={
-            copied === "formula" ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Copy className="h-4 w-4" />
-            )
-          }
-        />
-      </div>
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>How to use formula in TradingView</DialogTitle>
+            <DialogDescription>
+              This formula combines multiple stocks into one weighted custom index.
+            </DialogDescription>
+          </DialogHeader>
+          <ol className="space-y-3 text-sm text-foreground">
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                1
+              </span>
+              <span>
+                Click <strong>Copy</strong> to copy the formula.
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                2
+              </span>
+              <span>
+                In TradingView, open a chart and click the <strong>symbol</strong> field (top-left corner).
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                3
+              </span>
+              <span>
+                <strong>Paste</strong> the formula as the expression, then press{" "}
+                <kbd className="rounded border border-border bg-muted px-1 py-0.5 font-mono text-[10px]">
+                  Enter
+                </kbd>
+                .
+              </span>
+            </li>
+            <li className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                4
+              </span>
+              <span>
+                Symbols are automatically prefixed with{" "}
+                <span className="font-mono">IDX:</span> for the Indonesia Stock
+                Exchange.
+              </span>
+            </li>
+
+          </ol>
+        </DialogContent>
+      </Dialog>
     </div>
-  );
-}
-
-function IconBtn({
-  onClick,
-  disabled,
-  active,
-  primary,
-  title,
-  icon,
-}: {
-  onClick: () => void;
-  disabled?: boolean;
-  active?: boolean;
-  primary?: boolean;
-  title: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className={`inline-flex h-9 w-9 items-center justify-center rounded-lg transition ${
-        primary
-          ? "bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-40"
-          : active
-            ? "bg-primary/10 text-primary"
-            : "border border-border bg-background text-muted-foreground hover:border-primary/30 hover:text-foreground disabled:opacity-40"
-      }`}
-    >
-      {icon}
-    </button>
   );
 }
