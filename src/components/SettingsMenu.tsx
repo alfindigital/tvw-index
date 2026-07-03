@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Download,
-  FileSpreadsheet,
   Upload,
   Settings as SettingsIcon,
   RefreshCw,
