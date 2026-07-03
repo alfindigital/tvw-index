@@ -73,7 +73,7 @@ function EmitenPage() {
         </Link>
 
         <header className="mt-6">
-          <h1 className="font-mono text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             {t}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">

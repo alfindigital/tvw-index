@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 import {
   Download,
-  FileSpreadsheet,
   Upload,
   Settings as SettingsIcon,
   RefreshCw,
@@ -41,7 +40,6 @@ type Props = {
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
-  onExportCsv: () => void;
   onShareLink: () => void;
 };
 
@@ -51,7 +49,6 @@ export function SettingsMenu({
   onRefreshAll,
   onReset,
   onAfterImport,
-  onExportCsv,
   onShareLink,
 }: Props) {
   const [resetOpen, setResetOpen] = useState(false);
@@ -182,11 +179,6 @@ export function SettingsMenu({
           <DropdownMenuItem onSelect={handleExport}>
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
-          </DropdownMenuItem>
-          <DropdownMenuItem disabled={currentStocks.length === 0} onSelect={onExportCsv}>
-            <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
-            Export watchlist (.csv)
-            <DropdownMenuShortcut>⇧E</DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleImportClick}>
             <Upload className="mr-2 h-3.5 w-3.5" />
