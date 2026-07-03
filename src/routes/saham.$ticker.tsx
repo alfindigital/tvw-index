@@ -19,13 +19,13 @@ export const Route = createFileRoute("/saham/$ticker")({
     const t = (params.ticker || "").toUpperCase().replace(/\.JK$/i, "");
     const shares = IDX_SHARES[t];
     const desc = shares
-      ? `${t}: ${formatCompact(shares * 1_000_000)} lembar saham beredar. Hitung market cap & bobot index, lalu tambahkan ${t} ke watchlist TradingView kamu di ${SITE_NAME}.`
-      : `Data saham ${t} di IDX: hitung market cap, bobot index, dan formula TradingView di ${SITE_NAME}.`;
+      ? `${t}: ${formatCompact(shares * 1_000_000)} shares outstanding. Calculate market cap & index weight, then add ${t} to your TradingView watchlist on ${SITE_NAME}.`
+      : `${t} IDX stock data: calculate market cap, index weight, and TradingView formula on ${SITE_NAME}.`;
     return {
       meta: [
-        { title: `${t} — Saham Beredar & Market Cap IDX | ${SITE_NAME}` },
+        { title: `${t} — Shares Outstanding & Market Cap IDX | ${SITE_NAME}` },
         { name: "description", content: desc },
-        { property: "og:title", content: `${t} — Saham IDX | ${SITE_NAME}` },
+        { property: "og:title", content: `${t} — IDX Stock | ${SITE_NAME}` },
         { property: "og:description", content: desc },
         { property: "og:url", content: `${SITE_URL}/saham/${t}` },
       ],
@@ -69,7 +69,7 @@ function EmitenPage() {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
-          Kembali ke watchlist
+          Back to watchlist
         </Link>
 
         <header className="mt-6">
@@ -77,7 +77,7 @@ function EmitenPage() {
             {t}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Saham Bursa Efek Indonesia (IDX) · simbol TradingView{" "}
+            Indonesia Stock Exchange (IDX) · TradingView symbol{" "}
             <span className="font-mono text-foreground">IDX:{t}</span>
           </p>
         </header>
@@ -85,7 +85,7 @@ function EmitenPage() {
         <section className="mt-8 grid gap-3 sm:grid-cols-3">
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Saham Beredar
+              Shares Outstanding
             </div>
             <div className="mt-1 font-mono text-lg font-semibold text-foreground">
               {sharesM != null ? formatCompact(sharesM * 1_000_000) : "—"}
@@ -96,7 +96,7 @@ function EmitenPage() {
           </div>
           <div className="rounded-2xl border border-border bg-card p-4">
             <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Harga Terakhir
+              Last Price
             </div>
             <div className="mt-1 font-mono text-lg font-semibold text-foreground">
               {loading ? "…" : price != null ? `Rp ${price.toLocaleString("en-US")}` : "—"}
@@ -123,25 +123,25 @@ function EmitenPage() {
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow transition-colors hover:bg-primary/90"
           >
             <Plus className="h-4 w-4" />
-            Tambah {t} ke watchlist
+            Add {t} to watchlist
           </Link>
         </div>
 
         <section className="mt-10 space-y-3 text-sm leading-relaxed text-muted-foreground">
           <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
             <TrendingUp className="h-4 w-4 text-primary" />
-            Tentang {t} di {SITE_NAME}
+            About {t} on {SITE_NAME}
           </h2>
           <p>
-            {SITE_NAME} membantu kamu menyusun watchlist saham IDX yang dibobotin berdasarkan
-            kapitalisasi pasar (atau free-float adjusted), lalu menghasilkan formula TradingView
-            siap salin. Tambahkan {t} bersama emiten lain untuk membangun index custom-mu sendiri
-            dan men-chart-nya di TradingView.
+            {SITE_NAME} helps you build an IDX stock watchlist weighted by
+            market cap (or free-float adjusted), then generates a ready-to-use TradingView
+            formula. Add {t} along with other issuers to build your own custom index
+            and chart it on TradingView.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            Catatan: jumlah saham beredar bersumber dari data IDX (per {SHARES_AS_OF}) dan dapat
-            berubah akibat aksi korporasi. Harga berasal dari Yahoo Finance dan bersifat
-            delayed/penutupan, bukan real-time. Bukan rekomendasi investasi.
+            Note: shares outstanding are sourced from IDX data (as of {SHARES_AS_OF}) and may
+            change due to corporate actions. Prices come from Yahoo Finance and are
+            delayed/closing, not real-time. Not investment advice.
           </p>
         </section>
       </main>

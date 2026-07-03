@@ -5,12 +5,12 @@ export const APP_TAGLINE = "IDX stock watchlist, weighted by market cap.";
 
 export const WATCHLIST_LABEL = "Watchlist";
 
-export const WATCHLIST_EMPTY_TITLE = "Watchlist masih kosong";
+export const WATCHLIST_EMPTY_TITLE = "Watchlist is empty";
 export const WATCHLIST_EMPTY_HINT =
   "Type a ticker above (e.g. BBCA) then press Enter to add your first stock.";
 
 // Used when an action (refresh, save template) needs the watchlist to have items.
-export const WATCHLIST_EMPTY_TOAST = "Watchlist masih kosong";
+export const WATCHLIST_EMPTY_TOAST = "Watchlist is empty";
 export const WATCHLIST_NO_TICKER_TOAST =
   "Watchlist is empty — no tickers to refresh yet.";
 
@@ -21,7 +21,7 @@ export const TEMPLATE_NAME_MAX = 60;
 export const TEMPLATE_NAME_REQUIRED =
   "Template name cannot be empty. Give it a memorable name.";
 export const TEMPLATE_NAME_TOO_LONG = (length: number) =>
-  `Nama template terlalu panjang (${length}/${TEMPLATE_NAME_MAX} chars). Try shortening it.`;
+  `Template name too long (${length}/${TEMPLATE_NAME_MAX} chars). Try shortening it.`;
 export const TEMPLATE_NAME_DUPLICATE = (name: string) =>
   `A template named "${name}" already exists. Use another name or delete the old one first.`;
 export const TEMPLATE_NAME_INVALID_FALLBACK =

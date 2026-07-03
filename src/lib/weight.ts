@@ -144,7 +144,7 @@ export function buildPineScript(
   const name = (opts.name ?? "IndexW Basket").replace(/"/g, "'");
   const clean = rows.filter((r) => r.ticker && r.weight > 0);
   if (clean.length === 0) {
-    return `//@version=5\nindicator("${name}", overlay=false)\n// Watchlist kosong — tambah saham dulu.`;
+    return `//@version=5\nindicator("${name}", overlay=false)\n// Watchlist empty — add stocks first.`;
   }
   const lines: string[] = [];
   lines.push(`//@version=5`);
