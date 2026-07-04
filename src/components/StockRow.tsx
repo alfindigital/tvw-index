@@ -121,6 +121,37 @@ function StockRowImpl({
           </div>
         </div>
 
+        {/* Shares — row 2 on mobile (col-span-3); 2nd slot on desktop flex */}
+        <label className="col-span-3 row-start-2 block min-w-0 sm:flex-1 sm:col-auto sm:row-auto">
+          <span className={LABEL_CLS}>Shares (M)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={formatSharesInput(stock.shares)}
+              onChange={(e) =>
+                onChange({
+                  shares: Number(e.target.value) || 0,
+                  manualShares: true,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  priceRef.current?.focus();
+                  priceRef.current?.select();
+                }
+              }}
+              placeholder="0"
+              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+              className={`${FIELD_CLS} pr-7`}
+            />
+            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+          </div>
+        </label>
+
         {/* Price */}
         <label className="block min-w-0 sm:flex-1">
           <span className={LABEL_CLS}>Price (IDR)</span>
@@ -164,37 +195,6 @@ function StockRowImpl({
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-
-        {/* Shares — spans all 3 columns on mobile; flex item on desktop */}
-        <label className="col-span-3 block min-w-0 sm:flex-1 sm:col-auto">
-          <span className={LABEL_CLS}>Shares (M)</span>
-          <div className="relative w-full min-w-0">
-            <Input
-              type="number"
-              inputMode="decimal"
-              min={0}
-              step="0.01"
-              value={formatSharesInput(stock.shares)}
-              onChange={(e) =>
-                onChange({
-                  shares: Number(e.target.value) || 0,
-                  manualShares: true,
-                })
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  priceRef.current?.focus();
-                  priceRef.current?.select();
-                }
-              }}
-              placeholder="0"
-              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
-              className={`${FIELD_CLS} pr-7`}
-            />
-            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
-          </div>
-        </label>
       </div>
 
       {/* Inline status */}
