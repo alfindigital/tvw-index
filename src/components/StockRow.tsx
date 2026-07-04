@@ -86,10 +86,10 @@ function StockRowImpl({
   const showFreeFloat = weightMode === "freefloat";
 
   return (
-    <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
-      {/* Mobile: ticker on row 1; shares | price | delete on row 2.
-          Desktop: one row with ticker | shares | price | delete. */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
+      <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+      {/* Mobile: grid — row 1 = ticker | price | delete; row 2 = shares full-width.
+          Desktop: flex row — ticker | shares | price | delete. */}
+      <div className="grid grid-cols-[1fr_1fr_auto] gap-1.5 sm:flex sm:flex-row sm:items-end sm:gap-2">
         {/* Ticker */}
         <div className="min-w-0 sm:flex-1">
           <div className={LABEL_CLS}>Ticker</div>
@@ -121,78 +121,80 @@ function StockRowImpl({
           </div>
         </div>
 
-        {/* Shares + Price + Delete */}
-        <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
-          <label className="block min-w-0 flex-1">
-            <span className={LABEL_CLS}>Shares (M)</span>
-            <div className="relative w-full min-w-0">
-              <Input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                value={formatSharesInput(stock.shares)}
-                onChange={(e) =>
-                  onChange({
-                    shares: Number(e.target.value) || 0,
-                    manualShares: true,
-                  })
+        {/* Shares — row 2 on mobile (col-span-3); 2nd slot on desktop flex */}
+        <label className="col-span-3 row-start-2 block min-w-0 sm:flex-1 sm:col-auto sm:row-auto">
+          <span className={LABEL_CLS}>Shares (M)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={formatSharesInput(stock.shares)}
+              onChange={(e) =>
+                onChange({
+                  shares: Number(e.target.value) || 0,
+                  manualShares: true,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  priceRef.current?.focus();
+                  priceRef.current?.select();
                 }
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    priceRef.current?.focus();
-                    priceRef.current?.select();
-                  }
-                }}
-                placeholder="0"
-                title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
-                className={`${FIELD_CLS} pr-7`}
-              />
-              <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
-            </div>
-          </label>
-          <label className="block min-w-0 flex-1">
-            <span className={LABEL_CLS}>Price (IDR)</span>
-            <div className="relative w-full min-w-0">
-              <Input
-                ref={priceRef}
-                type="text"
-                inputMode="numeric"
-                value={stock.price ? stock.price.toLocaleString("en-US") : ""}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/\D/g, "");
-                  const num = Math.min(Number(raw) || 0, 999999999999);
-                  onChange({
-                    price: num,
-                    manualPrice: true,
-                  });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    (e.target as HTMLInputElement).blur();
-                    onCommitPrice?.();
-                  }
-                }}
-                placeholder="0"
-                title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
-                className={`${FIELD_CLS} pr-9`}
-              />
-              <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
-            </div>
-          </label>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onRemove}
-            className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
-            aria-label={`Remove ${stock.ticker || "stock"}`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+              }}
+              placeholder="0"
+              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+              className={`${FIELD_CLS} pr-7`}
+            />
+            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+          </div>
+        </label>
+
+        {/* Price */}
+        <label className="block min-w-0 sm:flex-1">
+          <span className={LABEL_CLS}>Price (IDR)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              ref={priceRef}
+              type="text"
+              inputMode="numeric"
+              value={stock.price ? stock.price.toLocaleString("en-US") : ""}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "");
+                const num = Math.min(Number(raw) || 0, 999999999999);
+                onChange({
+                  price: num,
+                  manualPrice: true,
+                });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  (e.target as HTMLInputElement).blur();
+                  onCommitPrice?.();
+                }
+              }}
+              placeholder="0"
+              title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
+              className={`${FIELD_CLS} pr-9`}
+            />
+            <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
+          </div>
+        </label>
+
+        {/* Delete */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onRemove}
+          className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
+          aria-label={`Remove ${stock.ticker || "stock"}`}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Inline status */}
