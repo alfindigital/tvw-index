@@ -86,89 +86,43 @@ function StockRowImpl({
   const showFreeFloat = weightMode === "freefloat";
 
   return (
-    <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+      <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
       {/* Mobile: ticker | price | delete on row 1; shares full-width on row 2.
           Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-        {/* Row 1: Ticker | Price | Delete */}
-        <div className="grid grid-cols-[1fr_1fr_auto] items-end gap-1.5 sm:contents">
-          {/* Ticker */}
-          <div className="min-w-0 sm:flex-1">
-            <div className={LABEL_CLS}>Ticker</div>
-            <div className="relative">
-              <Input
-                value={tickerDraft}
-                aria-label="Stock ticker"
-                onChange={(e) => handleTickerChange(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    commit();
-                    (e.target as HTMLInputElement).blur();
-                  }
-                }}
-                onBlur={() => {
-                  if (tickerDraft !== stock.ticker) commit();
-                }}
-                placeholder="TICKER"
-                autoComplete="off"
-                autoCapitalize="characters"
-                spellCheck={false}
-                title={tickerDraft || undefined}
-                className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
-              />
-              {loading ? (
-                <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-              ) : null}
-            </div>
+        {/* Ticker — mobile row 1, desktop left */}
+        <div className="order-1 min-w-0 sm:flex-1 sm:order-none">
+          <div className={LABEL_CLS}>Ticker</div>
+          <div className="relative">
+            <Input
+              value={tickerDraft}
+              aria-label="Stock ticker"
+              onChange={(e) => handleTickerChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  commit();
+                  (e.target as HTMLInputElement).blur();
+                }
+              }}
+              onBlur={() => {
+                if (tickerDraft !== stock.ticker) commit();
+              }}
+              placeholder="TICKER"
+              autoComplete="off"
+              autoCapitalize="characters"
+              spellCheck={false}
+              title={tickerDraft || undefined}
+              className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
+            />
+            {loading ? (
+              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+            ) : null}
           </div>
-
-          {/* Price */}
-          <label className="block min-w-0">
-            <span className={LABEL_CLS}>Price (IDR)</span>
-            <div className="relative w-full min-w-0">
-              <Input
-                ref={priceRef}
-                type="text"
-                inputMode="numeric"
-                value={stock.price ? stock.price.toLocaleString("en-US") : ""}
-                onChange={(e) => {
-                  const raw = e.target.value.replace(/\D/g, "");
-                  const num = Math.min(Number(raw) || 0, 999999999999);
-                  onChange({
-                    price: num,
-                    manualPrice: true,
-                  });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    (e.target as HTMLInputElement).blur();
-                    onCommitPrice?.();
-                  }
-                }}
-                placeholder="0"
-                title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
-                className={`${FIELD_CLS} pr-9`}
-              />
-              <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
-            </div>
-          </label>
-
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onRemove}
-            className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
-            aria-label={`Remove ${stock.ticker || "stock"}`}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
         </div>
 
-        {/* Row 2: Shares (mobile only; desktop flows inside the sm:flex-row above via sm:contents) */}
-        <label className="block min-w-0 sm:hidden">
+        {/* Shares — mobile row 2 (full width), desktop 2nd slot */}
+        <label className="order-4 block min-w-0 sm:flex-1 sm:order-none">
           <span className={LABEL_CLS}>Shares (M)</span>
           <div className="relative w-full min-w-0">
             <Input
@@ -198,36 +152,49 @@ function StockRowImpl({
           </div>
         </label>
 
-        {/* Desktop Shares (hidden on mobile, shown in sm:flex-row via sm:contents wrapper) */}
-        <label className="hidden min-w-0 flex-1 sm:block">
-          <span className={LABEL_CLS}>Shares (M)</span>
+        {/* Price — mobile row 1, desktop 3rd slot */}
+        <label className="order-2 block min-w-0 sm:flex-1 sm:order-none">
+          <span className={LABEL_CLS}>Price (IDR)</span>
           <div className="relative w-full min-w-0">
             <Input
-              type="number"
-              inputMode="decimal"
-              min={0}
-              step="0.01"
-              value={formatSharesInput(stock.shares)}
-              onChange={(e) =>
+              ref={priceRef}
+              type="text"
+              inputMode="numeric"
+              value={stock.price ? stock.price.toLocaleString("en-US") : ""}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "");
+                const num = Math.min(Number(raw) || 0, 999999999999);
                 onChange({
-                  shares: Number(e.target.value) || 0,
-                  manualShares: true,
-                })
-              }
+                  price: num,
+                  manualPrice: true,
+                });
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
-                  priceRef.current?.focus();
-                  priceRef.current?.select();
+                  (e.target as HTMLInputElement).blur();
+                  onCommitPrice?.();
                 }
               }}
               placeholder="0"
-              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
-              className={`${FIELD_CLS} pr-7`}
+              title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
+              className={`${FIELD_CLS} pr-9`}
             />
-            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+            <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
           </div>
         </label>
+
+        {/* Delete — mobile row 1, desktop right */}
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={onRemove}
+          className="order-3 h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9 sm:order-none"
+          aria-label={`Remove ${stock.ticker || "stock"}`}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
 
       {/* Inline status */}
