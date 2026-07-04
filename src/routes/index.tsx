@@ -8,9 +8,6 @@ import {
   AlertTriangle,
   RefreshCw,
   Keyboard,
-  Twitter,
-  Send,
-  Instagram,
 } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
