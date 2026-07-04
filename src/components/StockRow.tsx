@@ -91,39 +91,51 @@ function StockRowImpl({
           Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
         {/* Ticker */}
-        <div className="min-w-0 sm:flex-1">
+        <div className="flex flex-col gap-1 min-w-0 sm:flex-1">
           <div className={LABEL_CLS}>Ticker</div>
-          <div className="relative">
-            <Input
-              value={tickerDraft}
-              aria-label="Stock ticker"
-              onChange={(e) => handleTickerChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  commit();
-                  (e.target as HTMLInputElement).blur();
-                }
-              }}
-              onBlur={() => {
-                if (tickerDraft !== stock.ticker) commit();
-              }}
-              placeholder="TICKER"
-              autoComplete="off"
-              autoCapitalize="characters"
-              spellCheck={false}
-              title={tickerDraft || undefined}
-              className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
-            />
-            {loading ? (
-              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-            ) : null}
+          <div className="flex items-end gap-1.5">
+            <div className="relative flex-1 min-w-0">
+              <Input
+                value={tickerDraft}
+                aria-label="Stock ticker"
+                onChange={(e) => handleTickerChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    commit();
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}
+                onBlur={() => {
+                  if (tickerDraft !== stock.ticker) commit();
+                }}
+                placeholder="TICKER"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                title={tickerDraft || undefined}
+                className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
+              />
+              {loading ? (
+                <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+              ) : null}
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={onRemove}
+              className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:hidden"
+              aria-label={`Remove ${stock.ticker || "stock"}`}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
         {/* Shares + Price + Delete */}
         <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
-          <label className="block min-w-0 flex-1">
+          <label className="block min-w-0 flex-[2] sm:flex-1">
             <span className={LABEL_CLS}>Shares (M)</span>
             <div className="relative w-full min-w-0">
               <Input
@@ -187,7 +199,7 @@ function StockRowImpl({
             variant="ghost"
             size="icon"
             onClick={onRemove}
-            className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
+            className="hidden h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:inline-flex sm:h-9 sm:w-9"
             aria-label={`Remove ${stock.ticker || "stock"}`}
           >
             <Trash2 className="h-4 w-4" />
