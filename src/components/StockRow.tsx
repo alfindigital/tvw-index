@@ -87,72 +87,44 @@ function StockRowImpl({
 
   return (
     <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
-      {/* Mobile: ticker on row 1; shares | price | delete on row 2.
+      {/* Mobile: ticker | price | delete on row 1; shares full-width on row 2.
           Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-        {/* Ticker */}
-        <div className="min-w-0 sm:flex-1">
-          <div className={LABEL_CLS}>Ticker</div>
-          <div className="relative">
-            <Input
-              value={tickerDraft}
-              aria-label="Stock ticker"
-              onChange={(e) => handleTickerChange(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  commit();
-                  (e.target as HTMLInputElement).blur();
-                }
-              }}
-              onBlur={() => {
-                if (tickerDraft !== stock.ticker) commit();
-              }}
-              placeholder="TICKER"
-              autoComplete="off"
-              autoCapitalize="characters"
-              spellCheck={false}
-              title={tickerDraft || undefined}
-              className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
-            />
-            {loading ? (
-              <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
-            ) : null}
-          </div>
-        </div>
-
-        {/* Shares + Price + Delete */}
-        <div className="flex items-end gap-1.5 sm:flex-[2] sm:gap-2">
-          <label className="block min-w-0 flex-1">
-            <span className={LABEL_CLS}>Shares (M)</span>
-            <div className="relative w-full min-w-0">
+        {/* Row 1: Ticker | Price | Delete */}
+        <div className="grid grid-cols-[1fr_1fr_auto] items-end gap-1.5 sm:contents">
+          {/* Ticker */}
+          <div className="min-w-0 sm:flex-1">
+            <div className={LABEL_CLS}>Ticker</div>
+            <div className="relative">
               <Input
-                type="number"
-                inputMode="decimal"
-                min={0}
-                step="0.01"
-                value={formatSharesInput(stock.shares)}
-                onChange={(e) =>
-                  onChange({
-                    shares: Number(e.target.value) || 0,
-                    manualShares: true,
-                  })
-                }
+                value={tickerDraft}
+                aria-label="Stock ticker"
+                onChange={(e) => handleTickerChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    priceRef.current?.focus();
-                    priceRef.current?.select();
+                    commit();
+                    (e.target as HTMLInputElement).blur();
                   }
                 }}
-                placeholder="0"
-                title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
-                className={`${FIELD_CLS} pr-7`}
+                onBlur={() => {
+                  if (tickerDraft !== stock.ticker) commit();
+                }}
+                placeholder="TICKER"
+                autoComplete="off"
+                autoCapitalize="characters"
+                spellCheck={false}
+                title={tickerDraft || undefined}
+                className={`${FIELD_CLS} truncate pr-9 font-semibold uppercase tracking-wider`}
               />
-              <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+              {loading ? (
+                <Loader2 className="absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
+              ) : null}
             </div>
-          </label>
-          <label className="block min-w-0 flex-1">
+          </div>
+
+          {/* Price */}
+          <label className="block min-w-0">
             <span className={LABEL_CLS}>Price (IDR)</span>
             <div className="relative w-full min-w-0">
               <Input
@@ -182,6 +154,7 @@ function StockRowImpl({
               <span className={SUFFIX_CLS}>IDR{stock.manualPrice ? "*" : ""}</span>
             </div>
           </label>
+
           <Button
             type="button"
             variant="ghost"
@@ -193,6 +166,68 @@ function StockRowImpl({
             <Trash2 className="h-4 w-4" />
           </Button>
         </div>
+
+        {/* Row 2: Shares (mobile only; desktop flows inside the sm:flex-row above via sm:contents) */}
+        <label className="block min-w-0 sm:hidden">
+          <span className={LABEL_CLS}>Shares (M)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={formatSharesInput(stock.shares)}
+              onChange={(e) =>
+                onChange({
+                  shares: Number(e.target.value) || 0,
+                  manualShares: true,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  priceRef.current?.focus();
+                  priceRef.current?.select();
+                }
+              }}
+              placeholder="0"
+              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+              className={`${FIELD_CLS} pr-7`}
+            />
+            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+          </div>
+        </label>
+
+        {/* Desktop Shares (hidden on mobile, shown in sm:flex-row via sm:contents wrapper) */}
+        <label className="hidden min-w-0 flex-1 sm:block">
+          <span className={LABEL_CLS}>Shares (M)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={formatSharesInput(stock.shares)}
+              onChange={(e) =>
+                onChange({
+                  shares: Number(e.target.value) || 0,
+                  manualShares: true,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  priceRef.current?.focus();
+                  priceRef.current?.select();
+                }
+              }}
+              placeholder="0"
+              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+              className={`${FIELD_CLS} pr-7`}
+            />
+            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+          </div>
+        </label>
       </div>
 
       {/* Inline status */}
