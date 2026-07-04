@@ -87,11 +87,11 @@ function StockRowImpl({
 
   return (
       <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
-      {/* Mobile: ticker | price | delete on row 1; shares full-width on row 2.
-          Desktop: one row with ticker | shares | price | delete. */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
-        {/* Ticker — mobile row 1, desktop left */}
-        <div className="order-1 min-w-0 sm:flex-1 sm:order-none">
+      {/* Mobile: grid — row 1 = ticker | price | delete; row 2 = shares full-width.
+          Desktop: flex row — ticker | shares | price | delete. */}
+      <div className="grid grid-cols-[1fr_1fr_auto] gap-1.5 sm:flex sm:flex-row sm:items-end sm:gap-2">
+        {/* Ticker */}
+        <div className="min-w-0 sm:flex-1">
           <div className={LABEL_CLS}>Ticker</div>
           <div className="relative">
             <Input
@@ -121,39 +121,8 @@ function StockRowImpl({
           </div>
         </div>
 
-        {/* Shares — mobile row 2 (full width), desktop 2nd slot */}
-        <label className="order-4 block min-w-0 sm:flex-1 sm:order-none">
-          <span className={LABEL_CLS}>Shares (M)</span>
-          <div className="relative w-full min-w-0">
-            <Input
-              type="number"
-              inputMode="decimal"
-              min={0}
-              step="0.01"
-              value={formatSharesInput(stock.shares)}
-              onChange={(e) =>
-                onChange({
-                  shares: Number(e.target.value) || 0,
-                  manualShares: true,
-                })
-              }
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  priceRef.current?.focus();
-                  priceRef.current?.select();
-                }
-              }}
-              placeholder="0"
-              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
-              className={`${FIELD_CLS} pr-7`}
-            />
-            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
-          </div>
-        </label>
-
-        {/* Price — mobile row 1, desktop 3rd slot */}
-        <label className="order-2 block min-w-0 sm:flex-1 sm:order-none">
+        {/* Price */}
+        <label className="block min-w-0 sm:flex-1">
           <span className={LABEL_CLS}>Price (IDR)</span>
           <div className="relative w-full min-w-0">
             <Input
@@ -184,17 +153,48 @@ function StockRowImpl({
           </div>
         </label>
 
-        {/* Delete — mobile row 1, desktop right */}
+        {/* Delete */}
         <Button
           type="button"
           variant="ghost"
           size="icon"
           onClick={onRemove}
-          className="order-3 h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9 sm:order-none"
+          className="h-10 w-10 shrink-0 rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive sm:h-9 sm:w-9"
           aria-label={`Remove ${stock.ticker || "stock"}`}
         >
           <Trash2 className="h-4 w-4" />
         </Button>
+
+        {/* Shares — spans all 3 columns on mobile; flex item on desktop */}
+        <label className="col-span-3 block min-w-0 sm:flex-1 sm:col-auto">
+          <span className={LABEL_CLS}>Shares (M)</span>
+          <div className="relative w-full min-w-0">
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={formatSharesInput(stock.shares)}
+              onChange={(e) =>
+                onChange({
+                  shares: Number(e.target.value) || 0,
+                  manualShares: true,
+                })
+              }
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  priceRef.current?.focus();
+                  priceRef.current?.select();
+                }
+              }}
+              placeholder="0"
+              title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+              className={`${FIELD_CLS} pr-7`}
+            />
+            <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
+          </div>
+        </label>
       </div>
 
       {/* Inline status */}
