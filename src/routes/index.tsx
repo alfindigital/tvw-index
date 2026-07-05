@@ -662,7 +662,7 @@ function IndexPage() {
         }
       />
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pt-8">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pt-5 sm:px-6 sm:pt-8">
         <h1 className="sr-only">StackCap — IDX Stock Index Weight Calculator for TradingView</h1>
 
         {/* Stats */}
