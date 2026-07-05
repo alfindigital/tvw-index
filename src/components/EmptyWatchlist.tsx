@@ -20,9 +20,6 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
       <p className="mt-3 text-base font-semibold text-foreground">
         Build your own IDX stock index
       </p>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Pick a starter pack below, or type a ticker in the Quick Add box.
-      </p>
 
       {/* How it works */}
       <div className="mx-auto mt-5 grid max-w-xl gap-2 sm:grid-cols-3">
