@@ -25,6 +25,7 @@ import { WeightControls } from "@/components/WeightControls";
 import { EmptyWatchlist } from "@/components/EmptyWatchlist";
 import { Button } from "@/components/ui/button";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
+import { TelegramIcon, InstagramIcon, TikTokIcon, XIcon } from "@/components/SocialIcons";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
 import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
@@ -628,7 +629,7 @@ function IndexPage() {
   const hasRows = enriched.rows.length > 0;
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
       <Toaster position="top-center" richColors />
       <AppHeader
         actions={
@@ -661,7 +662,7 @@ function IndexPage() {
         }
       />
 
-      <main className="mx-auto w-full max-w-5xl px-4 pb-10 pt-5 sm:px-6 sm:pt-8">
+      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-4 pt-5 sm:px-6 sm:pt-8">
         <h1 className="sr-only">StackCap — IDX Stock Index Weight Calculator for TradingView</h1>
 
         {/* Stats */}
@@ -802,7 +803,7 @@ function IndexPage() {
             </a>
           </span>
           <span aria-hidden className="opacity-40">·</span>
-          <nav aria-label="Social media" className="flex items-center gap-2">
+          <nav aria-label="Social media" className="flex items-center gap-3">
             <a
               href="https://t.me/lotmetrik"
               target="_blank"
@@ -810,9 +811,8 @@ function IndexPage() {
               aria-label="Telegram"
               className="hover:text-foreground"
             >
-              Telegram
+              <TelegramIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://instagram.com/lotmetrik"
               target="_blank"
@@ -820,9 +820,8 @@ function IndexPage() {
               aria-label="Instagram"
               className="hover:text-foreground"
             >
-              Instagram
+              <InstagramIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://tiktok.com/@lotmetrik"
               target="_blank"
@@ -830,9 +829,8 @@ function IndexPage() {
               aria-label="TikTok"
               className="hover:text-foreground"
             >
-              TikTok
+              <TikTokIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://x.com/lotmetrik"
               target="_blank"
@@ -840,7 +838,7 @@ function IndexPage() {
               aria-label="X"
               className="hover:text-foreground"
             >
-              X
+              <XIcon className="h-3.5 w-3.5" />
             </a>
           </nav>
         </footer>
