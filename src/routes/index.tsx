@@ -789,8 +789,60 @@ function IndexPage() {
           )}
         </section>
 
-        <footer className="mt-auto py-3 text-center text-[10px] text-muted-foreground">
-          © {new Date().getFullYear()} lotmetrik
+        <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-3 text-[10px] text-muted-foreground">
+          <span>
+            © {new Date().getFullYear()}{" "}
+            <a
+              href="https://lotmetrik.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium hover:text-foreground"
+            >
+              lotmetrik
+            </a>
+          </span>
+          <span aria-hidden className="opacity-40">·</span>
+          <nav aria-label="Social media" className="flex items-center gap-2">
+            <a
+              href="https://t.me/lotmetrik"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Telegram"
+              className="hover:text-foreground"
+            >
+              Telegram
+            </a>
+            <span aria-hidden className="opacity-40">·</span>
+            <a
+              href="https://instagram.com/lotmetrik"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="hover:text-foreground"
+            >
+              Instagram
+            </a>
+            <span aria-hidden className="opacity-40">·</span>
+            <a
+              href="https://tiktok.com/@lotmetrik"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="TikTok"
+              className="hover:text-foreground"
+            >
+              TikTok
+            </a>
+            <span aria-hidden className="opacity-40">·</span>
+            <a
+              href="https://x.com/lotmetrik"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X"
+              className="hover:text-foreground"
+            >
+              X
+            </a>
+          </nav>
         </footer>
       </main>
 
