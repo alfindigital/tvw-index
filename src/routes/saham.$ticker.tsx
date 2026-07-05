@@ -1,13 +1,36 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useState } from "react";
-import { ArrowLeft, Plus, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Plus, TrendingUp, HelpCircle } from "lucide-react";
 import { AppHeader } from "@/components/AppHeader";
-import { IDX_SHARES } from "@/data/idx-shares";
+import { IDX_SHARES, IDX_TICKERS } from "@/data/idx-shares";
 import { formatCompact, formatIDR } from "@/lib/format";
 import { validateTicker } from "@/lib/ticker";
 import { getQuotes } from "@/lib/quotes.functions";
 import { SITE_NAME, SITE_URL, SHARES_AS_OF } from "@/lib/site";
+
+function buildFaqs(t: string, sharesM: number | null) {
+  return [
+    {
+      q: `Berapa jumlah saham beredar ${t}?`,
+      a: sharesM != null
+        ? `${t} memiliki sekitar ${formatCompact(sharesM * 1_000_000)} lembar saham beredar (per ${SHARES_AS_OF}, sumber data IDX). Angka ini dapat berubah karena aksi korporasi (stock split, rights issue, buyback).`
+        : `Data jumlah saham beredar ${t} belum tersedia di database ${SITE_NAME}. Silakan cek langsung ke laman resmi IDX.`,
+    },
+    {
+      q: `Bagaimana cara menghitung market cap ${t}?`,
+      a: `Market cap = harga saham × jumlah saham beredar. Di ${SITE_NAME}, harga diambil real-time dari Yahoo Finance dan dikalikan jumlah saham beredar dari data IDX.`,
+    },
+    {
+      q: `Bagaimana cara menambahkan ${t} ke chart TradingView?`,
+      a: `Gunakan simbol IDX:${t} di TradingView. Atau tambahkan ${t} ke watchlist ${SITE_NAME}, lalu salin rumus TradingView yang otomatis dibuat untuk menggabungkan ${t} dengan saham lain sebagai custom index.`,
+    },
+    {
+      q: `Apakah harga ${t} di ${SITE_NAME} real-time?`,
+      a: `Harga bersumber dari Yahoo Finance dan bersifat delayed/closing (bukan real-time tick-by-tick). Cocok untuk analisis dan pembuatan basket index, bukan untuk trading intraday.`,
+    },
+  ];
+}
 
 export const Route = createFileRoute("/saham/$ticker")({
   beforeLoad: ({ params }) => {
@@ -19,21 +42,51 @@ export const Route = createFileRoute("/saham/$ticker")({
     const t = (params.ticker || "").toUpperCase().replace(/\.JK$/i, "");
     const shares = IDX_SHARES[t];
     const desc = shares
-      ? `${t}: ${formatCompact(shares * 1_000_000)} shares outstanding. Calculate market cap & index weight, then add ${t} to your TradingView watchlist on ${SITE_NAME}.`
-      : `${t} IDX stock data: calculate market cap, index weight, and TradingView formula on ${SITE_NAME}.`;
+      ? `${t}: ${formatCompact(shares * 1_000_000)} saham beredar. Hitung market cap & bobot indeks, tambahkan ${t} ke watchlist TradingView di ${SITE_NAME}.`
+      : `Data saham ${t} IDX: hitung market cap, bobot indeks, dan rumus TradingView di ${SITE_NAME}.`;
+    const url = `${SITE_URL}/saham/${t}`;
+    const faqs = buildFaqs(t, shares ?? null);
     return {
       meta: [
-        { title: `${t} — Shares Outstanding & Market Cap IDX | ${SITE_NAME}` },
+        { title: `${t} — Saham Beredar & Market Cap IDX | ${SITE_NAME}` },
         { name: "description", content: desc },
-        { property: "og:title", content: `${t} — IDX Stock | ${SITE_NAME}` },
+        { property: "og:title", content: `${t} — Saham IDX | ${SITE_NAME}` },
         { property: "og:description", content: desc },
-        { property: "og:url", content: `${SITE_URL}/saham/${t}` },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "article" },
       ],
-      links: [{ rel: "canonical", href: `${SITE_URL}/saham/${t}` }],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              { "@type": "ListItem", position: 1, name: SITE_NAME, item: SITE_URL },
+              { "@type": "ListItem", position: 2, name: "Saham", item: `${SITE_URL}/` },
+              { "@type": "ListItem", position: 3, name: t, item: url },
+            ],
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqs.map((f) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }),
+        },
+      ],
     };
   },
   component: EmitenPage,
 });
+
 
 function EmitenPage() {
   const { ticker } = Route.useParams();
