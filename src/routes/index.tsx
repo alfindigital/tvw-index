@@ -790,7 +790,7 @@ function IndexPage() {
           )}
         </section>
 
-        <footer className="mt-auto flex flex-wrap items-center justify-center gap-x-3 gap-y-1 py-3 text-[10px] text-muted-foreground">
+        <footer className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3 text-[10px] text-muted-foreground">
           <span>
             © {new Date().getFullYear()}{" "}
             <a
