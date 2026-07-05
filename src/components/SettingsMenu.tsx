@@ -8,6 +8,7 @@ import {
   Sun,
   Moon,
   Link2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { applyImport, buildExport, type Stock } from "@/lib/storage";
+import { enrichStocks } from "@/lib/weight";
 import { useTheme } from "@/hooks/use-theme";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 
@@ -70,6 +72,26 @@ export function SettingsMenu({
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast.success("Data exported");
+  }
+
+  function handleCopyCsv() {
+    if (currentStocks.length === 0) return;
+    const { rows } = enrichStocks(currentStocks, { mode: "mcap", cap: null });
+    const header = "ticker,shares_millions,price_idr,market_cap_idr,weight_pct";
+    const lines = rows.map((r) =>
+      [
+        r.ticker,
+        r.shares.toString(),
+        r.price.toString(),
+        r.marketCap.toFixed(0),
+        (r.weight * 100).toFixed(4),
+      ].join(","),
+    );
+    const csv = [header, ...lines].join("\n");
+    navigator.clipboard.writeText(csv).then(
+      () => toast.success("CSV copied to clipboard"),
+      () => toast.error("Copy failed"),
+    );
   }
 
   function handleImportClick() {
@@ -179,6 +201,16 @@ export function SettingsMenu({
           <DropdownMenuItem onSelect={handleExport}>
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            disabled={currentStocks.length === 0}
+            onSelect={(e) => {
+              e.preventDefault();
+              handleCopyCsv();
+            }}
+          >
+            <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
+            Copy as CSV
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleImportClick}>
             <Upload className="mr-2 h-3.5 w-3.5" />
