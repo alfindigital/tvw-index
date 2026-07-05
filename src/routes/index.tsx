@@ -629,7 +629,7 @@ function IndexPage() {
   const hasRows = enriched.rows.length > 0;
 
   return (
-    <div className="relative min-h-screen bg-background text-foreground">
+    <div className="relative flex min-h-screen flex-col bg-background text-foreground">
       <Toaster position="top-center" richColors />
       <AppHeader
         actions={
