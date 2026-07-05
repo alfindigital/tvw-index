@@ -210,7 +210,41 @@ function EmitenPage() {
             delayed/closing, not real-time. Not investment advice.
           </p>
         </section>
+
+        {related.length > 0 ? (
+          <section className="mt-10">
+            <h2 className="text-base font-semibold text-foreground">Saham lain dengan ukuran serupa</h2>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {related.map((r) => (
+                <Link
+                  key={r}
+                  to="/saham/$ticker"
+                  params={{ ticker: r }}
+                  className="rounded-lg border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold text-foreground transition-colors hover:border-primary/50 hover:text-primary"
+                >
+                  {r}
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="mt-10">
+          <h2 className="flex items-center gap-2 text-base font-semibold text-foreground">
+            <HelpCircle className="h-4 w-4 text-primary" />
+            Pertanyaan yang sering ditanyakan
+          </h2>
+          <dl className="mt-4 space-y-4">
+            {faqs.map((f) => (
+              <div key={f.q} className="rounded-2xl border border-border bg-card p-4">
+                <dt className="text-sm font-semibold text-foreground">{f.q}</dt>
+                <dd className="mt-2 text-sm leading-relaxed text-muted-foreground">{f.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
       </main>
     </div>
   );
 }
+
