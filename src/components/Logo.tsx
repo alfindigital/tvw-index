@@ -6,7 +6,7 @@ type Props = {
 };
 
 /**
- * StackCap brand lockup: indigo tile with a stacked-cylinder mark
+ * lotmetrik brand lockup: indigo tile with a stacked-cylinder mark
  * (three offset "coin" layers with a teal rim-light on the top layer)
  * + Jakarta Sans wordmark. Contrast-tuned for both light and dark themes.
  */
@@ -33,7 +33,7 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
 }
 
 /**
- * StackCap brand mark: clean outline of three stacked layers.
+ * lotmetrik brand mark: clean outline of three stacked layers.
  * Single-weight stroke, no fill, minimal and readable at all sizes.
  */
 function StackMark({ className = "" }: { className?: string }) {
