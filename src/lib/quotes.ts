@@ -81,17 +81,19 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
 }
 
 // Cloudflare edge cache (caches.default) is available in the Worker runtime but
-// not in dev/node — guard accordingly. Successful quotes are cached for a few
-// seconds so refresh-all + concurrent users don't each hit Yahoo.
+// not in dev/node — guard accordingly. Successful quotes are cached briefly
+// (CACHE_TTL_S) as fresh, and a longer stale copy (STALE_TTL_S) is kept so we
+// can degrade gracefully if Yahoo returns an error or times out.
 async function fetchQuoteCached(symbol: string): Promise<QuoteResult> {
   const cacheStorage =
     typeof caches !== "undefined" ? (caches as unknown as { default?: Cache }) : null;
   const cache = cacheStorage?.default ?? null;
-  const cacheKey = new Request(`https://idxw.cache/quote/${encodeURIComponent(symbol)}`);
+  const freshKey = new Request(`https://idxw.cache/quote/${encodeURIComponent(symbol)}`);
+  const staleKey = new Request(`https://idxw.cache/quote-stale/${encodeURIComponent(symbol)}`);
 
   if (cache) {
     try {
-      const hit = await cache.match(cacheKey);
+      const hit = await cache.match(freshKey);
       if (hit) return (await hit.json()) as QuoteResult;
     } catch {
       // ignore cache read errors
@@ -101,18 +103,42 @@ async function fetchQuoteCached(symbol: string): Promise<QuoteResult> {
   const result = await fetchQuoteRaw(symbol);
 
   if (cache && result.price != null) {
+    // Cache both the short-lived "fresh" copy and a long-lived stale fallback.
+    const body = JSON.stringify(result);
     try {
       await cache.put(
-        cacheKey,
-        new Response(JSON.stringify(result), {
+        freshKey,
+        new Response(body, {
           headers: {
             "Content-Type": "application/json",
             "Cache-Control": `public, max-age=${CACHE_TTL_S}`,
           },
         }),
       );
+      await cache.put(
+        staleKey,
+        new Response(body, {
+          headers: {
+            "Content-Type": "application/json",
+            "Cache-Control": `public, max-age=${STALE_TTL_S}`,
+          },
+        }),
+      );
     } catch {
       // ignore cache write errors
+    }
+  }
+
+  // Yahoo call failed → try the long-lived stale copy before giving up.
+  if (result.price == null && cache) {
+    try {
+      const stale = await cache.match(staleKey);
+      if (stale) {
+        const cached = (await stale.json()) as QuoteResult;
+        return { ...cached, error: "stale" };
+      }
+    } catch {
+      // ignore
     }
   }
 
