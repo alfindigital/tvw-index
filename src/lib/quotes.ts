@@ -8,7 +8,8 @@ export type QuoteResult = {
 
 
 const TIMEOUT_MS = 8000;
-const CACHE_TTL_S = 45; // edge-cache quotes briefly, shared across all users
+const CACHE_TTL_S = 45; // fresh-quote edge cache
+const STALE_TTL_S = 60 * 60 * 6; // fallback if Yahoo is failing (6h)
 const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
 
 function toJkSymbol(ticker: string): string {
