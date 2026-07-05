@@ -25,6 +25,7 @@ import { WeightControls } from "@/components/WeightControls";
 import { EmptyWatchlist } from "@/components/EmptyWatchlist";
 import { Button } from "@/components/ui/button";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
+import { TelegramIcon, InstagramIcon, TikTokIcon, XIcon } from "@/components/SocialIcons";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
 import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
