@@ -803,7 +803,7 @@ function IndexPage() {
             </a>
           </span>
           <span aria-hidden className="opacity-40">·</span>
-          <nav aria-label="Social media" className="flex items-center gap-2">
+          <nav aria-label="Social media" className="flex items-center gap-3">
             <a
               href="https://t.me/lotmetrik"
               target="_blank"
@@ -811,9 +811,8 @@ function IndexPage() {
               aria-label="Telegram"
               className="hover:text-foreground"
             >
-              Telegram
+              <TelegramIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://instagram.com/lotmetrik"
               target="_blank"
@@ -821,9 +820,8 @@ function IndexPage() {
               aria-label="Instagram"
               className="hover:text-foreground"
             >
-              Instagram
+              <InstagramIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://tiktok.com/@lotmetrik"
               target="_blank"
@@ -831,9 +829,8 @@ function IndexPage() {
               aria-label="TikTok"
               className="hover:text-foreground"
             >
-              TikTok
+              <TikTokIcon className="h-3.5 w-3.5" />
             </a>
-            <span aria-hidden className="opacity-40">·</span>
             <a
               href="https://x.com/lotmetrik"
               target="_blank"
@@ -841,7 +838,7 @@ function IndexPage() {
               aria-label="X"
               className="hover:text-foreground"
             >
-              X
+              <XIcon className="h-3.5 w-3.5" />
             </a>
           </nav>
         </footer>
