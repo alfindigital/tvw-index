@@ -8,6 +8,7 @@ import {
   Sun,
   Moon,
   Link2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,6 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { applyImport, buildExport, type Stock } from "@/lib/storage";
+import { computeWeights, fullMarketCap } from "@/lib/weight";
 import { useTheme } from "@/hooks/use-theme";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 
