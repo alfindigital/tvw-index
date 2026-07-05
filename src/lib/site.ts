@@ -4,10 +4,10 @@ const DEFAULT_URL = "https://tvx.alfidx.my.id";
 
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
-export const SITE_NAME = "StackCap";
+export const SITE_NAME = "lotmetrik";
 export const SITE_TAGLINE = "IDX watchlist, stacked by market cap.";
 export const SITE_DESC =
-  "StackCap — build an IDX stock watchlist, stack market-cap weights, and get a ready-to-use TradingView formula.";
+  "lotmetrik — build an IDX stock watchlist, stack market-cap weights, and get a ready-to-use TradingView formula.";
 
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 

@@ -1,8 +1,8 @@
-# StackCap
+# lotmetrik
 
 > Build an IDX stock watchlist, stack market-cap weights (optional free-float), and get a ready-to-copy TradingView formula.
 
-StackCap is an indie web tool for IDX investors: assemble a watchlist of Indonesian stocks, compute a custom index weighted by market cap (or free-float adjusted), monitor market caps, then export a TradingView formula (e.g. `IDX:BBCA*0.45 + IDX:TLKM*0.23`) to chart your own index.
+lotmetrik is an indie web tool for IDX investors: assemble a watchlist of Indonesian stocks, compute a custom index weighted by market cap (or free-float adjusted), monitor market caps, then export a TradingView formula (e.g. `IDX:BBCA*0.45 + IDX:TLKM*0.23`) to chart your own index.
 
 Data notes: prices are pulled from Yahoo Finance (close/delayed, not real-time). Shares-outstanding data is bundled from IDX releases and has an "as of" date — check the app footer.
 

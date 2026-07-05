@@ -1,6 +1,6 @@
 {
-  "name": "StackCap — IDX Stock Watchlist",
-  "short_name": "StackCap",
+  "name": "lotmetrik — IDX Stock Watchlist",
+  "short_name": "lotmetrik",
   "description": "Build an IDX stock watchlist, stack market-cap weights, and get a ready-to-use TradingView formula.",
   "start_url": "/",
   "scope": "/",
