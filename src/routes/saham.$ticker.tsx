@@ -112,6 +112,19 @@ function EmitenPage() {
   }, [t, getQuotesServer]);
 
   const marketCap = sharesM != null && price != null ? sharesM * price * 1_000_000 : null;
+  const faqs = useMemo(() => buildFaqs(t, sharesM), [t, sharesM]);
+  const related = useMemo(() => {
+    if (sharesM == null) return [];
+    // Pick 6 tickers with the closest shares-outstanding count as "related" —
+    // gives internal linking + long-tail crawl paths without extra data.
+    const sorted = IDX_TICKERS
+      .filter((x) => x !== t && IDX_SHARES[x] != null)
+      .map((x) => ({ x, diff: Math.abs(Math.log(IDX_SHARES[x]!) - Math.log(sharesM)) }))
+      .sort((a, b) => a.diff - b.diff)
+      .slice(0, 6)
+      .map((r) => r.x);
+    return sorted;
+  }, [t, sharesM]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
