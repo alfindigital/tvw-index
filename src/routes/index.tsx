@@ -790,58 +790,10 @@ function IndexPage() {
           )}
         </section>
 
-        <footer className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-3 text-[10px] text-muted-foreground">
-          <span>
-            © {new Date().getFullYear()}{" "}
-            <a
-              href="https://lotmetrik.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-medium hover:text-foreground"
-            >
-              lotmetrik
-            </a>
-          </span>
-          <span aria-hidden className="opacity-40">·</span>
-          <nav aria-label="Social media" className="flex items-center gap-3">
-            <a
-              href="https://t.me/lotmetrik"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Telegram"
-              className="hover:text-foreground"
-            >
-              <TelegramIcon className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://instagram.com/lotmetrik"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Instagram"
-              className="hover:text-foreground"
-            >
-              <InstagramIcon className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://tiktok.com/@lotmetrik"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="TikTok"
-              className="hover:text-foreground"
-            >
-              <TikTokIcon className="h-3.5 w-3.5" />
-            </a>
-            <a
-              href="https://x.com/lotmetrik"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="X"
-              className="hover:text-foreground"
-            >
-              <XIcon className="h-3.5 w-3.5" />
-            </a>
-          </nav>
-        </footer>
+        <div className="mt-auto pt-12 sm:pt-16">
+          <DynamicFooter />
+        </div>
+
       </main>
 
 
