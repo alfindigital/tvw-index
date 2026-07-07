@@ -790,7 +790,7 @@ function IndexPage() {
           )}
         </section>
 
-        <div className="mt-auto pt-12 sm:pt-16">
+        <div className="mt-auto pt-6 sm:pt-8">
           <DynamicFooter />
         </div>
 
