@@ -55,25 +55,25 @@ export function DynamicFooter() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 7px; height: 14px;
-          background: var(--primary); margin-left: 4px;
+          display: inline-block; width: 6px; height: 12px;
+          background: var(--primary); margin-left: 3px;
           animation: afd-blink 1.1s step-end infinite;
           vertical-align: -2px;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 36px; min-width: 210px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 28px; min-width: 180px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 36px;
-          display: flex; align-items: center; gap: 10px;
-          text-decoration: none; color: var(--foreground); font-size: 14px;
-          opacity: 0; transform: translateY(8px);
+          position: absolute; right: 0; top: 0; height: 28px;
+          display: flex; align-items: center; gap: 8px;
+          text-decoration: none; color: var(--foreground); font-size: 13px;
+          opacity: 0; transform: translateY(6px);
           transition: opacity .5s, transform .5s;
           pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .afd-item b { color: var(--primary); font-weight: 600; }
         .afd-ico {
-          position: relative; width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+          position: relative; width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
           display: inline-flex; align-items: center; justify-content: center;
           background: color-mix(in oklab, var(--primary) 12%, transparent);
           color: var(--primary);
@@ -128,7 +128,7 @@ export function DynamicFooter() {
               aria-label={s.label}
             >
               <span className="afd-ico">
-                <Icon className="h-[18px] w-[18px]" />
+                <Icon className="h-[14px] w-[14px]" />
               </span>
               <b>{s.handle}</b>
             </a>
