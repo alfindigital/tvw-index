@@ -95,18 +95,10 @@ export function DynamicFooter() {
       <div className="afd-glow" style={{ left: glow.left, top: glow.top }} />
 
       <span
-        className="inline-flex items-center text-sm text-muted-foreground"
+        className="inline-flex items-center text-xs text-muted-foreground"
         style={{ borderLeft: "3px solid var(--primary)", paddingLeft: 11 }}
       >
-        © {new Date().getFullYear()}{" "}
-        <a
-          href="https://lotmetrik.my.id"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-1 font-semibold text-primary hover:underline"
-        >
-          lotmetrik
-        </a>
+        © <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
         <span className="afd-caret" aria-hidden />
       </span>
 
