@@ -1,13 +1,6 @@
 import { useState } from "react";
-import { HelpCircle, Share2, Check, Copy, FileCode2, Sparkles } from "lucide-react";
+import { Share2, Check, Copy, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 
 type Props = {
   formula: string;
@@ -17,7 +10,6 @@ type Props = {
 
 export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   const [copied, setCopied] = useState<"formula" | "pine" | null>(null);
-  const [helpOpen, setHelpOpen] = useState(false);
   const empty = !formula;
 
   function copyText(text: string, kind: "formula" | "pine", label: string) {
@@ -32,31 +24,14 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   return (
     <div className="w-full">
       <div
-        className="relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl border border-primary/40 px-5 py-4 text-white shadow-[0_20px_50px_-20px_oklch(0.45_0.22_277_/_0.55)] sm:flex-row sm:items-center sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-white/25"
+        className="relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-primary/40 px-5 py-4 text-white shadow-[0_20px_50px_-20px_oklch(0.45_0.22_277_/_0.55)] sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-white/25"
         style={{
           backgroundImage:
             "linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 100%)",
         }}
       >
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-white/90" />
-            <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white/90 sm:text-xs">
-              Result
-            </span>
-            <button
-              type="button"
-              onClick={() => setHelpOpen(true)}
-              aria-label="How to use formula in TradingView"
-              title="How to use formula in TradingView"
-              className="inline-flex items-center text-white/70 transition-colors hover:text-white"
-            >
-              <HelpCircle className="h-3.5 w-3.5" />
-            </button>
-          </div>
-          <h2 className="mt-1.5 truncate font-mono text-base font-semibold leading-snug tracking-tight text-white sm:text-lg">
-            {formula || "Add stocks to generate formula"}
-          </h2>
+        <div className="min-w-0 flex-1 truncate font-mono text-base font-semibold leading-snug tracking-tight text-white sm:text-lg">
+          {formula || "Add stocks to generate formula"}
         </div>
         <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">
           {onShare ? (
