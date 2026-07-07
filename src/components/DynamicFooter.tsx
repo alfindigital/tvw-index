@@ -98,7 +98,15 @@ export function DynamicFooter() {
         className="inline-flex items-center text-xs text-muted-foreground"
         style={{ borderLeft: "3px solid var(--primary)", paddingLeft: 11 }}
       >
-        © <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
+        © <b className="text-primary">{new Date().getFullYear()}</b>{" "}
+        <a
+          href="https://lotmetrik.my.id"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="font-semibold text-primary hover:underline"
+        >
+          lotmetrik
+        </a>
         <span className="afd-caret" aria-hidden />
       </span>
 
