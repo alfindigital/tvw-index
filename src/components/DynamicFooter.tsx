@@ -44,7 +44,7 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 overflow-hidden rounded-2xl border border-border bg-card px-5 py-3 sm:px-6 sm:py-3.5">
+    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1 overflow-hidden rounded-2xl border border-border bg-card px-5 py-2 sm:px-6 sm:py-2.5">
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
@@ -55,25 +55,25 @@ export function DynamicFooter() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 5px; height: 10px;
-          background: var(--primary); margin-left: 3px;
+          display: inline-block; width: 4px; height: 8px;
+          background: var(--primary); margin-left: 2px;
           animation: afd-blink 1.1s step-end infinite;
-          vertical-align: -1px;
+          vertical-align: 0;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 20px; min-width: 140px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 18px; min-width: 130px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 20px;
-          display: flex; align-items: center; gap: 5px;
-          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 20px;
-          opacity: 0; transform: translateY(4px);
+          position: absolute; right: 0; top: 0; height: 18px;
+          display: flex; align-items: center; gap: 4px;
+          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 18px;
+          opacity: 0; transform: translateY(3px);
           transition: opacity .5s, transform .5s;
           pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .afd-item b { color: var(--primary); font-weight: 600; }
         .afd-ico {
-          position: relative; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+          position: relative; width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
           display: inline-flex; align-items: center; justify-content: center;
           background: color-mix(in oklab, var(--primary) 12%, transparent);
           color: var(--primary);
@@ -88,7 +88,7 @@ export function DynamicFooter() {
         }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
-          100% { box-shadow: 0 0 0 22px color-mix(in oklab, var(--primary) 0%, transparent); }
+          100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
         }
       `}</style>
 
@@ -96,7 +96,7 @@ export function DynamicFooter() {
 
       <span
         className="inline-flex items-center text-xs text-muted-foreground"
-        style={{ borderLeft: "3px solid var(--primary)", paddingLeft: 11 }}
+        style={{ borderLeft: "2px solid var(--primary)", paddingLeft: 8 }}
       >
         © <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
         <span className="afd-caret" aria-hidden />
