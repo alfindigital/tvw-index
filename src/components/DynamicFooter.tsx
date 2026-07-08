@@ -55,13 +55,13 @@ export function DynamicFooter() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 5px; height: 10px;
-          background: var(--primary); margin-left: 3px;
+          display: inline-block; width: 4px; height: 8px;
+          background: var(--primary); margin-left: 2px;
           animation: afd-blink 1.1s step-end infinite;
-          vertical-align: -1px;
+          vertical-align: 0;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 20px; min-width: 140px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 18px; min-width: 130px; flex: 0 0 auto; }
         .afd-item {
           position: absolute; right: 0; top: 0; height: 20px;
           display: flex; align-items: center; gap: 5px;
