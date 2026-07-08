@@ -44,7 +44,7 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-3 overflow-hidden rounded-2xl border border-border bg-card px-5 py-3.5 sm:px-6 sm:py-4">
+    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 overflow-hidden rounded-2xl border border-border bg-card px-5 py-3 sm:px-6 sm:py-3.5">
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
