@@ -96,7 +96,7 @@ export function DynamicFooter() {
 
       <span
         className="inline-flex items-center text-xs text-muted-foreground"
-        style={{ borderLeft: "3px solid var(--primary)", paddingLeft: 11 }}
+        style={{ borderLeft: "2px solid var(--primary)", paddingLeft: 8 }}
       >
         © <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
         <span className="afd-caret" aria-hidden />
