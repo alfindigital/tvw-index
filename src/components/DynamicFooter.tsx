@@ -61,11 +61,11 @@ export function DynamicFooter() {
           vertical-align: -1px;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 22px; min-width: 160px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 20px; min-width: 140px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 22px;
-          display: flex; align-items: center; gap: 6px;
-          text-decoration: none; color: var(--foreground); font-size: 11px;
+          position: absolute; right: 0; top: 0; height: 20px;
+          display: flex; align-items: center; gap: 5px;
+          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 20px;
           opacity: 0; transform: translateY(4px);
           transition: opacity .5s, transform .5s;
           pointer-events: none;
