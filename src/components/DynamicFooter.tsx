@@ -63,17 +63,17 @@ export function DynamicFooter() {
         @keyframes afd-blink { 50% { opacity: 0; } }
         .afd-rot { position: relative; height: 18px; min-width: 130px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 20px;
-          display: flex; align-items: center; gap: 5px;
-          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 20px;
-          opacity: 0; transform: translateY(4px);
+          position: absolute; right: 0; top: 0; height: 18px;
+          display: flex; align-items: center; gap: 4px;
+          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 18px;
+          opacity: 0; transform: translateY(3px);
           transition: opacity .5s, transform .5s;
           pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .afd-item b { color: var(--primary); font-weight: 600; }
         .afd-ico {
-          position: relative; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+          position: relative; width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
           display: inline-flex; align-items: center; justify-content: center;
           background: color-mix(in oklab, var(--primary) 12%, transparent);
           color: var(--primary);
@@ -88,7 +88,7 @@ export function DynamicFooter() {
         }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
-          100% { box-shadow: 0 0 0 22px color-mix(in oklab, var(--primary) 0%, transparent); }
+          100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
         }
       `}</style>
 
