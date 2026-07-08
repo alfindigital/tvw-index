@@ -44,7 +44,7 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-3 overflow-hidden rounded-2xl border border-border bg-card px-5 py-3.5 sm:px-6 sm:py-4">
+    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5 overflow-hidden rounded-2xl border border-border bg-card px-5 py-3 sm:px-6 sm:py-3.5">
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
@@ -61,11 +61,11 @@ export function DynamicFooter() {
           vertical-align: -1px;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 22px; min-width: 160px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 20px; min-width: 140px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 22px;
-          display: flex; align-items: center; gap: 6px;
-          text-decoration: none; color: var(--foreground); font-size: 11px;
+          position: absolute; right: 0; top: 0; height: 20px;
+          display: flex; align-items: center; gap: 5px;
+          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 20px;
           opacity: 0; transform: translateY(4px);
           transition: opacity .5s, transform .5s;
           pointer-events: none;
