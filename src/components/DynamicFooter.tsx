@@ -44,7 +44,7 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-3 gap-y-1 overflow-hidden rounded-2xl border border-border bg-card px-5 py-2 sm:px-6 sm:py-2.5">
+    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-x-3 sm:gap-y-1 sm:px-5 sm:py-2 lg:px-6">
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
@@ -55,25 +55,25 @@ export function DynamicFooter() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 4px; height: 8px;
+          display: inline-block; width: 3px; height: 14px;
           background: var(--primary); margin-left: 2px;
           animation: afd-blink 1.1s step-end infinite;
           vertical-align: 0;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 18px; min-width: 130px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 16px; min-width: 110px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 18px;
-          display: flex; align-items: center; gap: 4px;
-          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 18px;
-          opacity: 0; transform: translateY(3px);
-          transition: opacity .5s, transform .5s;
+          position: absolute; right: 0; top: 0; height: 16px;
+          display: flex; align-items: center; gap: 3px;
+          text-decoration: none; color: var(--foreground); font-size: 10px; line-height: 16px;
+          opacity: 0; transform: translateY(2px);
+          transition: opacity .4s, transform .4s;
           pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .afd-item b { color: var(--primary); font-weight: 600; }
         .afd-ico {
-          position: relative; width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+          position: relative; width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
           display: inline-flex; align-items: center; justify-content: center;
           background: color-mix(in oklab, var(--primary) 12%, transparent);
           color: var(--primary);
@@ -88,17 +88,27 @@ export function DynamicFooter() {
         }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
-          100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
+          100% { box-shadow: 0 0 0 16px color-mix(in oklab, var(--primary) 0%, transparent); }
+        }
+        @media (min-width: 640px) {
+          .afd-rot { height: 18px; min-width: 130px; }
+          .afd-item { height: 18px; line-height: 18px; font-size: 11px; gap: 4px; }
+          .afd-ico { width: 18px; height: 18px; }
+          @keyframes afd-ripple {
+            0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
+            100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
+          }
         }
       `}</style>
 
       <div className="afd-glow" style={{ left: glow.left, top: glow.top }} />
 
       <span
-        className="inline-flex items-center text-xs text-muted-foreground"
+        className="inline-flex items-center text-[10px] leading-4 tracking-tight text-muted-foreground sm:text-[11px] sm:leading-[18px]"
         style={{ borderLeft: "2px solid var(--primary)", paddingLeft: 8 }}
       >
-        © <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
+        <span className="mr-0.5">©</span>
+        <b className="text-primary">{new Date().getFullYear()} lotmetrik</b>
         <span className="afd-caret" aria-hidden />
       </span>
 
@@ -120,7 +130,7 @@ export function DynamicFooter() {
               aria-label={s.label}
             >
               <span className="afd-ico">
-                <Icon className="h-[11px] w-[11px]" />
+                <Icon className="h-[10px] w-[10px] sm:h-[11px] sm:w-[11px]" />
               </span>
               <b>{s.handle}</b>
             </a>
