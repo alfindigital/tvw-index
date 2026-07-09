@@ -129,7 +129,7 @@ export function DynamicFooter() {
               aria-label={s.label}
             >
               <span className="afd-ico">
-                <Icon className="h-[11px] w-[11px]" />
+                <Icon className="h-[10px] w-[10px] sm:h-[11px] sm:w-[11px]" />
               </span>
               <b>{s.handle}</b>
             </a>
