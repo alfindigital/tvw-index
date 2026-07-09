@@ -44,7 +44,7 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-x-3 sm:gap-y-1 sm:px-5 sm:py-2 lg:px-6">
+    <footer className="afd-foot relative flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 overflow-hidden rounded-2xl border border-border bg-card px-2.5 py-1.5 min-[360px]:px-3 sm:gap-x-3 sm:gap-y-1 sm:px-5 sm:py-2 lg:px-6">
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
@@ -89,6 +89,10 @@ export function DynamicFooter() {
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
           100% { box-shadow: 0 0 0 16px color-mix(in oklab, var(--primary) 0%, transparent); }
+        }
+        @media (max-width: 359px) {
+          .afd-rot { min-width: 96px; }
+          .afd-item { font-size: 9.5px; gap: 2px; }
         }
         @media (min-width: 640px) {
           .afd-rot { height: 18px; min-width: 130px; }
