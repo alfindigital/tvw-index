@@ -90,6 +90,10 @@ export function DynamicFooter() {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
           100% { box-shadow: 0 0 0 16px color-mix(in oklab, var(--primary) 0%, transparent); }
         }
+        @media (max-width: 359px) {
+          .afd-rot { min-width: 96px; }
+          .afd-item { font-size: 9.5px; gap: 2px; }
+        }
         @media (min-width: 640px) {
           .afd-rot { height: 18px; min-width: 130px; }
           .afd-item { height: 18px; line-height: 18px; font-size: 11px; gap: 4px; }
