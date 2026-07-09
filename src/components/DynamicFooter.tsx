@@ -55,25 +55,25 @@ export function DynamicFooter() {
           transition: left 6s ease-in-out, top 6s ease-in-out;
         }
         .afd-caret {
-          display: inline-block; width: 4px; height: 8px;
+          display: inline-block; width: 3px; height: 14px;
           background: var(--primary); margin-left: 2px;
           animation: afd-blink 1.1s step-end infinite;
           vertical-align: 0;
         }
         @keyframes afd-blink { 50% { opacity: 0; } }
-        .afd-rot { position: relative; height: 18px; min-width: 130px; flex: 0 0 auto; }
+        .afd-rot { position: relative; height: 16px; min-width: 110px; flex: 0 0 auto; }
         .afd-item {
-          position: absolute; right: 0; top: 0; height: 18px;
-          display: flex; align-items: center; gap: 4px;
-          text-decoration: none; color: var(--foreground); font-size: 11px; line-height: 18px;
-          opacity: 0; transform: translateY(3px);
-          transition: opacity .5s, transform .5s;
+          position: absolute; right: 0; top: 0; height: 16px;
+          display: flex; align-items: center; gap: 3px;
+          text-decoration: none; color: var(--foreground); font-size: 10px; line-height: 16px;
+          opacity: 0; transform: translateY(2px);
+          transition: opacity .4s, transform .4s;
           pointer-events: none;
         }
         .afd-item.active { opacity: 1; transform: translateY(0); pointer-events: auto; }
         .afd-item b { color: var(--primary); font-weight: 600; }
         .afd-ico {
-          position: relative; width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+          position: relative; width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0;
           display: inline-flex; align-items: center; justify-content: center;
           background: color-mix(in oklab, var(--primary) 12%, transparent);
           color: var(--primary);
@@ -88,7 +88,16 @@ export function DynamicFooter() {
         }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
-          100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
+          100% { box-shadow: 0 0 0 16px color-mix(in oklab, var(--primary) 0%, transparent); }
+        }
+        @media (min-width: 640px) {
+          .afd-rot { height: 18px; min-width: 130px; }
+          .afd-item { height: 18px; line-height: 18px; font-size: 11px; gap: 4px; }
+          .afd-ico { width: 18px; height: 18px; }
+          @keyframes afd-ripple {
+            0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
+            100% { box-shadow: 0 0 0 18px color-mix(in oklab, var(--primary) 0%, transparent); }
+          }
         }
       `}</style>
 
