@@ -196,3 +196,47 @@
     }
   }
 }
+
+/* ---------- Global footer typography scale ---------- */
+/* Single source of truth so caret, icon, text baseline stay aligned
+   at every breakpoint even when the font size changes.               */
+:root {
+  --footer-fs: 10px;
+  --footer-lh: 16px;      /* == row height, keeps baseline centered   */
+  --footer-tracking: -0.005em;
+  --footer-row-h: 16px;
+  --footer-icon: 16px;
+  --footer-caret-h: 12px;
+  --footer-caret-w: 3px;
+  --footer-gap: 3px;
+  --footer-rot-min: 110px;
+}
+@media (max-width: 359px) {
+  :root {
+    --footer-fs: 9.5px;
+    --footer-lh: 14px;
+    --footer-row-h: 14px;
+    --footer-icon: 14px;
+    --footer-caret-h: 11px;
+    --footer-gap: 2px;
+    --footer-rot-min: 96px;
+  }
+}
+@media (min-width: 640px) {
+  :root {
+    --footer-fs: 11px;
+    --footer-lh: 18px;
+    --footer-row-h: 18px;
+    --footer-icon: 18px;
+    --footer-caret-h: 14px;
+    --footer-gap: 4px;
+    --footer-rot-min: 130px;
+  }
+}
+
+@utility footer-type {
+  font-size: var(--footer-fs);
+  line-height: var(--footer-lh);
+  letter-spacing: var(--footer-tracking);
+  font-variant-numeric: tabular-nums;
+}
