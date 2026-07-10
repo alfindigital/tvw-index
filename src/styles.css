@@ -201,36 +201,38 @@
 /* Single source of truth so caret, icon, text baseline stay aligned
    at every breakpoint even when the font size changes.               */
 :root {
-  --footer-fs: 10px;
-  --footer-lh: 16px;      /* == row height, keeps baseline centered   */
+  /* rem-based so text scales with browser/OS "Large Text" settings.
+     Base 16px: 0.625rem=10px, 0.6875rem=11px, 0.75rem=12px            */
+  --footer-fs: 0.625rem;
+  --footer-lh: 1rem;             /* == row height, keeps baseline centered */
   --footer-tracking: -0.005em;
-  --footer-row-h: 16px;
-  --footer-icon: 16px;
-  --footer-caret-h: 12px;
+  --footer-row-h: 1rem;
+  --footer-icon: 1rem;
+  --footer-caret-h: 0.75rem;
   --footer-caret-w: 3px;
-  --footer-gap: 3px;
-  --footer-rot-min: 110px;
+  --footer-gap: 0.1875rem;
+  --footer-rot-min: 6.875rem;
 }
 @media (max-width: 359px) {
   :root {
-    --footer-fs: 9.5px;
-    --footer-lh: 14px;
-    --footer-row-h: 14px;
-    --footer-icon: 14px;
-    --footer-caret-h: 11px;
-    --footer-gap: 2px;
-    --footer-rot-min: 96px;
+    --footer-fs: 0.59375rem;     /* 9.5px */
+    --footer-lh: 0.875rem;       /* 14px  */
+    --footer-row-h: 0.875rem;
+    --footer-icon: 0.875rem;
+    --footer-caret-h: 0.6875rem; /* 11px */
+    --footer-gap: 0.125rem;
+    --footer-rot-min: 6rem;
   }
 }
 @media (min-width: 640px) {
   :root {
-    --footer-fs: 11px;
-    --footer-lh: 18px;
-    --footer-row-h: 18px;
-    --footer-icon: 18px;
-    --footer-caret-h: 14px;
-    --footer-gap: 4px;
-    --footer-rot-min: 130px;
+    --footer-fs: 0.6875rem;      /* 11px */
+    --footer-lh: 1.125rem;       /* 18px */
+    --footer-row-h: 1.125rem;
+    --footer-icon: 1.125rem;
+    --footer-caret-h: 0.875rem;  /* 14px */
+    --footer-gap: 0.25rem;
+    --footer-rot-min: 8.125rem;
   }
 }
 
