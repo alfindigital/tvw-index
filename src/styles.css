@@ -221,7 +221,7 @@
     --footer-icon: 0.875rem;
     --footer-caret-h: 0.6875rem; /* 11px */
     --footer-gap: 0.125rem;
-    --footer-rot-min: 6rem;
+    --footer-rot-min: 4.75rem;
   }
 }
 @media (min-width: 640px) {
