@@ -137,17 +137,22 @@ export function DynamicFooter() {
         aria-label="Social media"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
+        onFocus={() => setPaused(true)}
+        onBlur={() => setPaused(false)}
       >
         {SOCIALS.map((s, idx) => {
           const Icon = s.Icon;
+          const isActive = idx === active;
           return (
             <a
               key={s.label}
-              className={`afd-item${idx === active ? " active" : ""}`}
+              className={`afd-item${isActive ? " active" : ""}`}
               href={s.href}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={s.label}
+              aria-hidden={!isActive}
+              tabIndex={isActive ? 0 : -1}
             >
               <span className="afd-ico">
                 <Icon className="h-full w-full" />
