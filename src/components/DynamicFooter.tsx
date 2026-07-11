@@ -99,6 +99,15 @@ export function DynamicFooter() {
           content: ""; position: absolute; inset: 0; border-radius: 50%;
           animation: afd-ripple 1.3s ease-out infinite;
         }
+        /* Windows/macOS High Contrast: defer to system palette so
+           brand/handle text keeps AA contrast regardless of theme.  */
+        @media (forced-colors: active) {
+          .afd-item b,
+          .footer-type b { color: LinkText; }
+          .afd-ico { background: Canvas; color: LinkText; forced-color-adjust: none; }
+          .afd-caret { background: CanvasText; }
+        
+        }
         @keyframes afd-ripple {
           0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 50%, transparent); }
           100% { box-shadow: 0 0 0 var(--footer-icon) color-mix(in oklab, var(--primary) 0%, transparent); }
