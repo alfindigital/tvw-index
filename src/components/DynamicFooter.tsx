@@ -80,7 +80,10 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot footer-type relative flex flex-nowrap items-center justify-between gap-2 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-3 sm:px-5 sm:py-2 lg:px-6">
+    <footer
+      aria-label="Site footer"
+      className="afd-foot footer-type relative flex flex-nowrap items-center justify-between gap-2 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-3 sm:px-5 sm:py-2 lg:px-6"
+    >
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
