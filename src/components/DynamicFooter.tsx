@@ -21,6 +21,42 @@ export function DynamicFooter() {
   const [glow, setGlow] = useState({ left: "-20%", top: "0%" });
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  const linkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+
+  // Move active + focus together so the visible item is always the
+  // keyboard-focused one under forced-colors and 200% zoom.
+  const focusAt = useCallback((idx: number) => {
+    const next = ((idx % SOCIALS.length) + SOCIALS.length) % SOCIALS.length;
+    setActive(next);
+    // Wait for the aria-hidden/tabIndex swap to commit before focusing.
+    requestAnimationFrame(() => linkRefs.current[next]?.focus());
+  }, []);
+
+  const onNavKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLElement>) => {
+      switch (e.key) {
+        case "ArrowRight":
+        case "ArrowDown":
+          e.preventDefault();
+          focusAt(active + 1);
+          break;
+        case "ArrowLeft":
+        case "ArrowUp":
+          e.preventDefault();
+          focusAt(active - 1);
+          break;
+        case "Home":
+          e.preventDefault();
+          focusAt(0);
+          break;
+        case "End":
+          e.preventDefault();
+          focusAt(SOCIALS.length - 1);
+          break;
+      }
+    },
+    [active, focusAt],
+  );
 
   useEffect(() => {
     const id = setInterval(() => {
