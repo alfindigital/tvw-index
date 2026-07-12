@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { TelegramIcon, InstagramIcon, TikTokIcon, XIcon } from "./SocialIcons";
 
 type Social = {
