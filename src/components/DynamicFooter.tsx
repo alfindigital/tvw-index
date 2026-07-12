@@ -178,6 +178,7 @@ export function DynamicFooter() {
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
+        onKeyDown={onNavKeyDown}
       >
         {SOCIALS.map((s, idx) => {
           const Icon = s.Icon;
@@ -185,6 +186,9 @@ export function DynamicFooter() {
           return (
             <a
               key={s.label}
+              ref={(el) => {
+                linkRefs.current[idx] = el;
+              }}
               className={`afd-item${isActive ? " active" : ""}`}
               href={s.href}
               target="_blank"
@@ -192,6 +196,7 @@ export function DynamicFooter() {
               aria-label={s.label}
               aria-hidden={!isActive}
               tabIndex={isActive ? 0 : -1}
+              data-rotator-index={idx}
             >
               <span className="afd-ico">
                 <Icon className="h-full w-full" />
