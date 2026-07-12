@@ -147,10 +147,17 @@ async function fetchQuoteCached(symbol: string): Promise<QuoteResult> {
     }
   }
 
-  const result = await fetchQuoteRaw(symbol);
+  const state = marketState();
+  const raw = await fetchQuoteRaw(symbol);
+  const result: QuoteResult =
+    raw.price != null
+      ? { ...raw, marketOpen: state.open, asOf: Date.now() }
+      : raw;
 
   if (cache && result.price != null) {
-    // Cache both the short-lived "fresh" copy and a long-lived stale fallback.
+    // Fresh TTL is dynamic: 45s while IDX is open, up to the next market
+    // open (bounded 5m–12h) while closed. Stale copy is 24h so we can
+    // degrade gracefully if Yahoo returns an error over a weekend.
     const body = JSON.stringify(result);
     try {
       await cache.put(
@@ -158,7 +165,7 @@ async function fetchQuoteCached(symbol: string): Promise<QuoteResult> {
         new Response(body, {
           headers: {
             "Content-Type": "application/json",
-            "Cache-Control": `public, max-age=${CACHE_TTL_S}`,
+            "Cache-Control": `public, max-age=${state.ttlSeconds}`,
           },
         }),
       );
