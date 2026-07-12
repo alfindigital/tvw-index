@@ -3,14 +3,61 @@ export type QuoteResult = {
   price: number | null;
   previousClose: number | null;
   currency: string | null;
+  marketOpen?: boolean;
+  asOf?: number; // epoch ms the quote was fetched from Yahoo
   error?: string;
 };
 
 
 const TIMEOUT_MS = 8000;
-const CACHE_TTL_S = 45; // fresh-quote edge cache
-const STALE_TTL_S = 60 * 60 * 6; // fallback if Yahoo is failing (6h)
+// TTLs are computed dynamically from IDX market hours (see marketState()).
+// Fallbacks used only when the market-state computation fails.
+const CACHE_TTL_OPEN_S = 45;         // hot path during trading
+const CACHE_TTL_CLOSED_MIN_S = 300;  // never cache < 5m outside hours
+const CACHE_TTL_CLOSED_MAX_S = 12 * 60 * 60; // …and never > 12h
+const STALE_TTL_S = 60 * 60 * 24; // long fallback if Yahoo is failing (24h)
 const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
+
+// --- IDX market hours (Asia/Jakarta, WIB, UTC+7, no DST) ---
+// Trading Mon–Fri, 09:00 → 16:00 local. We treat the whole 09:00–16:00
+// window as "open" (session breaks are short enough that a 45s cache is
+// still correct; over-caching by a few minutes at lunch is fine).
+const JAKARTA_OFFSET_MS = 7 * 60 * 60 * 1000;
+const OPEN_MINUTE = 9 * 60;
+const CLOSE_MINUTE = 16 * 60;
+
+type MarketState = { open: boolean; ttlSeconds: number };
+
+function marketState(now = new Date()): MarketState {
+  // Shift into Jakarta wall-clock via UTC math so DST-less WIB is exact.
+  const jk = new Date(now.getTime() + JAKARTA_OFFSET_MS);
+  const wd = jk.getUTCDay(); // 0=Sun … 6=Sat
+  const mins = jk.getUTCHours() * 60 + jk.getUTCMinutes();
+  const isWeekday = wd >= 1 && wd <= 5;
+  const open = isWeekday && mins >= OPEN_MINUTE && mins < CLOSE_MINUTE;
+
+  if (open) return { open: true, ttlSeconds: CACHE_TTL_OPEN_S };
+
+  // Closed → cache until the next open bell (bounded).
+  let addDays = 0;
+  if (isWeekday && mins < OPEN_MINUTE) {
+    addDays = 0; // opens later today
+  } else {
+    // After close today, weekend, etc. Walk forward to next weekday.
+    addDays = 1;
+    while (((wd + addDays) % 7) === 0 || ((wd + addDays) % 7) === 6) addDays++;
+  }
+  const nextOpenJk = new Date(jk);
+  nextOpenJk.setUTCDate(jk.getUTCDate() + addDays);
+  nextOpenJk.setUTCHours(9, 0, 0, 0);
+  const nextOpenUtc = nextOpenJk.getTime() - JAKARTA_OFFSET_MS;
+  const secs = Math.max(1, Math.floor((nextOpenUtc - now.getTime()) / 1000));
+  const ttl = Math.min(CACHE_TTL_CLOSED_MAX_S, Math.max(CACHE_TTL_CLOSED_MIN_S, secs));
+  return { open: false, ttlSeconds: ttl };
+}
+
+// Exported for unit tests.
+export const __test = { marketState };
 
 function toJkSymbol(ticker: string): string {
   const normalized = ticker.trim().toUpperCase();
