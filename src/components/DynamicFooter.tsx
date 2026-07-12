@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import { TelegramIcon, InstagramIcon, TikTokIcon, XIcon } from "./SocialIcons";
 
 type Social = {
@@ -21,6 +21,42 @@ export function DynamicFooter() {
   const [glow, setGlow] = useState({ left: "-20%", top: "0%" });
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
+  const linkRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+
+  // Move active + focus together so the visible item is always the
+  // keyboard-focused one under forced-colors and 200% zoom.
+  const focusAt = useCallback((idx: number) => {
+    const next = ((idx % SOCIALS.length) + SOCIALS.length) % SOCIALS.length;
+    setActive(next);
+    // Wait for the aria-hidden/tabIndex swap to commit before focusing.
+    requestAnimationFrame(() => linkRefs.current[next]?.focus());
+  }, []);
+
+  const onNavKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLElement>) => {
+      switch (e.key) {
+        case "ArrowRight":
+        case "ArrowDown":
+          e.preventDefault();
+          focusAt(active + 1);
+          break;
+        case "ArrowLeft":
+        case "ArrowUp":
+          e.preventDefault();
+          focusAt(active - 1);
+          break;
+        case "Home":
+          e.preventDefault();
+          focusAt(0);
+          break;
+        case "End":
+          e.preventDefault();
+          focusAt(SOCIALS.length - 1);
+          break;
+      }
+    },
+    [active, focusAt],
+  );
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -44,7 +80,10 @@ export function DynamicFooter() {
   }, []);
 
   return (
-    <footer className="afd-foot footer-type relative flex flex-nowrap items-center justify-between gap-2 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-3 sm:px-5 sm:py-2 lg:px-6">
+    <footer
+      aria-label="Site footer"
+      className="afd-foot footer-type relative flex flex-nowrap items-center justify-between gap-2 overflow-hidden rounded-2xl border border-border bg-card px-3 py-1.5 sm:gap-3 sm:px-5 sm:py-2 lg:px-6"
+    >
       <style>{`
         .afd-foot > * { position: relative; z-index: 1; }
         .afd-glow {
@@ -139,6 +178,7 @@ export function DynamicFooter() {
         onMouseLeave={() => setPaused(false)}
         onFocus={() => setPaused(true)}
         onBlur={() => setPaused(false)}
+        onKeyDown={onNavKeyDown}
       >
         {SOCIALS.map((s, idx) => {
           const Icon = s.Icon;
@@ -146,6 +186,9 @@ export function DynamicFooter() {
           return (
             <a
               key={s.label}
+              ref={(el) => {
+                linkRefs.current[idx] = el;
+              }}
               className={`afd-item${isActive ? " active" : ""}`}
               href={s.href}
               target="_blank"
@@ -153,6 +196,7 @@ export function DynamicFooter() {
               aria-label={s.label}
               aria-hidden={!isActive}
               tabIndex={isActive ? 0 : -1}
+              data-rotator-index={idx}
             >
               <span className="afd-ico">
                 <Icon className="h-full w-full" />
