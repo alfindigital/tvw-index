@@ -47,3 +47,87 @@ describe("marketState (IDX, Asia/Jakarta)", () => {
     expect(s.open).toBe(false);
   });
 });
+
+describe("marketState TTL bounds (5m–12h)", () => {
+  const MIN = 300;
+  const MAX = 12 * 60 * 60;
+
+  it("is open at 09:00:00 WIB sharp (opening bell inclusive)", () => {
+    const s = marketState(utc(2026, 1, 5, 2, 0)); // Mon 09:00 WIB
+    expect(s.open).toBe(true);
+    expect(s.ttlSeconds).toBe(45);
+  });
+
+  it("is open at 15:59 WIB (one minute before close)", () => {
+    const s = marketState(utc(2026, 1, 5, 8, 59)); // Mon 15:59 WIB
+    expect(s.open).toBe(true);
+    expect(s.ttlSeconds).toBe(45);
+  });
+
+  it("is closed at 16:00 WIB sharp and TTL clamps down to 12h max", () => {
+    // Actual seconds to next open ≈17h → clamped to 12h.
+    const s = marketState(utc(2026, 1, 5, 9, 0)); // Mon 16:00 WIB
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MAX);
+  });
+
+  it("clamps TTL up to 5m when next open is <5m away (1m before bell)", () => {
+    const s = marketState(utc(2026, 1, 5, 1, 59)); // Mon 08:59 WIB
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MIN);
+  });
+
+  it("returns exactly 5m when next open is exactly 5m away", () => {
+    const s = marketState(utc(2026, 1, 5, 1, 55)); // Mon 08:55 WIB
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MIN);
+  });
+
+  it("passes through raw seconds inside the 5m–12h band (pre-open same day)", () => {
+    // Mon 05:00 WIB → 4h to open = 14400s (within band).
+    const s = marketState(utc(2026, 1, 4, 22, 0));
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(4 * 60 * 60);
+  });
+
+  it("clamps TTL down to 12h after Friday close (~65h to Mon open)", () => {
+    const s = marketState(utc(2026, 1, 9, 9, 0)); // Fri 16:00 WIB
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MAX);
+  });
+
+  it("clamps TTL down to 12h on Saturday midday", () => {
+    const s = marketState(utc(2026, 1, 10, 5, 0));
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MAX);
+  });
+
+  it("clamps TTL down to 12h on Sunday morning", () => {
+    const s = marketState(utc(2026, 1, 11, 0, 0));
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBe(MAX);
+  });
+
+  it("keeps TTL within the band on Sunday late evening (close to Mon open)", () => {
+    // Sun 23:59 WIB → ~9h1m until Mon 09:00.
+    const s = marketState(utc(2026, 1, 11, 16, 59));
+    expect(s.open).toBe(false);
+    expect(s.ttlSeconds).toBeGreaterThan(MIN);
+    expect(s.ttlSeconds).toBeLessThan(MAX);
+  });
+
+  it("never violates the 5m–12h bounds across a full week sweep", () => {
+    // Sample every 30 minutes across a full week starting Mon 00:00 WIB.
+    const start = utc(2026, 1, 4, 17, 0); // Sun 17:00 UTC = Mon 00:00 WIB
+    for (let step = 0; step < 7 * 48; step++) {
+      const t = new Date(start.getTime() + step * 30 * 60 * 1000);
+      const s = marketState(t);
+      if (s.open) {
+        expect(s.ttlSeconds).toBe(45);
+      } else {
+        expect(s.ttlSeconds).toBeGreaterThanOrEqual(MIN);
+        expect(s.ttlSeconds).toBeLessThanOrEqual(MAX);
+      }
+    }
+  });
+});
