@@ -18,6 +18,14 @@ const CACHE_TTL_CLOSED_MAX_S = 12 * 60 * 60; // …and never > 12h
 const STALE_TTL_S = 60 * 60 * 24; // long fallback if Yahoo is failing (24h)
 const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
 
+// Retry policy for transient Yahoo failures (network errors, timeouts,
+// 429 rate limits, 5xx). Total wall time is bounded by attempts × (timeout
+// + backoff) and stays well under the per-request budget.
+const MAX_RETRIES = 3;             // 3 attempts total: initial + 2 retries
+const RETRY_BASE_MS = 250;         // 250ms, 500ms, 1000ms (× jitter)
+const RETRY_MAX_BACKOFF_MS = 2000; // cap any single backoff
+
+
 // --- IDX market hours (Asia/Jakarta, WIB, UTC+7, no DST) ---
 // Trading Mon–Fri, 09:00 → 16:00 local. We treat the whole 09:00–16:00
 // window as "open" (session breaks are short enough that a 45s cache is
