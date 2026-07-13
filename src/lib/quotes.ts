@@ -21,9 +21,28 @@ const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
 // Retry policy for transient Yahoo failures (network errors, timeouts,
 // 429 rate limits, 5xx). Total wall time is bounded by attempts × (timeout
 // + backoff) and stays well under the per-request budget.
-const MAX_RETRIES = 3;             // 3 attempts total: initial + 2 retries
-const RETRY_BASE_MS = 250;         // 250ms, 500ms, 1000ms (× jitter)
-const RETRY_MAX_BACKOFF_MS = 2000; // cap any single backoff
+// Configurable via env vars so ops can tune without a code change:
+//   YAHOO_MAX_RETRIES        — total attempts (initial + retries). Default 3.
+//   YAHOO_RETRY_BASE_MS      — base backoff before jitter. Default 250.
+//   YAHOO_RETRY_MAX_BACKOFF_MS — cap on any single backoff. Default 2000.
+//   YAHOO_RETRY_JITTER       — ± jitter fraction (0..1). Default 0.25.
+function envNum(name: string, fallback: number, { min = 0, max = Number.POSITIVE_INFINITY } = {}): number {
+  const raw =
+    (typeof process !== "undefined" ? process.env?.[name] : undefined) ??
+    (typeof globalThis !== "undefined"
+      ? (globalThis as { [k: string]: unknown })[name]
+      : undefined);
+  if (raw == null || raw === "") return fallback;
+  const n = Number(raw);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.min(max, Math.max(min, n));
+}
+
+const MAX_RETRIES = Math.floor(envNum("YAHOO_MAX_RETRIES", 3, { min: 1, max: 10 }));
+const RETRY_BASE_MS = envNum("YAHOO_RETRY_BASE_MS", 250, { min: 0, max: 60_000 });
+const RETRY_MAX_BACKOFF_MS = envNum("YAHOO_RETRY_MAX_BACKOFF_MS", 2000, { min: 0, max: 60_000 });
+const RETRY_JITTER = envNum("YAHOO_RETRY_JITTER", 0.25, { min: 0, max: 1 });
+
 
 
 // --- IDX market hours (Asia/Jakarta, WIB, UTC+7, no DST) ---
@@ -154,8 +173,9 @@ function isRetryable(result: QuoteResult): boolean {
 function backoffDelayMs(attempt: number): number {
   // Exponential: 250ms * 2^attempt, capped, with ±25% jitter.
   const base = Math.min(RETRY_MAX_BACKOFF_MS, RETRY_BASE_MS * 2 ** attempt);
-  const jitter = base * (0.75 + Math.random() * 0.5);
+  const jitter = base * (1 - RETRY_JITTER + Math.random() * (2 * RETRY_JITTER));
   return Math.round(jitter);
+
 }
 
 async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
