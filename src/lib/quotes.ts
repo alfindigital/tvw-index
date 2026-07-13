@@ -173,8 +173,9 @@ function isRetryable(result: QuoteResult): boolean {
 function backoffDelayMs(attempt: number): number {
   // Exponential: 250ms * 2^attempt, capped, with ±25% jitter.
   const base = Math.min(RETRY_MAX_BACKOFF_MS, RETRY_BASE_MS * 2 ** attempt);
-  const jitter = base * (0.75 + Math.random() * 0.5);
+  const jitter = base * (1 - RETRY_JITTER + Math.random() * (2 * RETRY_JITTER));
   return Math.round(jitter);
+
 }
 
 async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
