@@ -72,7 +72,7 @@ function toJkSymbol(ticker: string): string {
   return normalized.endsWith(".JK") ? normalized : `${normalized}.JK`;
 }
 
-async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
+async function fetchQuoteOnce(symbol: string): Promise<QuoteResult> {
   try {
     const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(
       symbol,
@@ -133,6 +133,43 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
         : "fetch failed";
     return { symbol, price: null, previousClose: null, currency: null, error: msg };
   }
+}
+
+// Errors we consider transient and worth retrying. Everything else (e.g.
+// HTTP 404 for a delisted ticker, or "no price" on a valid symbol) is
+// terminal — retrying just wastes budget.
+function isRetryable(result: QuoteResult): boolean {
+  const err = result.error;
+  if (!err) return false;
+  if (err === "timeout") return true;
+  if (err === "fetch failed") return true;
+  if (err.startsWith("HTTP ")) {
+    const code = Number(err.slice(5));
+    return code === 408 || code === 425 || code === 429 || (code >= 500 && code < 600);
+  }
+  // Generic network-ish errors from fetch (e.g. "network error", DNS).
+  return /network|ECONN|ENOTFOUND|EAI_AGAIN|socket|reset/i.test(err);
+}
+
+function backoffDelayMs(attempt: number): number {
+  // Exponential: 250ms * 2^attempt, capped, with ±25% jitter.
+  const base = Math.min(RETRY_MAX_BACKOFF_MS, RETRY_BASE_MS * 2 ** attempt);
+  const jitter = base * (0.75 + Math.random() * 0.5);
+  return Math.round(jitter);
+}
+
+async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
+  let last: QuoteResult | null = null;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    const result = await fetchQuoteOnce(symbol);
+    if (result.price != null) return result;
+    last = result;
+    if (!isRetryable(result)) return result;
+    if (attempt < MAX_RETRIES - 1) {
+      await new Promise((r) => setTimeout(r, backoffDelayMs(attempt)));
+    }
+  }
+  return last ?? { symbol, price: null, previousClose: null, currency: null, error: "fetch failed" };
 }
 
 // Cloudflare edge cache (caches.default) is available in the Worker runtime but
