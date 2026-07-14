@@ -1,8 +1,8 @@
 // @vitest-environment node
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { __test } from "./quotes";
 
-const { marketState } = __test;
+const { marketState, envNum } = __test;
 
 // All inputs are UTC; Asia/Jakarta = UTC+7 (no DST).
 // 02:00 UTC = 09:00 WIB, 09:00 UTC = 16:00 WIB.
