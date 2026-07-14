@@ -8,6 +8,7 @@ import { formatCompact, formatIDR } from "@/lib/format";
 import { validateTicker } from "@/lib/ticker";
 import { getQuotes } from "@/lib/quotes.functions";
 import { SITE_NAME, SITE_URL, SHARES_AS_OF } from "@/lib/site";
+import { getCachedQuote, putQuoteCache } from "@/lib/storage";
 
 function buildFaqs(t: string, sharesM: number | null) {
   return [
