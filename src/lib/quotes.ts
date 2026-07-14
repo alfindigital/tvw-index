@@ -90,7 +90,7 @@ function marketState(now = new Date()): MarketState {
 }
 
 // Exported for unit tests.
-export const __test = { marketState };
+export const __test = { marketState, envNum };
 
 function toJkSymbol(ticker: string): string {
   const normalized = ticker.trim().toUpperCase();
