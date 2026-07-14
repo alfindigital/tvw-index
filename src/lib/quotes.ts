@@ -34,8 +34,14 @@ function envNum(name: string, fallback: number, { min = 0, max = Number.POSITIVE
       : undefined);
   if (raw == null || raw === "") return fallback;
   const n = Number(raw);
-  if (!Number.isFinite(n)) return fallback;
-  return Math.min(max, Math.max(min, n));
+  if (!Number.isFinite(n) || n < min || n > max) {
+    console.warn(
+      `[quotes] Invalid value for ${name}: ${JSON.stringify(raw)}. ` +
+        `Using default ${fallback} (valid range: ${min}-${max === Number.POSITIVE_INFINITY ? "∞" : max}).`,
+    );
+    return fallback;
+  }
+  return n;
 }
 
 const MAX_RETRIES = Math.floor(envNum("YAHOO_MAX_RETRIES", 3, { min: 1, max: 10 }));
@@ -84,7 +90,7 @@ function marketState(now = new Date()): MarketState {
 }
 
 // Exported for unit tests.
-export const __test = { marketState };
+export const __test = { marketState, envNum };
 
 function toJkSymbol(ticker: string): string {
   const normalized = ticker.trim().toUpperCase();
