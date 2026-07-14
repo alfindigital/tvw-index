@@ -180,3 +180,150 @@ describe("envNum runtime validation", () => {
     expect(warnSpy).toHaveBeenCalledOnce();
   });
 });
+
+describe("retry env overrides (module reload)", () => {
+  const ENV_KEYS = [
+    "YAHOO_MAX_RETRIES",
+    "YAHOO_RETRY_BASE_MS",
+    "YAHOO_RETRY_MAX_BACKOFF_MS",
+    "YAHOO_RETRY_JITTER",
+  ] as const;
+  const saved: Record<string, string | undefined> = {};
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    for (const k of ENV_KEYS) saved[k] = process.env[k];
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    for (const k of ENV_KEYS) {
+      if (saved[k] === undefined) delete process.env[k];
+      else process.env[k] = saved[k];
+    }
+    warnSpy.mockRestore();
+    vi.resetModules();
+  });
+
+  async function reload(env: Partial<Record<(typeof ENV_KEYS)[number], string>>) {
+    for (const k of ENV_KEYS) delete process.env[k];
+    for (const [k, v] of Object.entries(env)) process.env[k] = v;
+    vi.resetModules();
+    return await import("./quotes");
+  }
+
+  it("uses documented defaults when no env vars are set", async () => {
+    const mod = await reload({});
+    expect(mod.__test.retryConfig()).toEqual({
+      MAX_RETRIES: 3,
+      RETRY_BASE_MS: 250,
+      RETRY_MAX_BACKOFF_MS: 2000,
+      RETRY_JITTER: 0.25,
+    });
+  });
+
+  it("applies valid env overrides for all four knobs", async () => {
+    const mod = await reload({
+      YAHOO_MAX_RETRIES: "5",
+      YAHOO_RETRY_BASE_MS: "100",
+      YAHOO_RETRY_MAX_BACKOFF_MS: "5000",
+      YAHOO_RETRY_JITTER: "0.5",
+    });
+    expect(mod.__test.retryConfig()).toEqual({
+      MAX_RETRIES: 5,
+      RETRY_BASE_MS: 100,
+      RETRY_MAX_BACKOFF_MS: 5000,
+      RETRY_JITTER: 0.5,
+    });
+  });
+
+  it("floors MAX_RETRIES to an integer number of attempts", async () => {
+    const mod = await reload({ YAHOO_MAX_RETRIES: "4.9" });
+    expect(mod.__test.retryConfig().MAX_RETRIES).toBe(4);
+  });
+
+  it("clamps invalid jitter (>1 or <0) back to the default 0.25 with a warning", async () => {
+    const modHigh = await reload({ YAHOO_RETRY_JITTER: "1.5" });
+    expect(modHigh.__test.retryConfig().RETRY_JITTER).toBe(0.25);
+
+    const modNeg = await reload({ YAHOO_RETRY_JITTER: "-0.1" });
+    expect(modNeg.__test.retryConfig().RETRY_JITTER).toBe(0.25);
+
+    expect(warnSpy.mock.calls.some((c) => /YAHOO_RETRY_JITTER/.test(String(c[0])))).toBe(true);
+  });
+
+  it("accepts jitter at the exact 0 and 1 boundaries", async () => {
+    const modZero = await reload({ YAHOO_RETRY_JITTER: "0" });
+    expect(modZero.__test.retryConfig().RETRY_JITTER).toBe(0);
+
+    const modOne = await reload({ YAHOO_RETRY_JITTER: "1" });
+    expect(modOne.__test.retryConfig().RETRY_JITTER).toBe(1);
+  });
+
+  it("clamps MAX_RETRIES out-of-range values (0 and 11) to the default 3", async () => {
+    const modLow = await reload({ YAHOO_MAX_RETRIES: "0" });
+    expect(modLow.__test.retryConfig().MAX_RETRIES).toBe(3);
+
+    const modHigh = await reload({ YAHOO_MAX_RETRIES: "11" });
+    expect(modHigh.__test.retryConfig().MAX_RETRIES).toBe(3);
+  });
+
+  it("clamps base/max backoff out-of-range values to defaults", async () => {
+    const mod = await reload({
+      YAHOO_RETRY_BASE_MS: "-1",
+      YAHOO_RETRY_MAX_BACKOFF_MS: "999999",
+    });
+    const cfg = mod.__test.retryConfig();
+    expect(cfg.RETRY_BASE_MS).toBe(250);
+    expect(cfg.RETRY_MAX_BACKOFF_MS).toBe(2000);
+  });
+
+  it("caps backoff at RETRY_MAX_BACKOFF_MS with zero jitter for deterministic output", async () => {
+    const mod = await reload({
+      YAHOO_RETRY_BASE_MS: "100",
+      YAHOO_RETRY_MAX_BACKOFF_MS: "500",
+      YAHOO_RETRY_JITTER: "0",
+    });
+    // attempt 0 → 100, attempt 1 → 200, attempt 2 → 400, attempt 3 → 500 (capped from 800).
+    expect(mod.__test.backoffDelayMs(0)).toBe(100);
+    expect(mod.__test.backoffDelayMs(1)).toBe(200);
+    expect(mod.__test.backoffDelayMs(2)).toBe(400);
+    expect(mod.__test.backoffDelayMs(3)).toBe(500);
+    expect(mod.__test.backoffDelayMs(10)).toBe(500);
+  });
+
+  it("keeps jittered backoff within the ± jitter fraction band", async () => {
+    const mod = await reload({
+      YAHOO_RETRY_BASE_MS: "1000",
+      YAHOO_RETRY_MAX_BACKOFF_MS: "10000",
+      YAHOO_RETRY_JITTER: "0.25",
+    });
+    // attempt 0 → base 1000, ±25% → [750, 1250].
+    const rand = vi.spyOn(Math, "random");
+    try {
+      rand.mockReturnValue(0);
+      expect(mod.__test.backoffDelayMs(0)).toBe(750);
+      rand.mockReturnValue(0.9999999);
+      expect(mod.__test.backoffDelayMs(0)).toBe(1250);
+      rand.mockReturnValue(0.5);
+      expect(mod.__test.backoffDelayMs(0)).toBe(1000);
+    } finally {
+      rand.mockRestore();
+    }
+  });
+
+  it("collapses jitter when RETRY_JITTER=0 (fully deterministic)", async () => {
+    const mod = await reload({
+      YAHOO_RETRY_BASE_MS: "400",
+      YAHOO_RETRY_MAX_BACKOFF_MS: "10000",
+      YAHOO_RETRY_JITTER: "0",
+    });
+    const rand = vi.spyOn(Math, "random").mockReturnValue(0.42);
+    try {
+      expect(mod.__test.backoffDelayMs(0)).toBe(400);
+      expect(mod.__test.backoffDelayMs(1)).toBe(800);
+    } finally {
+      rand.mockRestore();
+    }
+  });
+});
