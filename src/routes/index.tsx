@@ -38,6 +38,7 @@ import {
   type Stock,
   type AppSettings,
   type SortKey,
+  putQuoteCache,
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
