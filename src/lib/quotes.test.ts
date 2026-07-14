@@ -131,3 +131,52 @@ describe("marketState TTL bounds (5m–12h)", () => {
     }
   });
 });
+
+describe("envNum runtime validation", () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    delete process.env.YAHOO_TEST_VAR;
+  });
+
+  it("returns the default for a missing or empty env value without warning", () => {
+    expect(envNum("YAHOO_TEST_VAR", 3, { min: 1, max: 10 })).toBe(3);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("returns a valid value inside the allowed range", () => {
+    process.env.YAHOO_TEST_VAR = "5";
+    expect(envNum("YAHOO_TEST_VAR", 3, { min: 1, max: 10 })).toBe(5);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("falls back to default and warns for a non-numeric value", () => {
+    process.env.YAHOO_TEST_VAR = "abc";
+    expect(envNum("YAHOO_TEST_VAR", 3, { min: 1, max: 10 })).toBe(3);
+    expect(warnSpy).toHaveBeenCalledOnce();
+    expect(warnSpy.mock.calls[0][0]).toMatch(/Invalid value for YAHOO_TEST_VAR/);
+  });
+
+  it("falls back to default and warns for a value above the max", () => {
+    process.env.YAHOO_TEST_VAR = "99";
+    expect(envNum("YAHOO_TEST_VAR", 3, { min: 1, max: 10 })).toBe(3);
+    expect(warnSpy).toHaveBeenCalledOnce();
+  });
+
+  it("falls back to default and warns for a value below the min", () => {
+    process.env.YAHOO_TEST_VAR = "0";
+    expect(envNum("YAHOO_TEST_VAR", 3, { min: 1, max: 10 })).toBe(3);
+    expect(warnSpy).toHaveBeenCalledOnce();
+  });
+
+  it("falls back to default and warns for a negative jitter value", () => {
+    process.env.YAHOO_TEST_VAR = "-0.5";
+    expect(envNum("YAHOO_TEST_VAR", 0.25, { min: 0, max: 1 })).toBe(0.25);
+    expect(warnSpy).toHaveBeenCalledOnce();
+  });
+});
