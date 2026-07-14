@@ -26,6 +26,98 @@ export type Template = {
 const KEY = "idx-basket-v1";
 const TPL_KEY = "idx-templates-v1";
 const SETTINGS_KEY = "idx-settings-v1";
+const QUOTES_KEY = "idx-quotes-v1";
+
+// ---------- Persistent quote cache ----------
+// Keyed by *normalized* ticker (uppercase, no .JK suffix — same shape used in
+// the UI). Serves as a client-side fallback so a page reload can render the
+// last known price instantly, before the network round-trip to Yahoo/Cloud
+// resolves. Fresh network data always wins and overwrites the entry.
+
+export type CachedQuote = {
+  price: number;
+  previousClose?: number | null;
+  currency?: string | null;
+  asOf: number; // epoch ms when the quote was captured
+};
+
+export type QuoteCache = Record<string, CachedQuote>;
+
+// Drop entries older than this so the cache doesn't grow forever with
+// tickers the user removed from their basket weeks ago.
+const QUOTE_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
+const QUOTE_CACHE_MAX_ENTRIES = 500;
+
+function normalizeTickerKey(ticker: string): string {
+  return ticker.trim().toUpperCase().replace(/\.JK$/i, "");
+}
+
+export function loadQuoteCache(): QuoteCache {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(QUOTES_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return {};
+    const now = Date.now();
+    const out: QuoteCache = {};
+    for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
+      if (!v || typeof v !== "object") continue;
+      const e = v as Partial<CachedQuote>;
+      const price = Number(e.price);
+      const asOf = Number(e.asOf);
+      if (!Number.isFinite(price) || price <= 0) continue;
+      if (!Number.isFinite(asOf)) continue;
+      if (now - asOf > QUOTE_CACHE_MAX_AGE_MS) continue;
+      out[normalizeTickerKey(k)] = {
+        price,
+        previousClose:
+          e.previousClose != null && Number.isFinite(Number(e.previousClose))
+            ? Number(e.previousClose)
+            : null,
+        currency: typeof e.currency === "string" ? e.currency : null,
+        asOf,
+      };
+    }
+    return out;
+  } catch {
+    return {};
+  }
+}
+
+export function saveQuoteCache(cache: QuoteCache): void {
+  if (typeof window === "undefined") return;
+  try {
+    // Trim to newest N entries if the cache grew too large.
+    const entries = Object.entries(cache);
+    if (entries.length > QUOTE_CACHE_MAX_ENTRIES) {
+      entries.sort((a, b) => b[1].asOf - a[1].asOf);
+      const trimmed: QuoteCache = {};
+      for (const [k, v] of entries.slice(0, QUOTE_CACHE_MAX_ENTRIES)) trimmed[k] = v;
+      localStorage.setItem(QUOTES_KEY, JSON.stringify(trimmed));
+      return;
+    }
+    localStorage.setItem(QUOTES_KEY, JSON.stringify(cache));
+  } catch {
+    // ignore quota errors
+  }
+}
+
+export function putQuoteCache(ticker: string, entry: CachedQuote): void {
+  const key = normalizeTickerKey(ticker);
+  if (!key) return;
+  const cache = loadQuoteCache();
+  cache[key] = entry;
+  saveQuoteCache(cache);
+}
+
+export function getCachedQuote(ticker: string): CachedQuote | null {
+  const key = normalizeTickerKey(ticker);
+  if (!key) return null;
+  const cache = loadQuoteCache();
+  return cache[key] ?? null;
+}
+
 
 // ---------- App settings (weighting / display preferences) ----------
 
