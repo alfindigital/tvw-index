@@ -97,13 +97,30 @@ function EmitenPage() {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Seed price from the persistent client cache so a reload shows the last
+  // known price immediately, before the network round-trip finishes.
+  useEffect(() => {
+    const cached = getCachedQuote(t);
+    if (cached) setPrice(cached.price);
+  }, [t]);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
     getQuotesServer({ data: { tickers: [t] } })
       .then((res) => {
         if (cancelled) return;
-        setPrice(res.quotes[0]?.price ?? null);
+        const q = res.quotes[0];
+        const p = q?.price ?? null;
+        setPrice(p);
+        if (q && p != null) {
+          putQuoteCache(t, {
+            price: Number(p),
+            previousClose: q.previousClose ?? null,
+            currency: q.currency ?? null,
+            asOf: Date.now(),
+          });
+        }
       })
       .catch(() => {})
       .finally(() => !cancelled && setLoading(false));
