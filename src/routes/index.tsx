@@ -394,6 +394,14 @@ function IndexPage() {
         const now = Date.now();
         setLastRefresh(now);
         setFetchedAt((prev) => ({ ...prev, [id]: now }));
+        // Persist to the client-side quote cache so a reload can show the
+        // last known price instantly, even if the network is slow/offline.
+        putQuoteCache(cleanTicker, {
+          price: Number(q.price),
+          previousClose: q.previousClose ?? null,
+          currency: q.currency ?? null,
+          asOf: now,
+        });
         // Track daily % change vs. previous close, if provider returned it.
         if (q.previousClose != null && q.previousClose > 0) {
           const pct = (Number(q.price) - Number(q.previousClose)) / Number(q.previousClose);
