@@ -249,7 +249,7 @@ describe("retry env overrides (module reload)", () => {
     const modNeg = await reload({ YAHOO_RETRY_JITTER: "-0.1" });
     expect(modNeg.__test.retryConfig().RETRY_JITTER).toBe(0.25);
 
-    expect(warnSpy.mock.calls.some((c) => /YAHOO_RETRY_JITTER/.test(String(c[0])))).toBe(true);
+    expect(warnSpy.mock.calls.some((c: unknown[]) => /YAHOO_RETRY_JITTER/.test(String(c[0])))).toBe(true);
   });
 
   it("accepts jitter at the exact 0 and 1 boundaries", async () => {
