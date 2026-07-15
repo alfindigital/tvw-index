@@ -1,4 +1,4 @@
-import { Plus, Keyboard, Copy, LineChart } from "lucide-react";
+import { Plus, Copy, LineChart } from "lucide-react";
 import { PRESETS } from "@/data/presets";
 
 type Props = {
