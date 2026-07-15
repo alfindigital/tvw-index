@@ -50,7 +50,6 @@ export function SettingsMenu({
   onRefreshAll,
   onReset,
   onAfterImport,
-  onShareLink,
 }: Props) {
   const [resetOpen, setResetOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -168,16 +167,6 @@ export function SettingsMenu({
             <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`} />
             Refresh prices
             <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={currentStocks.length === 0}
-            onSelect={(e) => {
-              e.preventDefault();
-              onShareLink();
-            }}
-          >
-            <Link2 className="mr-2 h-3.5 w-3.5" />
-            Copy watchlist link
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={currentStocks.length === 0}
