@@ -7,7 +7,6 @@ import {
   RotateCcw,
   Sun,
   Moon,
-  Link2,
   FileSpreadsheet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
