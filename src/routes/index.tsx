@@ -665,7 +665,6 @@ function IndexPage() {
               onRefreshAll={refreshAll}
               onReset={resetWatchlist}
               onAfterImport={reloadFromStorage}
-              onShareLink={shareWatchlist}
             />
           </>
         }
