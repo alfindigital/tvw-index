@@ -1,11 +1,21 @@
 import { forwardRef, useMemo, useRef, useState } from "react";
-import { AlertCircle, Plus, Database } from "lucide-react";
+import { AlertCircle, Plus, Database, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { validateTicker } from "@/lib/ticker";
 import { IDX_TICKERS, IDX_SHARES } from "@/data/idx-shares";
 import { formatCompact } from "@/lib/format";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
   onAdd: (ticker: string) => void;
