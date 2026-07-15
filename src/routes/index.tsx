@@ -360,11 +360,32 @@ function IndexPage() {
   );
 
   function resetWatchlist() {
+    resetSnapshotRef.current = {
+      stocks: stocksRef.current,
+      lastRefresh,
+      fetchedAt,
+      dailyChanges,
+    };
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());
     setFetchedAt({});
     setDailyChanges({});
+
+    toast.success("Watchlist reset", {
+      action: {
+        label: "Undo",
+        onClick: () => {
+          const snap = resetSnapshotRef.current;
+          if (!snap) return;
+          setStocks(snap.stocks);
+          setLastRefresh(snap.lastRefresh);
+          setFetchedAt(snap.fetchedAt);
+          setDailyChanges(snap.dailyChanges);
+          toast.success("Reset undone — watchlist restored");
+        },
+      },
+    });
   }
 
   async function fetchTickerForRow(
