@@ -177,18 +177,26 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
             </ul>
           ) : null}
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setResetOpen(true)}
-          disabled={!hasStocks}
-          className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
-          aria-label="Reset watchlist"
-          title="Reset watchlist"
-        >
-          <RotateCcw className="h-4 w-4" />
-          <span className="hidden sm:inline">Reset</span>
-        </Button>
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setResetOpen(true)}
+                disabled={!hasStocks}
+                className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
+                aria-label="Reset all — clear current watchlist"
+              >
+                <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                <span className="hidden sm:inline">Reset</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" sideOffset={6}>
+              <span>Reset all — clear current watchlist</span>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <Button
           type="button"
           onClick={commit}
