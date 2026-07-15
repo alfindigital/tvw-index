@@ -168,16 +168,6 @@ export function SettingsMenu({
             <Download className="mr-2 h-3.5 w-3.5" />
             Export data (.json)
           </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={currentStocks.length === 0}
-            onSelect={(e) => {
-              e.preventDefault();
-              handleCopyCsv();
-            }}
-          >
-            <FileSpreadsheet className="mr-2 h-3.5 w-3.5" />
-            Copy as CSV
-          </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleImportClick}>
             <Upload className="mr-2 h-3.5 w-3.5" />
             Import data (.json)
