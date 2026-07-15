@@ -1,14 +1,26 @@
 import { forwardRef, useMemo, useRef, useState } from "react";
-import { AlertCircle, Plus, Database } from "lucide-react";
+import { AlertCircle, Plus, Database, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { validateTicker } from "@/lib/ticker";
 import { IDX_TICKERS, IDX_SHARES } from "@/data/idx-shares";
 import { formatCompact } from "@/lib/format";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type Props = {
   onAdd: (ticker: string) => void;
+  onReset: () => void;
+  hasStocks: boolean;
 };
 
 const MAX_SUGGESTIONS = 8;
@@ -28,13 +40,14 @@ function matchTickers(query: string): string[] {
 }
 
 export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAddBar(
-  { onAdd },
+  { onAdd, onReset, hasStocks },
   ref,
 ) {
   const [value, setValue] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [resetOpen, setResetOpen] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmed = value.trim().toUpperCase();
@@ -160,6 +173,18 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
         </div>
         <Button
           type="button"
+          variant="outline"
+          onClick={() => setResetOpen(true)}
+          disabled={!hasStocks}
+          className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
+          aria-label="Reset watchlist"
+          title="Reset watchlist"
+        >
+          <RotateCcw className="h-4 w-4" />
+          <span className="hidden sm:inline">Reset</span>
+        </Button>
+        <Button
+          type="button"
           onClick={commit}
           disabled={!canAdd}
           className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
@@ -178,6 +203,31 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           {shownError}
         </p>
       ) : null}
+
+      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
+            <AlertDialogDescription>
+              All stocks in the current watchlist will be removed. Saved templates are unaffected.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onReset();
+                setResetOpen(false);
+                toast.success("Watchlist reset");
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 });

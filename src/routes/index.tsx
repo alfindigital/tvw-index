@@ -698,7 +698,12 @@ function IndexPage() {
         <section className="mt-6">
           {/* Quick add bar */}
           <div className="mb-3">
-            <QuickAddBar ref={quickAddRef} onAdd={addTicker} />
+            <QuickAddBar
+              ref={quickAddRef}
+              onAdd={addTicker}
+              onReset={resetWatchlist}
+              hasStocks={stocks.length > 0}
+            />
           </div>
 
           {hasRows ? (
