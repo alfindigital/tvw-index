@@ -41,7 +41,7 @@ type Props = {
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
-  onShareLink: () => void;
+  
 };
 
 export function SettingsMenu({
