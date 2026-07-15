@@ -19,6 +19,8 @@ import {
 
 type Props = {
   onAdd: (ticker: string) => void;
+  onReset: () => void;
+  hasStocks: boolean;
 };
 
 const MAX_SUGGESTIONS = 8;
