@@ -203,6 +203,31 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           {shownError}
         </p>
       ) : null}
+
+      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
+            <AlertDialogDescription>
+              All stocks in the current watchlist will be removed. Saved templates are unaffected.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                onReset();
+                setResetOpen(false);
+                toast.success("Watchlist reset");
+              }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reset
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 });
