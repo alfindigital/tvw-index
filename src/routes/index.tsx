@@ -134,6 +134,20 @@ function humanError(err: string | undefined): string {
   return "Failed to fetch price";
 }
 
+function stockSummary(stocks: Stock[]): string {
+  const count = stocks.length;
+  if (count === 0) return "0 stocks";
+  const tickers = stocks
+    .map((s) => s.ticker?.trim().toUpperCase())
+    .filter(Boolean) as string[];
+  const noun = count === 1 ? "stock" : "stocks";
+  if (tickers.length === 0) return `${count} ${noun}`;
+  const unique = [...new Set(tickers)];
+  if (unique.length <= 3) return `${count} ${noun} (${unique.join(", ")})`;
+  const [first, second, third] = unique;
+  return `${count} ${noun} (${first}, ${second}, ${third}, +${unique.length - 3} more)`;
+}
+
 
 function IndexPage() {
   const search = Route.useSearch();
