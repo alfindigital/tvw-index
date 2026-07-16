@@ -412,10 +412,11 @@ function IndexPage() {
     if (undoToastIdRef.current != null) {
       toast.dismiss(undoToastIdRef.current);
     }
+    const summary = stockSummary(snap.stocks);
     undoToastIdRef.current = toast.success(
-      `Reset undone — restored ${snap.count} ${snap.count === 1 ? "stock" : "stocks"}`,
+      `Undo reset — restored ${summary}`,
       {
-        description: "Changed your mind? Redo the reset.",
+        description: "Changed your mind? Redo the reset to clear them again.",
         duration: 10_000,
         action: {
           label: `Redo reset (${snap.count})`,
@@ -462,10 +463,11 @@ function IndexPage() {
     setDailyChanges({});
 
     const count = prevStocks.length;
+    const summary = stockSummary(prevStocks);
     resetToastIdRef.current = toast.success(
-      `Watchlist reset — ${count} ${count === 1 ? "stock" : "stocks"} cleared`,
+      `Watchlist reset — cleared ${summary}`,
       {
-        description: "Press Ctrl/⌘+Z to undo this reset",
+        description: "Undo now to restore them, or press Ctrl/⌘+Z.",
         duration: 10_000,
         action: {
           label: `Undo reset (${count})`,
