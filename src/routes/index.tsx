@@ -398,9 +398,7 @@ function IndexPage() {
       toast.dismiss(undoToastIdRef.current);
       undoToastIdRef.current = null;
     }
-    toast.success(
-      `Reset re-applied — cleared ${snap.count} ${snap.count === 1 ? "stock" : "stocks"} again`,
-    );
+    toast.success(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
   }, []);
 
