@@ -442,6 +442,11 @@ function IndexPage() {
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
     }
+    if (undoToastIdRef.current != null) {
+      toast.dismiss(undoToastIdRef.current);
+      undoToastIdRef.current = null;
+    }
+    redoResetRef.current = null;
     resetSnapshotRef.current = {
       stocks: prevStocks,
       lastRefresh,
