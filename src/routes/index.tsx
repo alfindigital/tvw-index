@@ -359,6 +359,18 @@ function IndexPage() {
     [update, remove, enableAuto],
   );
 
+  const undoReset = useCallback(() => {
+    const snap = resetSnapshotRef.current;
+    if (!snap) return false;
+    setStocks(snap.stocks);
+    setLastRefresh(snap.lastRefresh);
+    setFetchedAt(snap.fetchedAt);
+    setDailyChanges(snap.dailyChanges);
+    resetSnapshotRef.current = null;
+    toast.success("Reset undone — watchlist restored");
+    return true;
+  }, []);
+
   function resetWatchlist() {
     resetSnapshotRef.current = {
       stocks: stocksRef.current,
@@ -373,17 +385,10 @@ function IndexPage() {
     setDailyChanges({});
 
     toast.success("Watchlist reset", {
+      description: "Press Ctrl/⌘+Z to undo",
       action: {
         label: "Undo",
-        onClick: () => {
-          const snap = resetSnapshotRef.current;
-          if (!snap) return;
-          setStocks(snap.stocks);
-          setLastRefresh(snap.lastRefresh);
-          setFetchedAt(snap.fetchedAt);
-          setDailyChanges(snap.dailyChanges);
-          toast.success("Reset undone — watchlist restored");
-        },
+        onClick: () => undoReset(),
       },
     });
   }
@@ -652,6 +657,15 @@ function IndexPage() {
     },
     { key: "s", shift: true, handler: () => setSaveDialogTrigger((n) => n + 1) },
     { key: "c", shift: true, allowInInput: true, handler: () => copyFormula() },
+    {
+      key: "z",
+      ctrlOrMeta: true,
+      allowInInput: true,
+      handler: () => {
+        if (!resetSnapshotRef.current) return;
+        undoReset();
+      },
+    },
     { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
   ]);
 
