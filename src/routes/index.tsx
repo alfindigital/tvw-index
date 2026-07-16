@@ -187,6 +187,7 @@ function IndexPage() {
     fetchedAt: Record<string, number>;
     dailyChanges: Record<string, number>;
     count: number;
+    summary: string;
   } | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
