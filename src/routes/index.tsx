@@ -167,6 +167,14 @@ function IndexPage() {
     at: number;
   } | null>(null);
   const resetToastIdRef = useRef<string | number | null>(null);
+  const redoResetRef = useRef<{
+    stocks: Stock[];
+    lastRefresh: number | null;
+    fetchedAt: Record<string, number>;
+    dailyChanges: Record<string, number>;
+    count: number;
+  } | null>(null);
+  const undoToastIdRef = useRef<string | number | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
