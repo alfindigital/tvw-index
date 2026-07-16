@@ -370,16 +370,31 @@ function IndexPage() {
     setFetchedAt(snap.fetchedAt);
     setDailyChanges(snap.dailyChanges);
     resetSnapshotRef.current = null;
-    toast.success("Reset undone — watchlist restored");
+    if (resetToastIdRef.current != null) {
+      toast.dismiss(resetToastIdRef.current);
+      resetToastIdRef.current = null;
+    }
+    toast.success(`Reset undone — restored ${snap.count} ${snap.count === 1 ? "stock" : "stocks"}`);
     return true;
   }, []);
 
   function resetWatchlist() {
+    const prevStocks = stocksRef.current;
+    if (prevStocks.length === 0) {
+      toast.info("Watchlist already empty");
+      return;
+    }
+    // Dismiss any prior reset-undo toast so only the latest reset is undoable.
+    if (resetToastIdRef.current != null) {
+      toast.dismiss(resetToastIdRef.current);
+    }
     resetSnapshotRef.current = {
-      stocks: stocksRef.current,
+      stocks: prevStocks,
       lastRefresh,
       fetchedAt,
       dailyChanges,
+      count: prevStocks.length,
+      at: Date.now(),
     };
     setStocks([]);
     setLastRefresh(null);
@@ -387,13 +402,24 @@ function IndexPage() {
     setFetchedAt({});
     setDailyChanges({});
 
-    toast.success("Watchlist reset", {
-      description: "Press Ctrl/⌘+Z to undo",
-      action: {
-        label: "Undo",
-        onClick: () => undoReset(),
+    const count = prevStocks.length;
+    resetToastIdRef.current = toast.success(
+      `Watchlist reset — ${count} ${count === 1 ? "stock" : "stocks"} cleared`,
+      {
+        description: "Press Ctrl/⌘+Z to undo this reset",
+        duration: 10_000,
+        action: {
+          label: `Undo reset (${count})`,
+          onClick: () => undoReset(),
+        },
+        onDismiss: () => {
+          resetToastIdRef.current = null;
+        },
+        onAutoClose: () => {
+          resetToastIdRef.current = null;
+        },
       },
-    });
+    );
   }
 
   async function fetchTickerForRow(
