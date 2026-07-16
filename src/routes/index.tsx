@@ -167,6 +167,14 @@ function IndexPage() {
     at: number;
   } | null>(null);
   const resetToastIdRef = useRef<string | number | null>(null);
+  const redoResetRef = useRef<{
+    stocks: Stock[];
+    lastRefresh: number | null;
+    fetchedAt: Record<string, number>;
+    dailyChanges: Record<string, number>;
+    count: number;
+  } | null>(null);
+  const undoToastIdRef = useRef<string | number | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
@@ -362,9 +370,36 @@ function IndexPage() {
     [update, remove, enableAuto],
   );
 
+  const redoReset = useCallback(() => {
+    const snap = redoResetRef.current;
+    if (!snap) return false;
+    setStocks([]);
+    setLastRefresh(null);
+    setLoadingIds(new Set());
+    setFetchedAt({});
+    setDailyChanges({});
+    redoResetRef.current = null;
+    if (undoToastIdRef.current != null) {
+      toast.dismiss(undoToastIdRef.current);
+      undoToastIdRef.current = null;
+    }
+    toast.success(
+      `Reset re-applied — cleared ${snap.count} ${snap.count === 1 ? "stock" : "stocks"} again`,
+    );
+    return true;
+  }, []);
+
   const undoReset = useCallback(() => {
     const snap = resetSnapshotRef.current;
     if (!snap) return false;
+    // Capture current (post-reset) state so Redo can restore it.
+    redoResetRef.current = {
+      stocks: stocksRef.current,
+      lastRefresh: null,
+      fetchedAt: {},
+      dailyChanges: {},
+      count: snap.count,
+    };
     setStocks(snap.stocks);
     setLastRefresh(snap.lastRefresh);
     setFetchedAt(snap.fetchedAt);
@@ -374,9 +409,28 @@ function IndexPage() {
       toast.dismiss(resetToastIdRef.current);
       resetToastIdRef.current = null;
     }
-    toast.success(`Reset undone — restored ${snap.count} ${snap.count === 1 ? "stock" : "stocks"}`);
+    if (undoToastIdRef.current != null) {
+      toast.dismiss(undoToastIdRef.current);
+    }
+    undoToastIdRef.current = toast.success(
+      `Reset undone — restored ${snap.count} ${snap.count === 1 ? "stock" : "stocks"}`,
+      {
+        description: "Changed your mind? Redo the reset.",
+        duration: 10_000,
+        action: {
+          label: `Redo reset (${snap.count})`,
+          onClick: () => redoReset(),
+        },
+        onDismiss: () => {
+          undoToastIdRef.current = null;
+        },
+        onAutoClose: () => {
+          undoToastIdRef.current = null;
+        },
+      },
+    );
     return true;
-  }, []);
+  }, [redoReset]);
 
   function resetWatchlist() {
     const prevStocks = stocksRef.current;
@@ -388,6 +442,11 @@ function IndexPage() {
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
     }
+    if (undoToastIdRef.current != null) {
+      toast.dismiss(undoToastIdRef.current);
+      undoToastIdRef.current = null;
+    }
+    redoResetRef.current = null;
     resetSnapshotRef.current = {
       stocks: prevStocks,
       lastRefresh,
