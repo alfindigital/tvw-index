@@ -134,6 +134,20 @@ function humanError(err: string | undefined): string {
   return "Failed to fetch price";
 }
 
+function stockSummary(stocks: Stock[]): string {
+  const count = stocks.length;
+  if (count === 0) return "0 stocks";
+  const tickers = stocks
+    .map((s) => s.ticker?.trim().toUpperCase())
+    .filter(Boolean) as string[];
+  const noun = count === 1 ? "stock" : "stocks";
+  if (tickers.length === 0) return `${count} ${noun}`;
+  const unique = [...new Set(tickers)];
+  if (unique.length <= 3) return `${count} ${noun} (${unique.join(", ")})`;
+  const [first, second, third] = unique;
+  return `${count} ${noun} (${first}, ${second}, ${third}, +${unique.length - 3} more)`;
+}
+
 
 function IndexPage() {
   const search = Route.useSearch();
@@ -173,6 +187,7 @@ function IndexPage() {
     fetchedAt: Record<string, number>;
     dailyChanges: Record<string, number>;
     count: number;
+    summary: string;
   } | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
@@ -383,9 +398,7 @@ function IndexPage() {
       toast.dismiss(undoToastIdRef.current);
       undoToastIdRef.current = null;
     }
-    toast.success(
-      `Reset re-applied — cleared ${snap.count} ${snap.count === 1 ? "stock" : "stocks"} again`,
-    );
+    toast.success(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
   }, []);
 
@@ -399,6 +412,7 @@ function IndexPage() {
       fetchedAt: {},
       dailyChanges: {},
       count: snap.count,
+      summary: stockSummary(snap.stocks),
     };
     setStocks(snap.stocks);
     setLastRefresh(snap.lastRefresh);
@@ -412,10 +426,11 @@ function IndexPage() {
     if (undoToastIdRef.current != null) {
       toast.dismiss(undoToastIdRef.current);
     }
+    const summary = stockSummary(snap.stocks);
     undoToastIdRef.current = toast.success(
-      `Reset undone — restored ${snap.count} ${snap.count === 1 ? "stock" : "stocks"}`,
+      `Undo reset — restored ${summary}`,
       {
-        description: "Changed your mind? Redo the reset.",
+        description: "Changed your mind? Redo the reset to clear them again.",
         duration: 10_000,
         action: {
           label: `Redo reset (${snap.count})`,
@@ -462,10 +477,11 @@ function IndexPage() {
     setDailyChanges({});
 
     const count = prevStocks.length;
+    const summary = stockSummary(prevStocks);
     resetToastIdRef.current = toast.success(
-      `Watchlist reset — ${count} ${count === 1 ? "stock" : "stocks"} cleared`,
+      `Watchlist reset — cleared ${summary}`,
       {
-        description: "Press Ctrl/⌘+Z to undo this reset",
+        description: "Undo now to restore them, or press Ctrl/⌘+Z.",
         duration: 10_000,
         action: {
           label: `Undo reset (${count})`,
