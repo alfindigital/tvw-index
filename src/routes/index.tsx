@@ -414,6 +414,7 @@ function IndexPage() {
       fetchedAt: {},
       dailyChanges: {},
       count: snap.count,
+      summary: stockSummary(snap.stocks),
     };
     setStocks(snap.stocks);
     setLastRefresh(snap.lastRefresh);
