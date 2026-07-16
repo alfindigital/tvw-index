@@ -657,6 +657,15 @@ function IndexPage() {
     },
     { key: "s", shift: true, handler: () => setSaveDialogTrigger((n) => n + 1) },
     { key: "c", shift: true, allowInInput: true, handler: () => copyFormula() },
+    {
+      key: "z",
+      ctrlOrMeta: true,
+      allowInInput: true,
+      handler: () => {
+        if (!resetSnapshotRef.current) return;
+        undoReset();
+      },
+    },
     { key: "?", allowInInput: true, handler: () => setShortcutsOpen(true) },
   ]);
 
