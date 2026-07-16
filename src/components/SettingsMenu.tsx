@@ -182,7 +182,7 @@ export function SettingsMenu({
             <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
             <AlertDialogDescription>
               All stocks in the current watchlist will be removed. Saved templates are unaffected.
-              This action cannot be undone.
+              You can undo this from the toast that appears after resetting.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -191,7 +191,6 @@ export function SettingsMenu({
               onClick={() => {
                 onReset();
                 setResetOpen(false);
-                toast.success("Watchlist reset");
               }}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
