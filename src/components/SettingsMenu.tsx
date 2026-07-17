@@ -10,16 +10,6 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -39,7 +29,6 @@ type Props = {
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
-  
 };
 
 export function SettingsMenu({
@@ -49,7 +38,6 @@ export function SettingsMenu({
   onReset,
   onAfterImport,
 }: Props) {
-  const [resetOpen, setResetOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { theme, toggle: toggleTheme } = useTheme();
 
@@ -85,7 +73,9 @@ export function SettingsMenu({
       return;
     }
     onAfterImport();
-    toast.success(`Import successful · ${result.basketCount} stocks · ${result.templateCount} template`);
+    toast.success(
+      `Import successful · ${result.basketCount} stocks · ${result.templateCount} template`,
+    );
   }
 
   return (
@@ -150,7 +140,7 @@ export function SettingsMenu({
             disabled={currentStocks.length === 0}
             onSelect={(e) => {
               e.preventDefault();
-              setResetOpen(true);
+              onReset();
             }}
             className="text-destructive focus:text-destructive"
           >
@@ -174,31 +164,6 @@ export function SettingsMenu({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Reset confirmation */}
-      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
-            <AlertDialogDescription>
-              All stocks in the current watchlist will be removed. Saved templates are unaffected.
-              You can undo this from the toast that appears after resetting.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onReset();
-                setResetOpen(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

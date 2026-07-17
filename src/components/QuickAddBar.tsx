@@ -6,22 +6,7 @@ import { toast } from "sonner";
 import { validateTicker } from "@/lib/ticker";
 import { IDX_TICKERS, IDX_SHARES } from "@/data/idx-shares";
 import { formatCompact } from "@/lib/format";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Props = {
   onAdd: (ticker: string) => void;
@@ -53,7 +38,6 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
-  const [resetOpen, setResetOpen] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmed = value.trim().toUpperCase();
@@ -183,7 +167,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setResetOpen(true)}
+                onClick={() => onReset()}
                 disabled={!hasStocks}
                 className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
                 aria-label="Reset all — clear current watchlist"
@@ -217,30 +201,6 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           {shownError}
         </p>
       ) : null}
-
-      <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
-            <AlertDialogDescription>
-              All stocks in the current watchlist will be removed. Saved templates are unaffected.
-              You can undo this from the toast that appears after resetting.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                onReset();
-                setResetOpen(false);
-              }}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 });
