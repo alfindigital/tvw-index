@@ -186,6 +186,15 @@ function IndexPage() {
   const redoResetRef = useRef<ResetRedoSnapshot | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistResetHistory = useCallback(() => {
+    const undo = resetSnapshotRef.current;
+    const redo = redoResetRef.current;
+    if (!undo && !redo) {
+      clearResetHistory();
+      return;
+    }
+    saveResetHistory({ undo, redo });
+  }, []);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
