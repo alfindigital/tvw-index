@@ -238,6 +238,57 @@ function IndexPage() {
     saveBasket({ stocks, lastRefresh });
   }, [stocks, lastRefresh, hydrated]);
 
+  // Rehydrate reset undo/redo history from localStorage so a brief refresh
+  // doesn't lose the ability to undo/redo the last reset.
+  const didRehydrateResetHistory = useRef(false);
+  useEffect(() => {
+    if (!hydrated || didRehydrateResetHistory.current) return;
+    didRehydrateResetHistory.current = true;
+    const history = loadResetHistory();
+    if (history.undo) {
+      resetSnapshotRef.current = history.undo;
+      const summary = stockSummary(history.undo.stocks);
+      resetToastIdRef.current = toast.info(
+        `Undo reset available — ${summary} from before refresh`,
+        {
+          description: "Undo to restore, or press Ctrl/⌘+Z.",
+          duration: 12_000,
+          action: {
+            label: `Undo reset (${history.undo.count})`,
+            onClick: () => undoReset(),
+          },
+          onDismiss: () => {
+            resetToastIdRef.current = null;
+          },
+          onAutoClose: () => {
+            resetToastIdRef.current = null;
+          },
+        },
+      );
+    } else if (history.redo) {
+      redoResetRef.current = history.redo;
+      undoToastIdRef.current = toast.info(
+        `Redo reset available — ${history.redo.summary} from before refresh`,
+        {
+          description: "Redo to clear them again.",
+          duration: 12_000,
+          action: {
+            label: `Redo reset (${history.redo.count})`,
+            onClick: () => redoReset(),
+          },
+          onDismiss: () => {
+            undoToastIdRef.current = null;
+          },
+          onAutoClose: () => {
+            undoToastIdRef.current = null;
+          },
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
+
   // Persist settings on change
   useEffect(() => {
     if (!hydrated) return;
