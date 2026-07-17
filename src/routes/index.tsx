@@ -181,23 +181,9 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const stocksRef = useRef<Stock[]>([]);
-  const resetSnapshotRef = useRef<{
-    stocks: Stock[];
-    lastRefresh: number | null;
-    fetchedAt: Record<string, number>;
-    dailyChanges: Record<string, number>;
-    count: number;
-    at: number;
-  } | null>(null);
+  const resetSnapshotRef = useRef<ResetUndoSnapshot | null>(null);
   const resetToastIdRef = useRef<string | number | null>(null);
-  const redoResetRef = useRef<{
-    stocks: Stock[];
-    lastRefresh: number | null;
-    fetchedAt: Record<string, number>;
-    dailyChanges: Record<string, number>;
-    count: number;
-    summary: string;
-  } | null>(null);
+  const redoResetRef = useRef<ResetRedoSnapshot | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
