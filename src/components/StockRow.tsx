@@ -18,6 +18,8 @@ type Props = {
   dailyChange?: number | null;
   /** true when the last fetch is older than the stale threshold (default 5m). */
   stale?: boolean;
+  /** Brief visual highlight after undo (restored) / redo (about to be removed). */
+  flash?: "restored" | "removed" | null;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void;
   onRemove: () => void;
