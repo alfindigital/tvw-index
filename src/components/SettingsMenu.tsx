@@ -29,7 +29,6 @@ type Props = {
   onRefreshAll: () => void;
   onReset: () => void;
   onAfterImport: () => void;
-  
 };
 
 export function SettingsMenu({
@@ -74,7 +73,9 @@ export function SettingsMenu({
       return;
     }
     onAfterImport();
-    toast.success(`Import successful · ${result.basketCount} stocks · ${result.templateCount} template`);
+    toast.success(
+      `Import successful · ${result.basketCount} stocks · ${result.templateCount} template`,
+    );
   }
 
   return (

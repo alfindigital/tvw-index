@@ -1,14 +1,7 @@
 import { createFileRoute, useRouter, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  TrendingUp,
-  Layers,
-  Crown,
-  AlertTriangle,
-  RefreshCw,
-  Keyboard,
-} from "lucide-react";
+import { TrendingUp, Layers, Crown, AlertTriangle, RefreshCw, Keyboard } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { AppHeader } from "@/components/AppHeader";
@@ -56,7 +49,6 @@ import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
-
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
@@ -140,16 +132,15 @@ function humanError(err: string | undefined): string {
   const e = err.toLowerCase();
   if (e.includes("404") || e.includes("not found")) return "Ticker not found";
   if (e.includes("no price")) return "No price data";
-  if (e.includes("timeout") || e.includes("network") || e.includes("fetch")) return "Connection failed";
+  if (e.includes("timeout") || e.includes("network") || e.includes("fetch"))
+    return "Connection failed";
   return "Failed to fetch price";
 }
 
 function stockSummary(stocks: Stock[]): string {
   const count = stocks.length;
   if (count === 0) return "0 stocks";
-  const tickers = stocks
-    .map((s) => s.ticker?.trim().toUpperCase())
-    .filter(Boolean) as string[];
+  const tickers = stocks.map((s) => s.ticker?.trim().toUpperCase()).filter(Boolean) as string[];
   const noun = count === 1 ? "stock" : "stocks";
   if (tickers.length === 0) return `${count} ${noun}`;
   const unique = [...new Set(tickers)];
@@ -157,7 +148,6 @@ function stockSummary(stocks: Stock[]): string {
   const [first, second, third] = unique;
   return `${count} ${noun} (${first}, ${second}, ${third}, +${unique.length - 3} more)`;
 }
-
 
 function IndexPage() {
   const search = Route.useSearch();
@@ -270,9 +260,14 @@ function IndexPage() {
     }
   }, [enriched.rows, settings.sort]);
 
-  const formula = useMemo(() => buildFormula(sortedRows, settings.prefix), [sortedRows, settings.prefix]);
-  const pineScript = useMemo(() => buildPineScript(sortedRows, { prefix: settings.prefix }), [sortedRows, settings.prefix]);
-
+  const formula = useMemo(
+    () => buildFormula(sortedRows, settings.prefix),
+    [sortedRows, settings.prefix],
+  );
+  const pineScript = useMemo(
+    () => buildPineScript(sortedRows, { prefix: settings.prefix }),
+    [sortedRows, settings.prefix],
+  );
 
   // Basket-level daily change: weight × per-name % change, summed. Only names
   // with a known previousClose contribute (weight of the rest is treated as 0),
@@ -439,23 +434,20 @@ function IndexPage() {
       toast.dismiss(undoToastIdRef.current);
     }
     const summary = stockSummary(snap.stocks);
-    undoToastIdRef.current = toast.success(
-      `Undo reset — restored ${summary}`,
-      {
-        description: "Changed your mind? Redo the reset to clear them again.",
-        duration: 10_000,
-        action: {
-          label: `Redo reset (${snap.count})`,
-          onClick: () => redoReset(),
-        },
-        onDismiss: () => {
-          undoToastIdRef.current = null;
-        },
-        onAutoClose: () => {
-          undoToastIdRef.current = null;
-        },
+    undoToastIdRef.current = toast.success(`Undo reset — restored ${summary}`, {
+      description: "Changed your mind? Redo the reset to clear them again.",
+      duration: 10_000,
+      action: {
+        label: `Redo reset (${snap.count})`,
+        onClick: () => redoReset(),
       },
-    );
+      onDismiss: () => {
+        undoToastIdRef.current = null;
+      },
+      onAutoClose: () => {
+        undoToastIdRef.current = null;
+      },
+    });
     return true;
   }, [redoReset]);
 
@@ -498,23 +490,20 @@ function IndexPage() {
 
     const count = prevStocks.length;
     const summary = stockSummary(prevStocks);
-    resetToastIdRef.current = toast.success(
-      `Watchlist reset — cleared ${summary}`,
-      {
-        description: "Undo now to restore them, or press Ctrl/⌘+Z.",
-        duration: 10_000,
-        action: {
-          label: `Undo reset (${count})`,
-          onClick: () => undoReset(),
-        },
-        onDismiss: () => {
-          resetToastIdRef.current = null;
-        },
-        onAutoClose: () => {
-          resetToastIdRef.current = null;
-        },
+    resetToastIdRef.current = toast.success(`Watchlist reset — cleared ${summary}`, {
+      description: "Undo now to restore them, or press Ctrl/⌘+Z.",
+      duration: 10_000,
+      action: {
+        label: `Undo reset (${count})`,
+        onClick: () => undoReset(),
       },
-    );
+      onDismiss: () => {
+        resetToastIdRef.current = null;
+      },
+      onAutoClose: () => {
+        resetToastIdRef.current = null;
+      },
+    });
   }
 
   async function fetchTickerForRow(
@@ -723,7 +712,6 @@ function IndexPage() {
     await refreshList(list);
   }
 
-
   function loadFromTemplate(stocks: Stock[]) {
     setStocks(stocks);
     setTimeout(() => {
@@ -768,7 +756,7 @@ function IndexPage() {
   // Global keyboard shortcuts
   useShortcuts([
     { key: "n", handler: () => quickAddRef.current?.focus() },
-    
+
     { key: "r", shift: true, handler: () => refreshAll() },
     {
       key: "f",
@@ -798,7 +786,6 @@ function IndexPage() {
     [],
   );
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
-
 
   const hasRows = enriched.rows.length > 0;
 
@@ -881,8 +868,6 @@ function IndexPage() {
                 onRefresh={refreshAll}
                 refreshing={loadingIds.size > 0}
               />
-
-
             </div>
           ) : null}
 
@@ -959,11 +944,7 @@ function IndexPage() {
           {/* Formula — grand total output */}
           {hasRows && (
             <div className="mt-8">
-              <FloatingFormula
-                formula={formula}
-                pineScript={pineScript}
-                onShare={shareWatchlist}
-              />
+              <FloatingFormula formula={formula} pineScript={pineScript} onShare={shareWatchlist} />
             </div>
           )}
         </section>
@@ -971,9 +952,7 @@ function IndexPage() {
         <div className="mt-auto pt-6 sm:pt-8">
           <DynamicFooter />
         </div>
-
       </main>
-
 
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
 

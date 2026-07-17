@@ -6,12 +6,7 @@ import { toast } from "sonner";
 import { validateTicker } from "@/lib/ticker";
 import { IDX_TICKERS, IDX_SHARES } from "@/data/idx-shares";
 import { formatCompact } from "@/lib/format";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Props = {
   onAdd: (ticker: string) => void;
@@ -206,7 +201,6 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           {shownError}
         </p>
       ) : null}
-
     </div>
   );
 });
