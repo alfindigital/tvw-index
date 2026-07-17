@@ -465,6 +465,7 @@ function IndexPage() {
       1500,
     );
     resetSnapshotRef.current = null;
+    persistResetHistory();
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
       resetToastIdRef.current = null;
