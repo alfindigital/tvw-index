@@ -522,6 +522,7 @@ function IndexPage() {
       count: prevStocks.length,
       at: Date.now(),
     };
+    persistResetHistory();
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());
