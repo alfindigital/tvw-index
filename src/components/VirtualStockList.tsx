@@ -87,6 +87,7 @@ export function VirtualStockList({
                 weightMode={weightMode}
                 dailyChange={dailyChanges?.[r.id] ?? null}
                 stale={staleIds?.has(r.id) ?? false}
+                flash={flashIds?.has(r.id) ? (flashKind ?? null) : null}
                 onChange={h.onChange}
                 onCommitTicker={h.onCommitTicker}
                 onRemove={h.onRemove}
