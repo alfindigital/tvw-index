@@ -172,7 +172,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setResetOpen(true)}
+                onClick={() => onReset()}
                 disabled={!hasStocks}
                 className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
                 aria-label="Reset all — clear current watchlist"
