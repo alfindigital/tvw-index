@@ -439,12 +439,11 @@ function IndexPage() {
     // Capture current (post-reset) state so Redo can restore it.
     redoResetRef.current = {
       stocks: snap.stocks,
-      lastRefresh: null,
-      fetchedAt: {},
-      dailyChanges: {},
       count: snap.count,
       summary: stockSummary(snap.stocks),
+      at: Date.now(),
     };
+    persistResetHistory();
     setStocks(snap.stocks);
     setLastRefresh(snap.lastRefresh);
     setFetchedAt(snap.fetchedAt);
