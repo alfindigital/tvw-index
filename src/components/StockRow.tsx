@@ -49,6 +49,7 @@ function StockRowImpl({
   weightMode = "mcap",
   dailyChange = null,
   stale = false,
+  flash = null,
   onChange,
   onCommitTicker,
   onRemove,
