@@ -972,6 +972,7 @@ function IndexPage() {
                     weightMode={settings.weightMode}
                     dailyChange={dailyChanges[r.id] ?? null}
                     stale={staleIds.has(r.id)}
+                    flash={flashIds.has(r.id) ? flashKind : null}
                     onChange={h.onChange}
                     onCommitTicker={h.onCommitTicker}
                     onRemove={h.onRemove}
