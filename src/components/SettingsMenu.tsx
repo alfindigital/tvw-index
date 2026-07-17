@@ -39,7 +39,6 @@ export function SettingsMenu({
   onReset,
   onAfterImport,
 }: Props) {
-  const [resetOpen, setResetOpen] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const { theme, toggle: toggleTheme } = useTheme();
 
