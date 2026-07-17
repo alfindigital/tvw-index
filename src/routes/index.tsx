@@ -954,6 +954,8 @@ function IndexPage() {
                 weightMode={settings.weightMode}
                 dailyChanges={dailyChanges}
                 staleIds={staleIds}
+                flashIds={flashIds}
+                flashKind={flashKind}
                 getRowHandlers={getRowHandlers}
               />
             ) : (
