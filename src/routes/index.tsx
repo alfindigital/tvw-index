@@ -489,7 +489,7 @@ function IndexPage() {
       },
     });
     return true;
-  }, [redoReset, triggerFlash]);
+  }, [redoReset, triggerFlash, persistResetHistory]);
 
   function resetWatchlist() {
     const prevStocks = stocksRef.current;
