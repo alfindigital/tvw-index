@@ -89,7 +89,15 @@ function StockRowImpl({
   const showFreeFloat = weightMode === "freefloat";
 
   return (
-    <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+    <div
+      className={`relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]${
+        flash === "restored"
+          ? " lm-flash-restored"
+          : flash === "removed"
+            ? " lm-flash-removed"
+            : ""
+      }`}
+    >
       {/* Mobile: ticker on row 1; shares | price | delete on row 2.
           Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
