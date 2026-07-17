@@ -194,6 +194,7 @@ function IndexPage() {
     summary: string;
   } | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
