@@ -42,6 +42,11 @@ import {
   type AppSettings,
   type SortKey,
   putQuoteCache,
+  loadResetHistory,
+  saveResetHistory,
+  clearResetHistory,
+  type ResetUndoSnapshot,
+  type ResetRedoSnapshot,
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
