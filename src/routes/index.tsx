@@ -163,6 +163,8 @@ function IndexPage() {
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [pendingResetSummary, setPendingResetSummary] = useState<string | null>(null);
+  const [flashIds, setFlashIds] = useState<Set<string>>(() => new Set());
+  const [flashKind, setFlashKind] = useState<"restored" | "removed" | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
     sort: "manual",
@@ -192,6 +194,7 @@ function IndexPage() {
     summary: string;
   } | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
+  const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
@@ -392,14 +395,44 @@ function IndexPage() {
     [update, remove, enableAuto],
   );
 
+  const triggerFlash = useCallback(
+    (ids: string[], kind: "restored" | "removed", durationMs: number) => {
+      if (flashTimerRef.current) clearTimeout(flashTimerRef.current);
+      if (ids.length === 0) {
+        setFlashIds(new Set());
+        setFlashKind(null);
+        return;
+      }
+      setFlashIds(new Set(ids));
+      setFlashKind(kind);
+      flashTimerRef.current = setTimeout(() => {
+        setFlashIds(new Set());
+        setFlashKind(null);
+        flashTimerRef.current = null;
+      }, durationMs);
+    },
+    [],
+  );
+
   const redoReset = useCallback(() => {
     const snap = redoResetRef.current;
     if (!snap) return false;
-    setStocks([]);
-    setLastRefresh(null);
-    setLoadingIds(new Set());
-    setFetchedAt({});
-    setDailyChanges({});
+    // Flash the rows red first, then clear on the next tick so the user
+    // sees which tickers are about to disappear.
+    const idsToFlash = snap.stocks.map((s) => s.id);
+    triggerFlash(idsToFlash, "removed", 600);
+    const doClear = () => {
+      setStocks([]);
+      setLastRefresh(null);
+      setLoadingIds(new Set());
+      setFetchedAt({});
+      setDailyChanges({});
+    };
+    if (idsToFlash.length > 0) {
+      setTimeout(doClear, 500);
+    } else {
+      doClear();
+    }
     redoResetRef.current = null;
     if (undoToastIdRef.current != null) {
       toast.dismiss(undoToastIdRef.current);
@@ -407,14 +440,14 @@ function IndexPage() {
     }
     toast.success(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
-  }, []);
+  }, [triggerFlash]);
 
   const undoReset = useCallback(() => {
     const snap = resetSnapshotRef.current;
     if (!snap) return false;
     // Capture current (post-reset) state so Redo can restore it.
     redoResetRef.current = {
-      stocks: stocksRef.current,
+      stocks: snap.stocks,
       lastRefresh: null,
       fetchedAt: {},
       dailyChanges: {},
@@ -425,6 +458,12 @@ function IndexPage() {
     setLastRefresh(snap.lastRefresh);
     setFetchedAt(snap.fetchedAt);
     setDailyChanges(snap.dailyChanges);
+    // Flash restored rows green so the user sees exactly what came back.
+    triggerFlash(
+      snap.stocks.map((s) => s.id),
+      "restored",
+      1500,
+    );
     resetSnapshotRef.current = null;
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
@@ -449,7 +488,7 @@ function IndexPage() {
       },
     });
     return true;
-  }, [redoReset]);
+  }, [redoReset, triggerFlash]);
 
   function resetWatchlist() {
     const prevStocks = stocksRef.current;
@@ -897,6 +936,7 @@ function IndexPage() {
                       weightMode={settings.weightMode}
                       dailyChange={dailyChanges[r.id] ?? null}
                       stale={staleIds.has(r.id)}
+                      flash={flashIds.has(r.id) ? flashKind : null}
                       onChange={h.onChange}
                       onCommitTicker={h.onCommitTicker}
                       onRemove={h.onRemove}
@@ -914,6 +954,8 @@ function IndexPage() {
                 weightMode={settings.weightMode}
                 dailyChanges={dailyChanges}
                 staleIds={staleIds}
+                flashIds={flashIds}
+                flashKind={flashKind}
                 getRowHandlers={getRowHandlers}
               />
             ) : (
@@ -930,6 +972,7 @@ function IndexPage() {
                     weightMode={settings.weightMode}
                     dailyChange={dailyChanges[r.id] ?? null}
                     stale={staleIds.has(r.id)}
+                    flash={flashIds.has(r.id) ? flashKind : null}
                     onChange={h.onChange}
                     onCommitTicker={h.onCommitTicker}
                     onRemove={h.onRemove}

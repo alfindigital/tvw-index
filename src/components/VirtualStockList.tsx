@@ -19,6 +19,8 @@ type Props = {
   weightMode?: WeightMode;
   dailyChanges?: Record<string, number>;
   staleIds?: Set<string>;
+  flashIds?: Set<string>;
+  flashKind?: "restored" | "removed" | null;
   getRowHandlers: (id: string) => RowHandlers;
 };
 
@@ -29,6 +31,8 @@ export function VirtualStockList({
   weightMode,
   dailyChanges,
   staleIds,
+  flashIds,
+  flashKind,
   getRowHandlers,
 }: Props) {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -83,6 +87,7 @@ export function VirtualStockList({
                 weightMode={weightMode}
                 dailyChange={dailyChanges?.[r.id] ?? null}
                 stale={staleIds?.has(r.id) ?? false}
+                flash={flashIds?.has(r.id) ? (flashKind ?? null) : null}
                 onChange={h.onChange}
                 onCommitTicker={h.onCommitTicker}
                 onRemove={h.onRemove}

@@ -18,6 +18,8 @@ type Props = {
   dailyChange?: number | null;
   /** true when the last fetch is older than the stale threshold (default 5m). */
   stale?: boolean;
+  /** Brief visual highlight after undo (restored) / redo (about to be removed). */
+  flash?: "restored" | "removed" | null;
   onChange: (patch: Partial<Stock>) => void;
   onCommitTicker: (ticker: string) => void;
   onRemove: () => void;
@@ -47,6 +49,7 @@ function StockRowImpl({
   weightMode = "mcap",
   dailyChange = null,
   stale = false,
+  flash = null,
   onChange,
   onCommitTicker,
   onRemove,
@@ -86,7 +89,15 @@ function StockRowImpl({
   const showFreeFloat = weightMode === "freefloat";
 
   return (
-    <div className="relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]">
+    <div
+      className={`relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]${
+        flash === "restored"
+          ? " lm-flash-restored"
+          : flash === "removed"
+            ? " lm-flash-removed"
+            : ""
+      }`}
+    >
       {/* Mobile: ticker on row 1; shares | price | delete on row 2.
           Desktop: one row with ticker | shares | price | delete. */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-2">
@@ -318,6 +329,7 @@ export const StockRow = memo(StockRowImpl, (prev, next) => {
     prev.weightMode === next.weightMode &&
     prev.dailyChange === next.dailyChange &&
     prev.stale === next.stale &&
+    prev.flash === next.flash &&
     prev.onChange === next.onChange &&
     prev.onCommitTicker === next.onCommitTicker &&
     prev.onRemove === next.onRemove &&

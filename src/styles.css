@@ -242,3 +242,27 @@
   letter-spacing: var(--footer-tracking);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Watchlist row flash (undo/redo feedback) ---------- */
+@keyframes lm-flash-restored {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 0%, transparent);
+         background-color: color-mix(in oklch, var(--primary) 22%, transparent); }
+  40%  { box-shadow: 0 0 0 3px color-mix(in oklch, var(--primary) 55%, transparent);
+         background-color: color-mix(in oklch, var(--primary) 16%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--primary) 0%, transparent);
+         background-color: transparent; }
+}
+@keyframes lm-flash-removed {
+  0%   { box-shadow: 0 0 0 0 color-mix(in oklch, var(--destructive) 0%, transparent);
+         background-color: color-mix(in oklch, var(--destructive) 26%, transparent); }
+  40%  { box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 55%, transparent);
+         background-color: color-mix(in oklch, var(--destructive) 18%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--destructive) 0%, transparent);
+         background-color: transparent; }
+}
+.lm-flash-restored { animation: lm-flash-restored 1400ms ease-out; }
+.lm-flash-removed  { animation: lm-flash-removed 600ms ease-out forwards; }
+@media (prefers-reduced-motion: reduce) {
+  .lm-flash-restored, .lm-flash-removed { animation: none; }
+}
+
