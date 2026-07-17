@@ -329,6 +329,7 @@ export const StockRow = memo(StockRowImpl, (prev, next) => {
     prev.weightMode === next.weightMode &&
     prev.dailyChange === next.dailyChange &&
     prev.stale === next.stale &&
+    prev.flash === next.flash &&
     prev.onChange === next.onChange &&
     prev.onCommitTicker === next.onCommitTicker &&
     prev.onRemove === next.onRemove &&
