@@ -27,6 +27,11 @@ const KEY = "idx-basket-v1";
 const TPL_KEY = "idx-templates-v1";
 const SETTINGS_KEY = "idx-settings-v1";
 const QUOTES_KEY = "idx-quotes-v1";
+const RESET_HISTORY_KEY = "idx-reset-history-v1";
+// TTL for persisted reset undo/redo history. Long enough to survive a
+// brief refresh or accidental tab close, short enough that it doesn't
+// linger and confuse the user on the next visit.
+const RESET_HISTORY_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 // ---------- Persistent quote cache ----------
 // Keyed by *normalized* ticker (uppercase, no .JK suffix — same shape used in
