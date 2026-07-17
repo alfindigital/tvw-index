@@ -43,7 +43,6 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
-  const [resetOpen, setResetOpen] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmed = value.trim().toUpperCase();
