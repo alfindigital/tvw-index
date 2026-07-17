@@ -465,6 +465,14 @@ function IndexPage() {
       toast.info("Watchlist already empty");
       return;
     }
+    setPendingResetSummary(stockSummary(prevStocks));
+    setResetConfirmOpen(true);
+  }
+
+  function confirmReset() {
+    setResetConfirmOpen(false);
+    const prevStocks = stocksRef.current;
+    if (prevStocks.length === 0) return;
     // Dismiss any prior reset-undo toast so only the latest reset is undoable.
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
