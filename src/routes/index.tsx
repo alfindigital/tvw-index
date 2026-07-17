@@ -434,13 +434,14 @@ function IndexPage() {
       doClear();
     }
     redoResetRef.current = null;
+    persistResetHistory();
     if (undoToastIdRef.current != null) {
       toast.dismiss(undoToastIdRef.current);
       undoToastIdRef.current = null;
     }
     toast.success(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
-  }, [triggerFlash]);
+  }, [triggerFlash, persistResetHistory]);
 
   const undoReset = useCallback(() => {
     const snap = resetSnapshotRef.current;
