@@ -7,16 +7,6 @@ import { validateTicker } from "@/lib/ticker";
 import { IDX_TICKERS, IDX_SHARES } from "@/data/idx-shares";
 import { formatCompact } from "@/lib/format";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
