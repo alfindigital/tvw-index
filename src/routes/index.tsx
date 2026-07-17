@@ -42,6 +42,11 @@ import {
   type AppSettings,
   type SortKey,
   putQuoteCache,
+  loadResetHistory,
+  saveResetHistory,
+  clearResetHistory,
+  type ResetUndoSnapshot,
+  type ResetRedoSnapshot,
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
 import { formatIDR, formatPct } from "@/lib/format";
@@ -176,25 +181,20 @@ function IndexPage() {
   const quickAddRef = useRef<HTMLInputElement>(null);
   const formulaRef = useRef<string>("");
   const stocksRef = useRef<Stock[]>([]);
-  const resetSnapshotRef = useRef<{
-    stocks: Stock[];
-    lastRefresh: number | null;
-    fetchedAt: Record<string, number>;
-    dailyChanges: Record<string, number>;
-    count: number;
-    at: number;
-  } | null>(null);
+  const resetSnapshotRef = useRef<ResetUndoSnapshot | null>(null);
   const resetToastIdRef = useRef<string | number | null>(null);
-  const redoResetRef = useRef<{
-    stocks: Stock[];
-    lastRefresh: number | null;
-    fetchedAt: Record<string, number>;
-    dailyChanges: Record<string, number>;
-    count: number;
-    summary: string;
-  } | null>(null);
+  const redoResetRef = useRef<ResetRedoSnapshot | null>(null);
   const undoToastIdRef = useRef<string | number | null>(null);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const persistResetHistory = useCallback(() => {
+    const undo = resetSnapshotRef.current;
+    const redo = redoResetRef.current;
+    if (!undo && !redo) {
+      clearResetHistory();
+      return;
+    }
+    saveResetHistory({ undo, redo });
+  }, []);
   const getQuotesServer = useServerFn(getQuotes);
   // Stable per-row handler cache so memoized StockRow doesn't re-render
   // every time the parent re-renders.
@@ -237,6 +237,57 @@ function IndexPage() {
     if (!hydrated) return;
     saveBasket({ stocks, lastRefresh });
   }, [stocks, lastRefresh, hydrated]);
+
+  // Rehydrate reset undo/redo history from localStorage so a brief refresh
+  // doesn't lose the ability to undo/redo the last reset.
+  const didRehydrateResetHistory = useRef(false);
+  useEffect(() => {
+    if (!hydrated || didRehydrateResetHistory.current) return;
+    didRehydrateResetHistory.current = true;
+    const history = loadResetHistory();
+    if (history.undo) {
+      resetSnapshotRef.current = history.undo;
+      const summary = stockSummary(history.undo.stocks);
+      resetToastIdRef.current = toast.info(
+        `Undo reset available — ${summary} from before refresh`,
+        {
+          description: "Undo to restore, or press Ctrl/⌘+Z.",
+          duration: 12_000,
+          action: {
+            label: `Undo reset (${history.undo.count})`,
+            onClick: () => undoReset(),
+          },
+          onDismiss: () => {
+            resetToastIdRef.current = null;
+          },
+          onAutoClose: () => {
+            resetToastIdRef.current = null;
+          },
+        },
+      );
+    } else if (history.redo) {
+      redoResetRef.current = history.redo;
+      undoToastIdRef.current = toast.info(
+        `Redo reset available — ${history.redo.summary} from before refresh`,
+        {
+          description: "Redo to clear them again.",
+          duration: 12_000,
+          action: {
+            label: `Redo reset (${history.redo.count})`,
+            onClick: () => redoReset(),
+          },
+          onDismiss: () => {
+            undoToastIdRef.current = null;
+          },
+          onAutoClose: () => {
+            undoToastIdRef.current = null;
+          },
+        },
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
 
   // Persist settings on change
   useEffect(() => {
@@ -434,13 +485,14 @@ function IndexPage() {
       doClear();
     }
     redoResetRef.current = null;
+    persistResetHistory();
     if (undoToastIdRef.current != null) {
       toast.dismiss(undoToastIdRef.current);
       undoToastIdRef.current = null;
     }
     toast.success(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
-  }, [triggerFlash]);
+  }, [triggerFlash, persistResetHistory]);
 
   const undoReset = useCallback(() => {
     const snap = resetSnapshotRef.current;
@@ -448,12 +500,11 @@ function IndexPage() {
     // Capture current (post-reset) state so Redo can restore it.
     redoResetRef.current = {
       stocks: snap.stocks,
-      lastRefresh: null,
-      fetchedAt: {},
-      dailyChanges: {},
       count: snap.count,
       summary: stockSummary(snap.stocks),
+      at: Date.now(),
     };
+    persistResetHistory();
     setStocks(snap.stocks);
     setLastRefresh(snap.lastRefresh);
     setFetchedAt(snap.fetchedAt);
@@ -465,6 +516,7 @@ function IndexPage() {
       1500,
     );
     resetSnapshotRef.current = null;
+    persistResetHistory();
     if (resetToastIdRef.current != null) {
       toast.dismiss(resetToastIdRef.current);
       resetToastIdRef.current = null;
@@ -488,7 +540,7 @@ function IndexPage() {
       },
     });
     return true;
-  }, [redoReset, triggerFlash]);
+  }, [redoReset, triggerFlash, persistResetHistory]);
 
   function resetWatchlist() {
     const prevStocks = stocksRef.current;
@@ -521,6 +573,7 @@ function IndexPage() {
       count: prevStocks.length,
       at: Date.now(),
     };
+    persistResetHistory();
     setStocks([]);
     setLastRefresh(null);
     setLoadingIds(new Set());

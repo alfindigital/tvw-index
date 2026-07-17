@@ -27,6 +27,11 @@ const KEY = "idx-basket-v1";
 const TPL_KEY = "idx-templates-v1";
 const SETTINGS_KEY = "idx-settings-v1";
 const QUOTES_KEY = "idx-quotes-v1";
+const RESET_HISTORY_KEY = "idx-reset-history-v1";
+// TTL for persisted reset undo/redo history. Long enough to survive a
+// brief refresh or accidental tab close, short enough that it doesn't
+// linger and confuse the user on the next visit.
+const RESET_HISTORY_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
 // ---------- Persistent quote cache ----------
 // Keyed by *normalized* ticker (uppercase, no .JK suffix — same shape used in
@@ -333,5 +338,107 @@ export function applyImport(raw: string, mode: "replace" | "merge" = "replace"):
       ok: false,
       error: e instanceof Error ? e.message : "Parse error",
     };
+  }
+}
+
+// ---------- Reset undo/redo history (survives brief refresh) ----------
+
+export type ResetUndoSnapshot = {
+  stocks: Stock[];
+  lastRefresh: number | null;
+  fetchedAt: Record<string, number>;
+  dailyChanges: Record<string, number>;
+  count: number;
+  at: number;
+};
+
+export type ResetRedoSnapshot = {
+  stocks: Stock[];
+  count: number;
+  summary: string;
+  at: number;
+};
+
+export type ResetHistory = {
+  undo: ResetUndoSnapshot | null;
+  redo: ResetRedoSnapshot | null;
+};
+
+function normalizeNumRecord(v: unknown): Record<string, number> {
+  if (!v || typeof v !== "object") return {};
+  const out: Record<string, number> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    const n = Number(val);
+    if (Number.isFinite(n)) out[k] = n;
+  }
+  return out;
+}
+
+export function loadResetHistory(): ResetHistory {
+  if (typeof window === "undefined") return { undo: null, redo: null };
+  try {
+    const raw = localStorage.getItem(RESET_HISTORY_KEY);
+    if (!raw) return { undo: null, redo: null };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return { undo: null, redo: null };
+    const now = Date.now();
+    let undo: ResetUndoSnapshot | null = null;
+    let redo: ResetRedoSnapshot | null = null;
+    const u = (parsed as { undo?: unknown }).undo;
+    if (u && typeof u === "object") {
+      const raw = u as Record<string, unknown>;
+      const at = Number(raw.at);
+      const stocks = Array.isArray(raw.stocks) ? raw.stocks.map(normalizeStock) : [];
+      if (Number.isFinite(at) && now - at < RESET_HISTORY_TTL_MS && stocks.length > 0) {
+        undo = {
+          stocks,
+          lastRefresh:
+            raw.lastRefresh == null ? null : Number(raw.lastRefresh) || null,
+          fetchedAt: normalizeNumRecord(raw.fetchedAt),
+          dailyChanges: normalizeNumRecord(raw.dailyChanges),
+          count: Number(raw.count) || stocks.length,
+          at,
+        };
+      }
+    }
+    const r = (parsed as { redo?: unknown }).redo;
+    if (r && typeof r === "object") {
+      const raw = r as Record<string, unknown>;
+      const at = Number(raw.at);
+      const stocks = Array.isArray(raw.stocks) ? raw.stocks.map(normalizeStock) : [];
+      if (Number.isFinite(at) && now - at < RESET_HISTORY_TTL_MS && stocks.length > 0) {
+        redo = {
+          stocks,
+          count: Number(raw.count) || stocks.length,
+          summary: typeof raw.summary === "string" ? raw.summary : "",
+          at,
+        };
+      }
+    }
+    return { undo, redo };
+  } catch {
+    return { undo: null, redo: null };
+  }
+}
+
+export function saveResetHistory(history: ResetHistory): void {
+  if (typeof window === "undefined") return;
+  try {
+    if (!history.undo && !history.redo) {
+      localStorage.removeItem(RESET_HISTORY_KEY);
+      return;
+    }
+    localStorage.setItem(RESET_HISTORY_KEY, JSON.stringify(history));
+  } catch {
+    // ignore quota errors
+  }
+}
+
+export function clearResetHistory(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(RESET_HISTORY_KEY);
+  } catch {
+    // ignore
   }
 }
