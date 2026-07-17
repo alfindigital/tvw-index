@@ -242,3 +242,26 @@
   letter-spacing: var(--footer-tracking);
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Watchlist row flash (undo/redo feedback) ---------- */
+@keyframes lm-flash-restored {
+  0%   { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.0); background-color: hsl(var(--primary) / 0.18); }
+  40%  { box-shadow: 0 0 0 3px hsl(var(--primary) / 0.55); background-color: hsl(var(--primary) / 0.14); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.0); background-color: transparent; }
+}
+@keyframes lm-flash-removed {
+  0%   { box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.0); background-color: hsl(var(--destructive) / 0.22); }
+  40%  { box-shadow: 0 0 0 3px hsl(var(--destructive) / 0.55); background-color: hsl(var(--destructive) / 0.16); }
+  100% { box-shadow: 0 0 0 0 hsl(var(--destructive) / 0.0); background-color: transparent; }
+}
+@utility flash-restored {
+  animation: lm-flash-restored 1400ms ease-out;
+}
+@utility flash-removed {
+  animation: lm-flash-removed 600ms ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  @utility flash-restored { animation: none; }
+  @utility flash-removed { animation: none; }
+}
+
