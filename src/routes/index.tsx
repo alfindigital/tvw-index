@@ -171,6 +171,8 @@ function IndexPage() {
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [pendingResetSummary, setPendingResetSummary] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => ({
     weightMode: "mcap",
     sort: "manual",
