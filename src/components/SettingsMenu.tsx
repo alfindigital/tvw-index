@@ -139,7 +139,7 @@ export function SettingsMenu({
             disabled={currentStocks.length === 0}
             onSelect={(e) => {
               e.preventDefault();
-              setResetOpen(true);
+              onReset();
             }}
             className="text-destructive focus:text-destructive"
           >
