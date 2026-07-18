@@ -1037,27 +1037,6 @@ function IndexPage() {
       </main>
 
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
-
-      <AlertDialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will clear {pendingResetSummary ?? "the current watchlist"}. Saved templates are
-              unaffected. You can undo this from the toast that appears after resetting.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setResetConfirmOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmReset}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
