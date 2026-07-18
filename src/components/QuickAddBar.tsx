@@ -38,10 +38,42 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [resetArmed, setResetArmed] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetArmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmed = value.trim().toUpperCase();
   const suggestions = useMemo(() => matchTickers(value), [value]);
+
+  function disarmReset() {
+    setResetArmed(false);
+    if (resetArmTimer.current) {
+      clearTimeout(resetArmTimer.current);
+      resetArmTimer.current = null;
+    }
+  }
+
+  function armReset() {
+    setResetArmed(true);
+    if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    resetArmTimer.current = setTimeout(() => setResetArmed(false), 4000);
+  }
+
+  function handleResetClick() {
+    if (!hasStocks) return;
+    if (resetArmed) {
+      disarmReset();
+      onReset();
+      return;
+    }
+    armReset();
+  }
+
+  useEffect(() => {
+    return () => {
+      if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    };
+  }, []);
 
   let liveError: string | null = null;
   if (trimmed.length > 0) {
