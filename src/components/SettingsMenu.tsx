@@ -41,7 +41,36 @@ export function SettingsMenu({
   onAfterImport,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [resetArmed, setResetArmed] = useState(false);
+  const resetArmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { theme, toggle: toggleTheme } = useTheme();
+
+  function disarmReset() {
+    setResetArmed(false);
+    if (resetArmTimer.current) {
+      clearTimeout(resetArmTimer.current);
+      resetArmTimer.current = null;
+    }
+  }
+
+  function armReset() {
+    setResetArmed(true);
+    if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    resetArmTimer.current = setTimeout(() => setResetArmed(false), RESET_ARM_MS);
+  }
+
+  function handleResetSelect(e: Event) {
+    e.preventDefault();
+    if (currentStocks.length === 0) return;
+    if (resetArmed) {
+      disarmReset();
+      setOpen(false);
+      onReset();
+      return;
+    }
+    armReset();
+  }
 
   function handleExport() {
     const payload = buildExport();
