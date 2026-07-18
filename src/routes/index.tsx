@@ -134,14 +134,7 @@ function humanError(err: string | undefined): string {
 
 function stockSummary(stocks: Stock[]): string {
   const count = stocks.length;
-  if (count === 0) return "0 stocks";
-  const tickers = stocks.map((s) => s.ticker?.trim().toUpperCase()).filter(Boolean) as string[];
-  const noun = count === 1 ? "stock" : "stocks";
-  if (tickers.length === 0) return `${count} ${noun}`;
-  const unique = [...new Set(tickers)];
-  if (unique.length <= 3) return `${count} ${noun} (${unique.join(", ")})`;
-  const [first, second, third] = unique;
-  return `${count} ${noun} (${first}, ${second}, ${third}, +${unique.length - 3} more)`;
+  return `${count} ${count === 1 ? "stock" : "stocks"}`;
 }
 
 function IndexPage() {
@@ -477,7 +470,7 @@ function IndexPage() {
       toast.dismiss(undoToastIdRef.current);
       undoToastIdRef.current = null;
     }
-    toast.success(`Reset re-applied — cleared ${snap.summary} again`);
+    toast.info(`Reset re-applied — cleared ${snap.summary} again`);
     return true;
   }, [triggerFlash, persistResetHistory]);
 
@@ -512,7 +505,7 @@ function IndexPage() {
       toast.dismiss(undoToastIdRef.current);
     }
     const summary = stockSummary(snap.stocks);
-    undoToastIdRef.current = toast.success(`Undo reset — restored ${summary}`, {
+    undoToastIdRef.current = toast.info(`Undo reset — restored ${summary}`, {
       description: "Changed your mind? Redo the reset to clear them again.",
       duration: 10_000,
       action: {
@@ -567,7 +560,7 @@ function IndexPage() {
 
     const count = prevStocks.length;
     const summary = stockSummary(prevStocks);
-    resetToastIdRef.current = toast.success(`Watchlist reset — cleared ${summary}`, {
+    resetToastIdRef.current = toast.info(`Watchlist reset — cleared ${summary}`, {
       description: "Undo now to restore them, or press Ctrl/⌘+Z.",
       duration: 10_000,
       action: {
