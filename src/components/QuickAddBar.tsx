@@ -214,9 +214,7 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
                 aria-pressed={resetArmed}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">
-                  {resetArmed ? "Confirm?" : "Reset"}
-                </span>
+                <span className="hidden sm:inline">{resetArmed ? "Confirm?" : "Reset"}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={6}>

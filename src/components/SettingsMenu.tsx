@@ -118,10 +118,13 @@ export function SettingsMenu({
         onChange={handleFile}
         className="hidden"
       />
-      <DropdownMenu open={open} onOpenChange={(next) => {
-        setOpen(next);
-        if (!next) disarmReset();
-      }}>
+      <DropdownMenu
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) disarmReset();
+        }}
+      >
         <DropdownMenuTrigger asChild>
           <Button
             type="button"

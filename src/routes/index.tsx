@@ -276,7 +276,6 @@ function IndexPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
 
-
   // Persist settings on change
   useEffect(() => {
     if (!hydrated) return;
