@@ -118,7 +118,10 @@ export function SettingsMenu({
         onChange={handleFile}
         className="hidden"
       />
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) disarmReset();
+      }}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -169,14 +172,16 @@ export function SettingsMenu({
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={currentStocks.length === 0}
-            onSelect={(e) => {
-              e.preventDefault();
-              onReset();
-            }}
-            className="text-destructive focus:text-destructive"
+            onSelect={handleResetSelect}
+            className={`${
+              resetArmed
+                ? "bg-destructive text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
+                : "text-destructive focus:text-destructive"
+            }`}
+            aria-label={resetArmed ? "Click again to confirm reset" : "Reset watchlist"}
           >
             <RotateCcw className="mr-2 h-3.5 w-3.5" />
-            Reset watchlist
+            {resetArmed ? "Click again to reset" : "Reset watchlist"}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
