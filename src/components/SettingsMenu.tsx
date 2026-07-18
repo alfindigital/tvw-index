@@ -31,6 +31,8 @@ type Props = {
   onAfterImport: () => void;
 };
 
+const RESET_ARM_MS = 4000;
+
 export function SettingsMenu({
   currentStocks,
   loadingCount,
