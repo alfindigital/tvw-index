@@ -536,8 +536,7 @@ function IndexPage() {
       toast.info("Watchlist already empty");
       return;
     }
-    setPendingResetSummary(stockSummary(prevStocks));
-    setResetConfirmOpen(true);
+    confirmReset();
   }
 
   function confirmReset() {
