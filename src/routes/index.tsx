@@ -540,7 +540,6 @@ function IndexPage() {
   }
 
   function confirmReset() {
-    setResetConfirmOpen(false);
     const prevStocks = stocksRef.current;
     if (prevStocks.length === 0) return;
     // Dismiss any prior reset-undo toast so only the latest reset is undoable.
