@@ -1,4 +1,4 @@
-import { forwardRef, useMemo, useRef, useState } from "react";
+import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 import { AlertCircle, Plus, Database, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -38,10 +38,42 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
+  const [resetArmed, setResetArmed] = useState(false);
   const blurTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetArmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const trimmed = value.trim().toUpperCase();
   const suggestions = useMemo(() => matchTickers(value), [value]);
+
+  function disarmReset() {
+    setResetArmed(false);
+    if (resetArmTimer.current) {
+      clearTimeout(resetArmTimer.current);
+      resetArmTimer.current = null;
+    }
+  }
+
+  function armReset() {
+    setResetArmed(true);
+    if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    resetArmTimer.current = setTimeout(() => setResetArmed(false), 4000);
+  }
+
+  function handleResetClick() {
+    if (!hasStocks) return;
+    if (resetArmed) {
+      disarmReset();
+      onReset();
+      return;
+    }
+    armReset();
+  }
+
+  useEffect(() => {
+    return () => {
+      if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    };
+  }, []);
 
   let liveError: string | null = null;
   if (trimmed.length > 0) {
@@ -166,18 +198,31 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
             <TooltipTrigger asChild>
               <Button
                 type="button"
-                variant="outline"
-                onClick={() => onReset()}
+                variant={resetArmed ? "default" : "outline"}
+                onClick={handleResetClick}
                 disabled={!hasStocks}
-                className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
-                aria-label="Reset all — clear current watchlist"
+                className={`h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4 transition-colors ${
+                  resetArmed
+                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive"
+                    : ""
+                }`}
+                aria-label={
+                  resetArmed
+                    ? "Click again to confirm reset"
+                    : "Reset all — clear current watchlist"
+                }
+                aria-pressed={resetArmed}
               >
                 <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">Reset</span>
+                <span className="hidden sm:inline">{resetArmed ? "Confirm?" : "Reset"}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom" sideOffset={6}>
-              <span>Reset all — clear current watchlist</span>
+              <span>
+                {resetArmed
+                  ? "Click again to confirm reset — or wait to cancel"
+                  : "Reset all — clear current watchlist"}
+              </span>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>

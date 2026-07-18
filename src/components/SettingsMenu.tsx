@@ -31,6 +31,8 @@ type Props = {
   onAfterImport: () => void;
 };
 
+const RESET_ARM_MS = 4000;
+
 export function SettingsMenu({
   currentStocks,
   loadingCount,
@@ -39,7 +41,36 @@ export function SettingsMenu({
   onAfterImport,
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [resetArmed, setResetArmed] = useState(false);
+  const resetArmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { theme, toggle: toggleTheme } = useTheme();
+
+  function disarmReset() {
+    setResetArmed(false);
+    if (resetArmTimer.current) {
+      clearTimeout(resetArmTimer.current);
+      resetArmTimer.current = null;
+    }
+  }
+
+  function armReset() {
+    setResetArmed(true);
+    if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
+    resetArmTimer.current = setTimeout(() => setResetArmed(false), RESET_ARM_MS);
+  }
+
+  function handleResetSelect(e: Event) {
+    e.preventDefault();
+    if (currentStocks.length === 0) return;
+    if (resetArmed) {
+      disarmReset();
+      setOpen(false);
+      onReset();
+      return;
+    }
+    armReset();
+  }
 
   function handleExport() {
     const payload = buildExport();
@@ -87,7 +118,13 @@ export function SettingsMenu({
         onChange={handleFile}
         className="hidden"
       />
-      <DropdownMenu>
+      <DropdownMenu
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) disarmReset();
+        }}
+      >
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -138,14 +175,16 @@ export function SettingsMenu({
           </DropdownMenuItem>
           <DropdownMenuItem
             disabled={currentStocks.length === 0}
-            onSelect={(e) => {
-              e.preventDefault();
-              onReset();
-            }}
-            className="text-destructive focus:text-destructive"
+            onSelect={handleResetSelect}
+            className={`${
+              resetArmed
+                ? "bg-destructive text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
+                : "text-destructive focus:text-destructive"
+            }`}
+            aria-label={resetArmed ? "Click again to confirm reset" : "Reset watchlist"}
           >
             <RotateCcw className="mr-2 h-3.5 w-3.5" />
-            Reset watchlist
+            {resetArmed ? "Click again to reset" : "Reset watchlist"}
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

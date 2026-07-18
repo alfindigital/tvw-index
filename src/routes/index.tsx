@@ -17,16 +17,6 @@ import { ShortcutsDialog } from "@/components/ShortcutsDialog";
 import { WeightControls } from "@/components/WeightControls";
 import { EmptyWatchlist } from "@/components/EmptyWatchlist";
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 import { DynamicFooter } from "@/components/DynamicFooter";
 
@@ -166,8 +156,6 @@ function IndexPage() {
   const [hydrated, setHydrated] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [saveDialogTrigger, setSaveDialogTrigger] = useState(0);
-  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
-  const [pendingResetSummary, setPendingResetSummary] = useState<string | null>(null);
   const [flashIds, setFlashIds] = useState<Set<string>>(() => new Set());
   const [flashKind, setFlashKind] = useState<"restored" | "removed" | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => ({
@@ -287,7 +275,6 @@ function IndexPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrated]);
-
 
   // Persist settings on change
   useEffect(() => {
@@ -548,12 +535,10 @@ function IndexPage() {
       toast.info("Watchlist already empty");
       return;
     }
-    setPendingResetSummary(stockSummary(prevStocks));
-    setResetConfirmOpen(true);
+    confirmReset();
   }
 
   function confirmReset() {
-    setResetConfirmOpen(false);
     const prevStocks = stocksRef.current;
     if (prevStocks.length === 0) return;
     // Dismiss any prior reset-undo toast so only the latest reset is undoable.
@@ -1051,27 +1036,6 @@ function IndexPage() {
       </main>
 
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
-
-      <AlertDialog open={resetConfirmOpen} onOpenChange={setResetConfirmOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reset watchlist?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will clear {pendingResetSummary ?? "the current watchlist"}. Saved templates are
-              unaffected. You can undo this from the toast that appears after resetting.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setResetConfirmOpen(false)}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmReset}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Reset
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
