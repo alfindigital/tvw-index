@@ -193,39 +193,40 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
             </ul>
           ) : null}
         </div>
-        <TooltipProvider delayDuration={150}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                type="button"
-                variant={resetArmed ? "default" : "outline"}
-                onClick={handleResetClick}
-                disabled={!hasStocks}
-                className={`h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4 transition-colors ${
-                  resetArmed
-                    ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive"
-                    : ""
-                }`}
-                aria-label={
-                  resetArmed
-                    ? "Click again to confirm reset"
-                    : "Reset all — clear current watchlist"
-                }
-                aria-pressed={resetArmed}
-              >
-                <RotateCcw className="h-4 w-4" aria-hidden="true" />
-                <span className="hidden sm:inline">{resetArmed ? "Confirm?" : "Reset"}</span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" sideOffset={6}>
-              <span>
-                {resetArmed
-                  ? "Click again to confirm reset — or wait to cancel"
-                  : "Reset all — clear current watchlist"}
-              </span>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        {hasStocks ? (
+          <TooltipProvider delayDuration={150}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant={resetArmed ? "default" : "outline"}
+                  onClick={handleResetClick}
+                  className={`h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4 transition-colors ${
+                    resetArmed
+                      ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive"
+                      : ""
+                  }`}
+                  aria-label={
+                    resetArmed
+                      ? "Click again to confirm reset"
+                      : "Reset all — clear current watchlist"
+                  }
+                  aria-pressed={resetArmed}
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">{resetArmed ? "Confirm?" : "Reset"}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" sideOffset={6}>
+                <span>
+                  {resetArmed
+                    ? "Click again to confirm reset — or wait to cancel"
+                    : "Reset all — clear current watchlist"}
+                </span>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : null}
         <Button
           type="button"
           onClick={commit}
