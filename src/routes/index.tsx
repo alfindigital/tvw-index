@@ -39,6 +39,7 @@ import {
   type ResetRedoSnapshot,
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
+import { PRESETS } from "@/data/presets";
 import { formatIDR, formatPct } from "@/lib/format";
 import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/lib/weight";
 import { getQuotes } from "@/lib/quotes.functions";
