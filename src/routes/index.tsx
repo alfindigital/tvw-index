@@ -905,22 +905,26 @@ function IndexPage() {
       <AppHeader
         actions={
           <>
-            <TemplatesMenu
-              currentStocks={stocks}
-              onLoadTemplate={loadFromTemplate}
-              saveDialogTrigger={saveDialogTrigger}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={HEADER_ICON_BUTTON_CLASS}
-              aria-label="Help & keyboard shortcuts"
-              title="Help & keyboard shortcuts"
-              onClick={() => setShortcutsOpen(true)}
-            >
-              <Keyboard className={HEADER_ICON_CLASS} />
-            </Button>
+            {stocks.length > 0 ? (
+              <TemplatesMenu
+                currentStocks={stocks}
+                onLoadTemplate={loadFromTemplate}
+                saveDialogTrigger={saveDialogTrigger}
+              />
+            ) : null}
+            {stocks.length > 0 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={HEADER_ICON_BUTTON_CLASS}
+                aria-label="Help & keyboard shortcuts"
+                title="Help & keyboard shortcuts"
+                onClick={() => setShortcutsOpen(true)}
+              >
+                <Keyboard className={HEADER_ICON_CLASS} />
+              </Button>
+            ) : null}
             <SettingsMenu
               currentStocks={stocks}
               loadingCount={loadingIds.size}
