@@ -51,17 +51,17 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: "lotmetrik — IDX Stock Watchlist Stacked by Market Cap" },
+      { title: "lotmetrik — Bikin index kustom IDX untuk TradingView" },
       {
         name: "description",
         content:
-          "Build an IDX stock watchlist stacked by market cap. 957+ built-in issuers, auto-prices from Yahoo Finance, ready-to-copy TradingView formula.",
+          "Bikin watchlist IDX yang ditimbang market cap. 957+ emiten, harga auto dari Yahoo Finance, formula TradingView siap paste dalam 10 detik.",
       },
-      { property: "og:title", content: "lotmetrik — IDX Stock Watchlist" },
+      { property: "og:title", content: "lotmetrik — Custom IDX Index for TradingView" },
       {
         property: "og:description",
         content:
-          "Type ticker → Enter → instantly get market cap, weight, and TradingView formula. Indie tool for IDX investors.",
+          "Klik starter pack atau ketik ticker → dapat market cap, bobot, dan formula TradingView instan. Tool indie untuk investor IDX.",
       },
     ],
   }),
