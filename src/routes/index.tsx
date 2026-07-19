@@ -39,6 +39,7 @@ import {
   type ResetRedoSnapshot,
 } from "@/lib/storage";
 import { IDX_SHARES } from "@/data/idx-shares";
+import { PRESETS } from "@/data/presets";
 import { formatIDR, formatPct } from "@/lib/format";
 import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/lib/weight";
 import { getQuotes } from "@/lib/quotes.functions";
@@ -51,17 +52,17 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: "lotmetrik — IDX Stock Watchlist Stacked by Market Cap" },
+      { title: "lotmetrik — Bikin index kustom IDX untuk TradingView" },
       {
         name: "description",
         content:
-          "Build an IDX stock watchlist stacked by market cap. 957+ built-in issuers, auto-prices from Yahoo Finance, ready-to-copy TradingView formula.",
+          "Bikin watchlist IDX yang ditimbang market cap. 957+ emiten, harga auto dari Yahoo Finance, formula TradingView siap paste dalam 10 detik.",
       },
-      { property: "og:title", content: "lotmetrik — IDX Stock Watchlist" },
+      { property: "og:title", content: "lotmetrik — Custom IDX Index for TradingView" },
       {
         property: "og:description",
         content:
-          "Type ticker → Enter → instantly get market cap, weight, and TradingView formula. Indie tool for IDX investors.",
+          "Klik starter pack atau ketik ticker → dapat market cap, bobot, dan formula TradingView instan. Tool indie untuk investor IDX.",
       },
     ],
   }),
@@ -695,6 +696,45 @@ function IndexPage() {
     toast.success(`${fresh.length} stocks loaded`);
   }
 
+  // First-ever visit: seed watchlist with Blue Chip 10 so the landing page
+  // shows a real, populated index instead of "IDR 0 · 0 components". Marker
+  // is stored in localStorage so it only happens once per browser.
+  const FIRST_VISIT_KEY = "lm-visited-v1";
+  useEffect(() => {
+    if (!hydrated) return;
+    if (stocksRef.current.length > 0) return;
+    if (search.list) return; // deep-link takes priority
+    let seen = false;
+    try {
+      seen = localStorage.getItem(FIRST_VISIT_KEY) === "1";
+    } catch {
+      seen = true; // storage blocked → skip auto-seed to stay predictable
+    }
+    if (seen) return;
+    const preset = PRESETS.find((p) => p.id === "bluechip-10") ?? PRESETS[0];
+    if (!preset) return;
+    const fresh: Stock[] = preset.tickers.map((t) => ({
+      id: crypto.randomUUID(),
+      ticker: t,
+      shares: IDX_SHARES[t] ?? 0,
+      price: 0,
+      manualShares: false,
+      manualPrice: false,
+      freeFloat: null,
+      error: null,
+    }));
+    setStocks(fresh);
+    try {
+      localStorage.setItem(FIRST_VISIT_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setTimeout(() => {
+      fresh.forEach((s) => fetchTickerForRow(s.id, s.ticker, { silent: true }));
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
   // Auto-fetch all on first mount
   useEffect(() => {
     if (!hydrated || didInitialFetch.current) return;
@@ -865,22 +905,26 @@ function IndexPage() {
       <AppHeader
         actions={
           <>
-            <TemplatesMenu
-              currentStocks={stocks}
-              onLoadTemplate={loadFromTemplate}
-              saveDialogTrigger={saveDialogTrigger}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={HEADER_ICON_BUTTON_CLASS}
-              aria-label="Help & keyboard shortcuts"
-              title="Help & keyboard shortcuts"
-              onClick={() => setShortcutsOpen(true)}
-            >
-              <Keyboard className={HEADER_ICON_CLASS} />
-            </Button>
+            {stocks.length > 0 ? (
+              <TemplatesMenu
+                currentStocks={stocks}
+                onLoadTemplate={loadFromTemplate}
+                saveDialogTrigger={saveDialogTrigger}
+              />
+            ) : null}
+            {stocks.length > 0 ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={HEADER_ICON_BUTTON_CLASS}
+                aria-label="Help & keyboard shortcuts"
+                title="Help & keyboard shortcuts"
+                onClick={() => setShortcutsOpen(true)}
+              >
+                <Keyboard className={HEADER_ICON_CLASS} />
+              </Button>
+            ) : null}
             <SettingsMenu
               currentStocks={stocks}
               loadingCount={loadingIds.size}
