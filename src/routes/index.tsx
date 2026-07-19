@@ -696,6 +696,45 @@ function IndexPage() {
     toast.success(`${fresh.length} stocks loaded`);
   }
 
+  // First-ever visit: seed watchlist with Blue Chip 10 so the landing page
+  // shows a real, populated index instead of "IDR 0 · 0 components". Marker
+  // is stored in localStorage so it only happens once per browser.
+  const FIRST_VISIT_KEY = "lm-visited-v1";
+  useEffect(() => {
+    if (!hydrated) return;
+    if (stocksRef.current.length > 0) return;
+    if (search.list) return; // deep-link takes priority
+    let seen = false;
+    try {
+      seen = localStorage.getItem(FIRST_VISIT_KEY) === "1";
+    } catch {
+      seen = true; // storage blocked → skip auto-seed to stay predictable
+    }
+    if (seen) return;
+    const preset = PRESETS.find((p) => p.id === "bluechip-10") ?? PRESETS[0];
+    if (!preset) return;
+    const fresh: Stock[] = preset.tickers.map((t) => ({
+      id: crypto.randomUUID(),
+      ticker: t,
+      shares: IDX_SHARES[t] ?? 0,
+      price: 0,
+      manualShares: false,
+      manualPrice: false,
+      freeFloat: null,
+      error: null,
+    }));
+    setStocks(fresh);
+    try {
+      localStorage.setItem(FIRST_VISIT_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+    setTimeout(() => {
+      fresh.forEach((s) => fetchTickerForRow(s.id, s.ticker, { silent: true }));
+    }, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hydrated]);
+
   // Auto-fetch all on first mount
   useEffect(() => {
     if (!hydrated || didInitialFetch.current) return;
