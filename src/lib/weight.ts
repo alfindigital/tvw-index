@@ -141,7 +141,7 @@ export function buildPineScript(
   opts: { prefix?: string; name?: string } = {},
 ): string {
   const prefix = opts.prefix ?? "IDX:";
-  const name = (opts.name ?? "lotmetrik Basket").replace(/"/g, "'");
+  const name = (opts.name ?? "StackCap Basket").replace(/"/g, "'");
   const clean = rows.filter((r) => r.ticker && r.weight > 0);
   if (clean.length === 0) {
     return `//@version=5\nindicator("${name}", overlay=false)\n// Watchlist empty — add stocks first.`;
