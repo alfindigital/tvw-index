@@ -1,6 +1,6 @@
 // Centralized user-facing copy for watchlist states so heading,
 // empty messages, and toasts stay in sync across the UI.
-export const APP_NAME = "lotmetrik";
+export const APP_NAME = "StackCap";
 export const APP_TAGLINE = "IDX watchlist, stacked by market cap.";
 
 export const WATCHLIST_LABEL = "Watchlist";

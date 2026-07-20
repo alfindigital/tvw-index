@@ -40,7 +40,7 @@ export function ShortcutsDialog({ open, onOpenChange }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Keyboard shortcuts</DialogTitle>
-          <DialogDescription>Operate lotmetrik faster without a mouse.</DialogDescription>
+          <DialogDescription>Operate StackCap faster without a mouse.</DialogDescription>
         </DialogHeader>
         <div className="divide-y divide-border rounded-lg border border-border">
           {ROWS.map((r) => (
