@@ -52,13 +52,13 @@ export const Route = createFileRoute("/")({
   }),
   head: () => ({
     meta: [
-      { title: "lotmetrik — Bikin index kustom IDX untuk TradingView" },
+      { title: "StackCap — Bikin index kustom IDX untuk TradingView" },
       {
         name: "description",
         content:
           "Bikin watchlist IDX yang ditimbang market cap. 957+ emiten, harga auto dari Yahoo Finance, formula TradingView siap paste dalam 10 detik.",
       },
-      { property: "og:title", content: "lotmetrik — Custom IDX Index for TradingView" },
+      { property: "og:title", content: "StackCap — Custom IDX Index for TradingView" },
       {
         property: "og:description",
         content:
