@@ -33,7 +33,7 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
 }
 
 /**
- * lotmetrik brand mark: clean outline of three stacked layers.
+ * StackCap brand mark: clean outline of three stacked layers.
  * Single-weight stroke, no fill, minimal and readable at all sizes.
  */
 function StackMark({ className = "" }: { className?: string }) {
