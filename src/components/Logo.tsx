@@ -24,8 +24,8 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
         <span className="absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/20" />
       </div>
       {showWord ? (
-        <span className="truncate pb-0.5 text-[15px] font-bold lowercase leading-[1.2] tracking-[-0.015em] text-foreground sm:text-base">
-          lot<span className="text-primary">metrik</span>
+        <span className="truncate pb-0.5 text-[15px] font-bold leading-[1.2] tracking-[-0.015em] text-foreground sm:text-base">
+          Stack<span className="text-primary">Cap</span>
         </span>
       ) : null}
     </div>
