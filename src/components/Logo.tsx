@@ -6,7 +6,7 @@ type Props = {
 };
 
 /**
- * lotmetrik brand lockup: indigo tile with a stacked-cylinder mark
+ * StackCap brand lockup: indigo tile with a stacked-cylinder mark
  * (three offset "coin" layers with a teal rim-light on the top layer)
  * + Jakarta Sans wordmark. Contrast-tuned for both light and dark themes.
  */
