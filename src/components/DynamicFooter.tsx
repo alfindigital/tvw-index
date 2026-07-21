@@ -9,10 +9,10 @@ type Social = {
 };
 
 const SOCIALS: Social[] = [
-  { href: "https://t.me/stackcap", label: "Telegram", handle: "@stackcap", Icon: TelegramIcon },
-  { href: "https://instagram.com/stackcap", label: "Instagram", handle: "@stackcap", Icon: InstagramIcon },
-  { href: "https://tiktok.com/@stackcap", label: "TikTok", handle: "@stackcap", Icon: TikTokIcon },
-  { href: "https://x.com/stackcap", label: "X", handle: "@stackcap", Icon: XIcon },
+  { href: "https://t.me/lotmetrik", label: "Telegram", handle: "@lotmetrik", Icon: TelegramIcon },
+  { href: "https://instagram.com/lotmetrik", label: "Instagram", handle: "@lotmetrik", Icon: InstagramIcon },
+  { href: "https://tiktok.com/@lotmetrik", label: "TikTok", handle: "@lotmetrik", Icon: TikTokIcon },
+  { href: "https://x.com/lotmetrik", label: "X", handle: "@lotmetrik", Icon: XIcon },
 ];
 
 export function DynamicFooter() {
