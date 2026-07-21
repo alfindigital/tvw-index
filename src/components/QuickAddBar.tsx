@@ -231,9 +231,10 @@ export const QuickAddBar = forwardRef<HTMLInputElement, Props>(function QuickAdd
           type="button"
           onClick={commit}
           disabled={!canAdd}
+          aria-label="Tambah saham"
           className="h-10 shrink-0 gap-1.5 rounded-lg px-3 sm:px-4"
         >
-          <Plus className="h-4 w-4" />
+          <Plus className="h-4 w-4" aria-hidden="true" />
           <span className="hidden sm:inline">Add</span>
         </Button>
       </div>

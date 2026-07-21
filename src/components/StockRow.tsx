@@ -108,7 +108,7 @@ function StockRowImpl({
             <div className="relative flex-1 min-w-0">
               <Input
                 value={tickerDraft}
-                aria-label="Stock ticker"
+                aria-label="Ticker saham"
                 onChange={(e) => handleTickerChange(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
