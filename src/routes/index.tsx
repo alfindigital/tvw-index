@@ -971,8 +971,7 @@ function IndexPage() {
             </div>
           ) : null}
 
-            </div>
-          ) : null}
+
 
           <div className="space-y-2.5">
             {!hydrated ? (
