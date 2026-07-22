@@ -21,7 +21,8 @@ type Props = {
 };
 
 const MODE_BTN =
-  "flex h-full flex-1 items-center justify-center rounded-md px-3 text-xs font-semibold leading-none transition-colors sm:flex-none";
+  "flex h-full flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-semibold leading-none transition-colors sm:flex-none";
+
 
 
 export function WeightControls({
