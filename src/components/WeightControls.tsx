@@ -79,7 +79,7 @@ export function WeightControls({
             onClick={onSaveWatchlist}
             aria-label="Save watchlist as template"
             title="Save watchlist"
-            className="h-8 w-8 shrink-0 rounded-lg"
+            className="h-9 w-9 shrink-0 rounded-lg"
           >
             <Bookmark className="h-3.5 w-3.5" />
           </Button>
@@ -92,7 +92,7 @@ export function WeightControls({
           disabled={refreshing}
           aria-label="Refresh prices"
           title="Refresh prices"
-          className="h-8 w-8 shrink-0 rounded-lg"
+          className="h-9 w-9 shrink-0 rounded-lg"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
         </Button>
@@ -104,7 +104,7 @@ export function WeightControls({
               size="icon"
               aria-label="Sort watchlist"
               title="Sort watchlist"
-              className="h-8 w-8 shrink-0 rounded-lg"
+              className="h-9 w-9 shrink-0 rounded-lg"
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
             </Button>
