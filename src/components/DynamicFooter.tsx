@@ -167,7 +167,7 @@ export function DynamicFooter() {
         style={{ borderLeft: "2px solid var(--primary)", paddingLeft: 8 }}
       >
         <span className="mr-0.5">©</span>
-        <b className="truncate text-primary">{new Date().getFullYear()} StackCap</b>
+        <b className="truncate text-primary">{new Date().getFullYear()}&nbsp;Lotmetrik{"\n"}</b>
         <span className="afd-caret" aria-hidden />
       </span>
 

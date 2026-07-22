@@ -48,7 +48,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Mcap
+          Market cap
         </button>
         <button
           type="button"
@@ -61,7 +61,7 @@ export function WeightControls({
               : "text-muted-foreground hover:text-foreground"
           }`}
         >
-          Ffloat
+          Free Float
         </button>
       </div>
 
