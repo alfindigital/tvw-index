@@ -1,12 +1,11 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import {
   Download,
   Upload,
   Settings as SettingsIcon,
-  RefreshCw,
-  RotateCcw,
   Sun,
   Moon,
+  Keyboard,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,58 +18,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import { applyImport, buildExport, type Stock } from "@/lib/storage";
+import { applyImport, buildExport } from "@/lib/storage";
 import { useTheme } from "@/hooks/use-theme";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 
 type Props = {
-  currentStocks: Stock[];
-  loadingCount: number;
-  onRefreshAll: () => void;
-  onReset: () => void;
   onAfterImport: () => void;
+  onOpenShortcuts: () => void;
 };
 
-const RESET_ARM_MS = 4000;
-
-export function SettingsMenu({
-  currentStocks,
-  loadingCount,
-  onRefreshAll,
-  onReset,
-  onAfterImport,
-}: Props) {
+export function SettingsMenu({ onAfterImport, onOpenShortcuts }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [open, setOpen] = useState(false);
-  const [resetArmed, setResetArmed] = useState(false);
-  const resetArmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { theme, toggle: toggleTheme } = useTheme();
-
-  function disarmReset() {
-    setResetArmed(false);
-    if (resetArmTimer.current) {
-      clearTimeout(resetArmTimer.current);
-      resetArmTimer.current = null;
-    }
-  }
-
-  function armReset() {
-    setResetArmed(true);
-    if (resetArmTimer.current) clearTimeout(resetArmTimer.current);
-    resetArmTimer.current = setTimeout(() => setResetArmed(false), RESET_ARM_MS);
-  }
-
-  function handleResetSelect(e: Event) {
-    e.preventDefault();
-    if (currentStocks.length === 0) return;
-    if (resetArmed) {
-      disarmReset();
-      setOpen(false);
-      onReset();
-      return;
-    }
-    armReset();
-  }
 
   function handleExport() {
     const payload = buildExport();
@@ -118,13 +77,7 @@ export function SettingsMenu({
         onChange={handleFile}
         className="hidden"
       />
-      <DropdownMenu
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (!next) disarmReset();
-        }}
-      >
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -158,33 +111,19 @@ export function SettingsMenu({
 
           <DropdownMenuSeparator />
 
-          {/* Watchlist */}
+          {/* Help */}
           <DropdownMenuLabel className="text-[11px] uppercase tracking-wider text-muted-foreground">
-            Watchlist
+            Help
           </DropdownMenuLabel>
           <DropdownMenuItem
-            disabled={loadingCount > 0 || currentStocks.length === 0}
             onSelect={(e) => {
               e.preventDefault();
-              onRefreshAll();
+              onOpenShortcuts();
             }}
           >
-            <RefreshCw className={`mr-2 h-3.5 w-3.5 ${loadingCount > 0 ? "animate-spin" : ""}`} />
-            Refresh prices
-            <DropdownMenuShortcut>⇧R</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            disabled={currentStocks.length === 0}
-            onSelect={handleResetSelect}
-            className={`${
-              resetArmed
-                ? "bg-destructive text-destructive-foreground focus:bg-destructive focus:text-destructive-foreground"
-                : "text-destructive focus:text-destructive"
-            }`}
-            aria-label={resetArmed ? "Click again to confirm reset" : "Reset watchlist"}
-          >
-            <RotateCcw className="mr-2 h-3.5 w-3.5" />
-            {resetArmed ? "Click again to reset" : "Reset watchlist"}
+            <Keyboard className="mr-2 h-3.5 w-3.5" />
+            Keyboard shortcuts
+            <DropdownMenuShortcut>?</DropdownMenuShortcut>
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />
