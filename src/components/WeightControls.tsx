@@ -1,4 +1,4 @@
-import { RefreshCw, ArrowUpDown } from "lucide-react";
+import { RefreshCw, ArrowUpDown, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +17,7 @@ type Props = {
   onSortChange: (s: SortKey) => void;
   onRefresh: () => void;
   refreshing?: boolean;
+  onSaveWatchlist?: () => void;
 };
 
 const MODE_BTN =
@@ -29,6 +30,7 @@ export function WeightControls({
   onSortChange,
   onRefresh,
   refreshing,
+  onSaveWatchlist,
 }: Props) {
   return (
     <div className="flex flex-nowrap items-center gap-2 rounded-xl border border-border bg-card/60 p-2 sm:gap-3 sm:px-3">
@@ -65,10 +67,21 @@ export function WeightControls({
         </button>
       </div>
 
-
-
-      {/* Refresh + sort */}
+      {/* Save + Refresh + sort */}
       <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+        {onSaveWatchlist ? (
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={onSaveWatchlist}
+            aria-label="Save watchlist as template"
+            title="Save watchlist"
+            className="h-8 w-8 shrink-0 rounded-lg"
+          >
+            <Bookmark className="h-3.5 w-3.5" />
+          </Button>
+        ) : null}
         <Button
           type="button"
           variant="outline"
@@ -107,4 +120,5 @@ export function WeightControls({
     </div>
   );
 }
+
 
