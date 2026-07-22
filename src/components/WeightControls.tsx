@@ -21,7 +21,9 @@ type Props = {
 };
 
 const MODE_BTN =
-  "flex-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-colors sm:flex-none";
+  "flex h-full flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-semibold leading-none transition-colors sm:flex-none";
+
+
 
 export function WeightControls({
   mode,
@@ -33,10 +35,11 @@ export function WeightControls({
   onSaveWatchlist,
 }: Props) {
   return (
-    <div className="flex flex-nowrap items-center gap-2 rounded-xl border border-border bg-card/60 p-2 sm:gap-3 sm:px-3">
+    <div className="flex flex-nowrap items-stretch gap-2 rounded-xl border border-border bg-card/60 p-2 sm:gap-3 sm:px-3">
       {/* Weighting mode */}
       <div
-        className="flex rounded-lg border border-border bg-background p-0.5"
+        className="flex h-9 items-stretch rounded-lg border border-border bg-background p-0.5"
+
         role="group"
         aria-label="Weight mode"
       >
@@ -68,7 +71,7 @@ export function WeightControls({
       </div>
 
       {/* Save + Refresh + sort */}
-      <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+      <div className="ml-auto flex shrink-0 items-stretch gap-1.5 sm:gap-2">
         {onSaveWatchlist ? (
           <Button
             type="button"
@@ -77,7 +80,7 @@ export function WeightControls({
             onClick={onSaveWatchlist}
             aria-label="Save watchlist as template"
             title="Save watchlist"
-            className="h-8 w-8 shrink-0 rounded-lg"
+            className="h-9 w-9 shrink-0 rounded-lg"
           >
             <Bookmark className="h-3.5 w-3.5" />
           </Button>
@@ -90,7 +93,7 @@ export function WeightControls({
           disabled={refreshing}
           aria-label="Refresh prices"
           title="Refresh prices"
-          className="h-8 w-8 shrink-0 rounded-lg"
+          className="h-9 w-9 shrink-0 rounded-lg"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
         </Button>
@@ -102,7 +105,7 @@ export function WeightControls({
               size="icon"
               aria-label="Sort watchlist"
               title="Sort watchlist"
-              className="h-8 w-8 shrink-0 rounded-lg"
+              className="h-9 w-9 shrink-0 rounded-lg"
             >
               <ArrowUpDown className="h-3.5 w-3.5" />
             </Button>
