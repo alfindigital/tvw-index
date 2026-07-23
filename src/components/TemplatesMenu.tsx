@@ -85,6 +85,24 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   }, [saveDialogTrigger]);
 
   function openSaveDialog() {
+    if (currentStocks.length === 0) {
+      toast.error(WATCHLIST_EMPTY_TOAST);
+      return;
+    }
+    const identical = findIdenticalTemplate(currentStocks, templates);
+    if (identical) {
+      toast.info(WATCHLIST_ALREADY_SAVED_TOAST(identical.name), {
+        action: {
+          label: "Save as new",
+          onClick: () => {
+            setName("");
+            setNameError(null);
+            setSaveOpen(true);
+          },
+        },
+      });
+      return;
+    }
     setName("");
     setNameError(null);
     setSaveOpen(true);
