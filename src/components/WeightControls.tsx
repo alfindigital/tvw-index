@@ -77,55 +77,69 @@ export function WeightControls({
       </div>
 
       {/* Save + Refresh + sort */}
-      <div className="ml-auto flex shrink-0 items-stretch gap-1.5 sm:gap-2">
-        {onSaveWatchlist ? (
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={onSaveWatchlist}
-            aria-label="Save watchlist as template"
-            title="Save watchlist"
-            className="h-9 w-9 shrink-0 rounded-lg"
-          >
-            <Bookmark className="h-3.5 w-3.5" />
-          </Button>
-        ) : null}
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={onRefresh}
-          disabled={refreshing}
-          aria-label="Refresh prices"
-          title="Refresh prices"
-          className="h-9 w-9 shrink-0 rounded-lg"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
-        </Button>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              type="button"
-              variant="outline"
-              size="icon"
-              aria-label="Sort watchlist"
-              title="Sort watchlist"
-              className="h-9 w-9 shrink-0 rounded-lg"
-            >
-              <ArrowUpDown className="h-3.5 w-3.5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuRadioGroup value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
-              <DropdownMenuRadioItem value="manual">Input order</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="weight">Weight ↓</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="mcap">Market cap ↓</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="ticker">Ticker A–Z</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <TooltipProvider delayDuration={300}>
+        <div className="ml-auto flex shrink-0 items-stretch gap-1.5 sm:gap-2">
+          {onSaveWatchlist ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={onSaveWatchlist}
+                  aria-label="Save watchlist as template"
+                  className="h-9 w-9 shrink-0 rounded-lg"
+                >
+                  <Bookmark className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Save watchlist</TooltipContent>
+            </Tooltip>
+          ) : null}
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={onRefresh}
+                disabled={refreshing}
+                aria-label="Refresh prices"
+                className="h-9 w-9 shrink-0 rounded-lg"
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Refresh prices</TooltipContent>
+          </Tooltip>
+          <DropdownMenu>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    aria-label="Sort watchlist"
+                    className="h-9 w-9 shrink-0 rounded-lg"
+                  >
+                    <ArrowUpDown className="h-3.5 w-3.5" />
+                  </Button>
+                </DropdownMenuTrigger>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">Sort watchlist</TooltipContent>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuRadioGroup value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
+                <DropdownMenuRadioItem value="manual">Input order</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="weight">Weight ↓</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="mcap">Market cap ↓</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="ticker">Ticker A–Z</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </TooltipProvider>
     </div>
   );
 }
