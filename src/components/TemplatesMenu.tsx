@@ -53,6 +53,14 @@ function validateName(
   return { ok: true, value: trimmed };
 }
 
+function findIdenticalTemplate(stocks: Stock[], templates: Template[]): Template | undefined {
+  const current = stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+  return templates.find((t) => {
+    const theirs = t.stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+    return theirs === current;
+  });
+}
+
 type Props = {
   currentStocks: Stock[];
   onLoadTemplate: (stocks: Stock[]) => void;
