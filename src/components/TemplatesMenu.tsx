@@ -139,7 +139,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setName("");
     setNameError(null);
     setSaveOpen(false);
-    toast.success("Watchlist saved as template", { description: result.value });
+    toast.success(WATCHLIST_SAVED_TOAST(result.value), {
+      description: `${currentStocks.length} stocks`,
+    });
   }
 
   function handleLoad(t: Template) {
