@@ -20,7 +20,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { loadTemplates, saveTemplates, type Stock, type Template } from "@/lib/storage";
+import {
+  loadTemplates,
+  saveTemplates,
+  normalizeTickerKey,
+  type Stock,
+  type Template,
+} from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
@@ -29,6 +35,8 @@ import {
   TEMPLATE_NAME_REQUIRED,
   TEMPLATE_NAME_TOO_LONG,
   TEMPLATE_NAME_DUPLICATE,
+  WATCHLIST_SAVED_TOAST,
+  WATCHLIST_ALREADY_SAVED_TOAST,
 } from "@/lib/copy";
 
 function validateName(
@@ -43,6 +51,14 @@ function validateName(
   const dup = existing.find((t) => t.name.trim().toLowerCase() === trimmed.toLowerCase());
   if (dup) return { ok: false, message: TEMPLATE_NAME_DUPLICATE(trimmed) };
   return { ok: true, value: trimmed };
+}
+
+function findIdenticalTemplate(stocks: Stock[], templates: Template[]): Template | undefined {
+  const current = stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+  return templates.find((t) => {
+    const theirs = t.stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+    return theirs === current;
+  });
 }
 
 type Props = {
@@ -69,6 +85,24 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   }, [saveDialogTrigger]);
 
   function openSaveDialog() {
+    if (currentStocks.length === 0) {
+      toast.error(WATCHLIST_EMPTY_TOAST);
+      return;
+    }
+    const identical = findIdenticalTemplate(currentStocks, templates);
+    if (identical) {
+      toast.info(WATCHLIST_ALREADY_SAVED_TOAST(identical.name), {
+        action: {
+          label: "Save as new",
+          onClick: () => {
+            setName("");
+            setNameError(null);
+            setSaveOpen(true);
+          },
+        },
+      });
+      return;
+    }
     setName("");
     setNameError(null);
     setSaveOpen(true);
@@ -105,7 +139,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setName("");
     setNameError(null);
     setSaveOpen(false);
-    toast.success("Watchlist saved as template", { description: result.value });
+    toast.success(WATCHLIST_SAVED_TOAST(result.value), {
+      description: `${currentStocks.length} stocks`,
+    });
   }
 
   function handleLoad(t: Template) {

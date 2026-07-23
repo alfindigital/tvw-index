@@ -26,3 +26,8 @@ export const TEMPLATE_NAME_DUPLICATE = (name: string) =>
   `A template named "${name}" already exists. Use another name or delete the old one first.`;
 export const TEMPLATE_NAME_INVALID_FALLBACK =
   "Template name invalid. Please check again.";
+
+export const WATCHLIST_SAVED_TOAST = (name: string) =>
+  `Watchlist saved as "${name}"`;
+export const WATCHLIST_ALREADY_SAVED_TOAST = (name: string) =>
+  `Watchlist already saved as "${name}"`;
