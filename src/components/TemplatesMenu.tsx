@@ -20,7 +20,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { loadTemplates, saveTemplates, type Stock, type Template } from "@/lib/storage";
+import {
+  loadTemplates,
+  saveTemplates,
+  normalizeTickerKey,
+  type Stock,
+  type Template,
+} from "@/lib/storage";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
@@ -29,6 +35,8 @@ import {
   TEMPLATE_NAME_REQUIRED,
   TEMPLATE_NAME_TOO_LONG,
   TEMPLATE_NAME_DUPLICATE,
+  WATCHLIST_SAVED_TOAST,
+  WATCHLIST_ALREADY_SAVED_TOAST,
 } from "@/lib/copy";
 
 function validateName(
