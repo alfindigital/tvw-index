@@ -53,7 +53,7 @@ export type QuoteCache = Record<string, CachedQuote>;
 const QUOTE_CACHE_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const QUOTE_CACHE_MAX_ENTRIES = 500;
 
-function normalizeTickerKey(ticker: string): string {
+export function normalizeTickerKey(ticker: string): string {
   return ticker.trim().toUpperCase().replace(/\.JK$/i, "");
 }
 
