@@ -24,7 +24,7 @@ const SCENARIOS = [
 const TESTS = [
   {
     key: "save",
-    label: "Save watchlist",
+    label: "Save watchlist as template",
     selector: "button[aria-label='Save watchlist as template']",
     expectedTooltip: "Save watchlist",
   },
