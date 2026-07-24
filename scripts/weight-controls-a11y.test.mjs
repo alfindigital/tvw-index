@@ -59,6 +59,22 @@ async function visibleTooltipText(page) {
   }
 }
 
+async function focusByTab(page, selector) {
+  // Start focus from the document body and tab until the target is focused.
+  await page.evaluate(() => {
+    if (document.body?.focus) document.body.focus();
+  });
+  for (let i = 0; i < 30; i++) {
+    await page.keyboard.press("Tab");
+    const focused = await page.evaluate(
+      (sel) => document.querySelector(sel) === document.activeElement,
+      selector,
+    );
+    if (focused) return true;
+  }
+  return false;
+}
+
 async function runScenario(s) {
   const ctx = await browser.newContext({
     viewport: { width: s.width, height: s.height },
