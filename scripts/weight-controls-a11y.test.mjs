@@ -155,7 +155,9 @@ async function runScenario(s) {
       // Mobile tap/focus tooltip.
       if (isMobile) {
         await locator.tap();
-        await page.waitForTimeout(150);
+        // With delayDuration=0 the tooltip opens on pointer-down focus; it closes
+        // as soon as the click action (dialog/dropdown/refresh) re-renders, so
+        // check immediately before dismissing the resulting UI.
         tapTooltip = await visibleTooltipText(page);
         tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
 
