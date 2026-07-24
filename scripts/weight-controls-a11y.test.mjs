@@ -74,15 +74,18 @@ async function runScenario(s) {
   // Seed a watchlist so WeightControls (and the Save button) render.
   await page.evaluate(() => {
     localStorage.setItem(
-      "idx-watchlist-v1",
-      JSON.stringify([
-        { id: "test-1", ticker: "BBCA", shares: "100", price: null, autoPrice: true },
-        { id: "test-2", ticker: "BBRI", shares: "200", price: null, autoPrice: true },
-      ]),
+      "idx-basket-v1",
+      JSON.stringify({
+        stocks: [
+          { id: "test-1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          { id: "test-2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+        ],
+        lastRefresh: null,
+      }),
     );
   });
   await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(400);
+  await page.waitForTimeout(600);
 
   const scenarioResult = {
     scenario: s.name,
