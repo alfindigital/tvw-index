@@ -66,12 +66,9 @@ async function runScenario(s) {
     colorScheme: s.dark ? "dark" : "light",
   });
   const page = await ctx.newPage();
-  await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
-  if (s.dark) {
-    await page.evaluate(() => document.documentElement.classList.add("dark"));
-  }
 
-  // Seed a watchlist so WeightControls (and the Save button) render.
+  // Seed localStorage on a blank origin first so the app reads it on first load.
+  await page.goto("about:blank");
   await page.evaluate(() => {
     localStorage.setItem(
       "idx-basket-v1",
@@ -84,20 +81,12 @@ async function runScenario(s) {
       }),
     );
   });
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(1200);
 
-  // Debug: dump counts and screenshot if controls are missing.
-  const debugShot = `${OUT}/${s.name}-debug.png`;
-  const counts = await page.evaluate(() => ({
-    weightGroup: document.querySelectorAll("div[role='group'][aria-label='Weight mode']").length,
-    labeledButtons: Array.from(document.querySelectorAll("button[aria-label]")).map((b) => b.getAttribute("aria-label")),
-    stockRows: document.querySelectorAll("[data-stock-row]").length,
-  }));
-  if (counts.weightGroup === 0) {
-    await page.screenshot({ path: debugShot, fullPage: false });
-    console.error(`   debug ${s.name}:`, counts, `screenshot: ${rel(debugShot)}`);
+  await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
+  if (s.dark) {
+    await page.evaluate(() => document.documentElement.classList.add("dark"));
   }
+  await page.waitForTimeout(800);
 
   const scenarioResult = {
     scenario: s.name,
