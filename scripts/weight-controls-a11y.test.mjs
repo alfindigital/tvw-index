@@ -85,7 +85,19 @@ async function runScenario(s) {
     );
   });
   await page.reload({ waitUntil: "domcontentloaded" });
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(1200);
+
+  // Debug: dump counts and screenshot if controls are missing.
+  const debugShot = `${OUT}/${s.name}-debug.png`;
+  const counts = await page.evaluate(() => ({
+    weightGroup: document.querySelectorAll("div[role='group'][aria-label='Weight mode']").length,
+    labeledButtons: Array.from(document.querySelectorAll("button[aria-label]")).map((b) => b.getAttribute("aria-label")),
+    stockRows: document.querySelectorAll("[data-stock-row]").length,
+  }));
+  if (counts.weightGroup === 0) {
+    await page.screenshot({ path: debugShot, fullPage: false });
+    console.error(`   debug ${s.name}:`, counts, `screenshot: ${rel(debugShot)}`);
+  }
 
   const scenarioResult = {
     scenario: s.name,
