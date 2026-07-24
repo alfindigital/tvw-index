@@ -1,7 +1,7 @@
 // A11y / tooltip E2E for WeightControls icon buttons.
 // Verifies that Save watchlist, Refresh prices, and Sort watchlist buttons:
 // 1. Have the expected aria-label attribute
-// 2. Expose a visible tooltip on hover and on keyboard focus
+// 2. Expose a visible tooltip on hover, keyboard focus, and mobile tap/focus
 // 3. Keep icon aria-hidden and show sr-only text for screen readers
 //
 // Usage: `node scripts/weight-controls-a11y.test.mjs` (dev server on :8080).
@@ -76,10 +76,12 @@ async function focusByTab(page, selector) {
 }
 
 async function runScenario(s) {
+  const isMobile = s.width < 768;
   const ctx = await browser.newContext({
     viewport: { width: s.width, height: s.height },
     deviceScaleFactor: 2,
     colorScheme: s.dark ? "dark" : "light",
+    hasTouch: isMobile,
   });
   const page = await ctx.newPage();
 
@@ -120,8 +122,10 @@ async function runScenario(s) {
     let srText = null;
     let hoverTooltip = null;
     let focusTooltip = null;
+    let tapTooltip = null;
     let hoverOk = false;
     let focusOk = false;
+    let tapOk = false;
 
     if (exists) {
       ariaLabel = await locator.getAttribute("aria-label");
@@ -129,14 +133,14 @@ async function runScenario(s) {
 
       // Hover tooltip.
       await locator.hover();
-      await page.waitForTimeout(350); // TooltipProvider delay is 300ms.
+      await page.waitForTimeout(150); // delayDuration is 0; allow portal render.
       hoverTooltip = await visibleTooltipText(page);
       hoverOk = hoverTooltip?.includes(t.expectedTooltip) ?? false;
 
       // Dismiss hover tooltip before focus test.
       await page.mouse.move(0, 0);
       await page.keyboard.press("Escape");
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(300);
 
       // Keyboard focus tooltip via Tab navigation (focus-visible).
       const focused = await focusByTab(page, t.selector);
@@ -144,16 +148,28 @@ async function runScenario(s) {
       focusTooltip = await visibleTooltipText(page);
       focusOk = focused && (focusTooltip?.includes(t.expectedTooltip) ?? false);
 
-      // Dismiss tooltip before next test.
+      // Dismiss tooltip before tap test.
       await page.keyboard.press("Escape");
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(300);
+
+      // Mobile tap/focus tooltip.
+      if (isMobile) {
+        await locator.tap();
+        await page.waitForTimeout(150);
+        tapTooltip = await visibleTooltipText(page);
+        tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
+
+        // Close any dropdown/dialog opened by the tap so the next test isn't blocked.
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(300);
+      }
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
       scenarioResult.screenshots.push({ key: t.key, path: rel(shot) });
     }
 
-    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk;
+    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk && (!isMobile || tapOk);
     if (!testOk) scenarioResult.ok = false;
 
     scenarioResult.tests.push({
@@ -164,8 +180,10 @@ async function runScenario(s) {
       srText,
       hoverTooltip,
       focusTooltip,
+      tapTooltip,
       hoverOk,
       focusOk,
+      tapOk,
       ok: testOk,
     });
   }
@@ -197,18 +215,18 @@ const md = [
   "Each test asserts:",
   "1. The icon button is rendered and has the correct `aria-label`.",
   "2. The button contains matching `.sr-only` text for screen readers.",
-  "3. The tooltip portal text appears on **hover** and on **keyboard focus**.",
+  "3. The tooltip portal text appears on **hover**, **keyboard focus**, and **mobile tap/focus**.",
   "",
 ];
 
 for (const r of results) {
   md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`);
   md.push("");
-  md.push(`| Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |`);
-  md.push(`| --- | --- | --- | --- | --- | --- |`);
+  md.push(`| Button | aria-label | sr-only | Hover | Focus | Mobile tap | Status |`);
+  md.push(`| --- | --- | --- | --- | --- | --- | --- |`);
   for (const t of r.tests) {
     md.push(
-      `| ${t.label} | ${t.ariaLabel ?? "—"} | ${t.srText ?? "—"} | ${t.hoverTooltip ?? "—"} | ${t.focusTooltip ?? "—"} | ${t.ok ? "✅" : "❌"} |`,
+      `| ${t.label} | ${t.ariaLabel ?? "—"} | ${t.srText ?? "—"} | ${t.hoverTooltip ?? "—"} | ${t.focusTooltip ?? "—"} | ${t.tapTooltip ?? "—"} | ${t.ok ? "✅" : "❌"} |`,
     );
   }
   md.push("");
