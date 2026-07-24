@@ -108,7 +108,8 @@ export function WeightControls({
                 aria-label="Refresh prices"
                 className="h-9 w-9 shrink-0 rounded-lg"
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
+                <span className="sr-only">Refresh prices</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Refresh prices</TooltipContent>
