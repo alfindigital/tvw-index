@@ -67,8 +67,11 @@ async function runScenario(s) {
   });
   const page = await ctx.newPage();
 
-  // Seed localStorage on a blank origin first so the app reads it on first load.
-  await page.goto("about:blank");
+  // First load lets the app hydrate and persist its default empty basket.
+  await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
+  await page.waitForTimeout(1200);
+
+  // Seed a watchlist so WeightControls (and the Save button) render on reload.
   await page.evaluate(() => {
     localStorage.setItem(
       "idx-basket-v1",
@@ -81,12 +84,11 @@ async function runScenario(s) {
       }),
     );
   });
-
-  await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
+  await page.reload({ waitUntil: "domcontentloaded" });
   if (s.dark) {
     await page.evaluate(() => document.documentElement.classList.add("dark"));
   }
-  await page.waitForTimeout(800);
+  await page.waitForTimeout(1200);
 
   const scenarioResult = {
     scenario: s.name,
