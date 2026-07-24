@@ -90,7 +90,8 @@ export function WeightControls({
                   aria-label="Save watchlist as template"
                   className="h-9 w-9 shrink-0 rounded-lg"
                 >
-                  <Bookmark className="h-3.5 w-3.5" />
+                  <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="sr-only">Save watchlist as template</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">Save watchlist</TooltipContent>
