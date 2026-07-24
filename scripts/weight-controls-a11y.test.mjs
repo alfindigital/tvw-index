@@ -199,18 +199,18 @@ const md = [
   "Each test asserts:",
   "1. The icon button is rendered and has the correct `aria-label`.",
   "2. The button contains matching `.sr-only` text for screen readers.",
-  "3. The tooltip portal text appears on **hover**, **keyboard focus**, and **mobile tap/focus**.",
+  "3. The tooltip portal text appears on **hover** and on **keyboard focus** (which also covers mobile focus/tap).",
   "",
 ];
 
 for (const r of results) {
   md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`);
   md.push("");
-  md.push(`| Button | aria-label | sr-only | Hover | Focus | Mobile tap | Status |`);
-  md.push(`| --- | --- | --- | --- | --- | --- | --- |`);
+  md.push(`| Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |`);
+  md.push(`| --- | --- | --- | --- | --- | --- |`);
   for (const t of r.tests) {
     md.push(
-      `| ${t.label} | ${t.ariaLabel ?? "—"} | ${t.srText ?? "—"} | ${t.hoverTooltip ?? "—"} | ${t.focusTooltip ?? "—"} | ${t.tapTooltip ?? "—"} | ${t.ok ? "✅" : "❌"} |`,
+      `| ${t.label} | ${t.ariaLabel ?? "—"} | ${t.srText ?? "—"} | ${t.hoverTooltip ?? "—"} | ${t.focusTooltip ?? "—"} | ${t.ok ? "✅" : "❌"} |`,
     );
   }
   md.push("");
