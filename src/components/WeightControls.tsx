@@ -90,7 +90,8 @@ export function WeightControls({
                   aria-label="Save watchlist as template"
                   className="h-9 w-9 shrink-0 rounded-lg"
                 >
-                  <Bookmark className="h-3.5 w-3.5" />
+                  <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="sr-only">Save watchlist as template</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom">Save watchlist</TooltipContent>
@@ -107,7 +108,8 @@ export function WeightControls({
                 aria-label="Refresh prices"
                 className="h-9 w-9 shrink-0 rounded-lg"
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} />
+                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
+                <span className="sr-only">Refresh prices</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="bottom">Refresh prices</TooltipContent>
@@ -123,7 +125,8 @@ export function WeightControls({
                     aria-label="Sort watchlist"
                     className="h-9 w-9 shrink-0 rounded-lg"
                   >
-                    <ArrowUpDown className="h-3.5 w-3.5" />
+                    <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
+                    <span className="sr-only">Sort watchlist</span>
                   </Button>
                 </DropdownMenuTrigger>
               </TooltipTrigger>
