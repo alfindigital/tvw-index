@@ -115,11 +115,20 @@ async function runScenario(s) {
       hoverTooltip = await visibleTooltipText(page);
       hoverOk = hoverTooltip?.includes(t.expectedTooltip) ?? false;
 
+      // Dismiss hover tooltip before focus test.
+      await page.mouse.move(0, 0);
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(150);
+
       // Keyboard focus tooltip.
       await locator.focus();
       await page.waitForTimeout(350);
       focusTooltip = await visibleTooltipText(page);
       focusOk = focusTooltip?.includes(t.expectedTooltip) ?? false;
+
+      // Dismiss tooltip before next test.
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(150);
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
