@@ -42,7 +42,9 @@ const TESTS = [
   },
 ];
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+  executablePath: process.env.PW_CHROMIUM_PATH ?? "/chromium-1194/chrome-linux/chrome",
+});
 const results = [];
 const rel = (p) => relative(OUT, p).replace(/\\/g, "/");
 
