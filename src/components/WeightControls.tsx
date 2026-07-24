@@ -77,7 +77,7 @@ export function WeightControls({
       </div>
 
       {/* Save + Refresh + sort */}
-      <TooltipProvider delayDuration={300}>
+      <TooltipProvider delayDuration={0}>
         <div className="ml-auto flex shrink-0 items-stretch gap-1.5 sm:gap-2">
           {onSaveWatchlist ? (
             <Tooltip>
@@ -87,6 +87,7 @@ export function WeightControls({
                   variant="outline"
                   size="icon"
                   onClick={onSaveWatchlist}
+                  onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                   aria-label="Save watchlist as template"
                   className="h-9 w-9 shrink-0 rounded-lg"
                 >
@@ -104,6 +105,7 @@ export function WeightControls({
                 variant="outline"
                 size="icon"
                 onClick={onRefresh}
+                onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                 disabled={refreshing}
                 aria-label="Refresh prices"
                 className="h-9 w-9 shrink-0 rounded-lg"
@@ -122,6 +124,7 @@ export function WeightControls({
                     type="button"
                     variant="outline"
                     size="icon"
+                    onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                     aria-label="Sort watchlist"
                     className="h-9 w-9 shrink-0 rounded-lg"
                   >

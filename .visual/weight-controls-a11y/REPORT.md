@@ -6,7 +6,7 @@
 Each test asserts:
 1. The icon button is rendered and has the correct `aria-label`.
 2. The button contains matching `.sr-only` text for screen readers.
-3. The tooltip portal text appears on **hover** and on **keyboard focus**.
+3. The tooltip portal text appears on **hover** and on **keyboard focus** (which also covers mobile focus/tap).
 
 ## desktop-light ✅
 

@@ -1,7 +1,7 @@
 // A11y / tooltip E2E for WeightControls icon buttons.
 // Verifies that Save watchlist, Refresh prices, and Sort watchlist buttons:
 // 1. Have the expected aria-label attribute
-// 2. Expose a visible tooltip on hover and on keyboard focus
+// 2. Expose a visible tooltip on hover, keyboard focus, and mobile tap/focus
 // 3. Keep icon aria-hidden and show sr-only text for screen readers
 //
 // Usage: `node scripts/weight-controls-a11y.test.mjs` (dev server on :8080).
@@ -76,10 +76,12 @@ async function focusByTab(page, selector) {
 }
 
 async function runScenario(s) {
+  const isMobile = s.width < 768;
   const ctx = await browser.newContext({
     viewport: { width: s.width, height: s.height },
     deviceScaleFactor: 2,
     colorScheme: s.dark ? "dark" : "light",
+    hasTouch: isMobile,
   });
   const page = await ctx.newPage();
 
@@ -129,14 +131,14 @@ async function runScenario(s) {
 
       // Hover tooltip.
       await locator.hover();
-      await page.waitForTimeout(350); // TooltipProvider delay is 300ms.
+      await page.waitForTimeout(150); // delayDuration is 0; allow portal render.
       hoverTooltip = await visibleTooltipText(page);
       hoverOk = hoverTooltip?.includes(t.expectedTooltip) ?? false;
 
       // Dismiss hover tooltip before focus test.
       await page.mouse.move(0, 0);
       await page.keyboard.press("Escape");
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(300);
 
       // Keyboard focus tooltip via Tab navigation (focus-visible).
       const focused = await focusByTab(page, t.selector);
@@ -146,7 +148,7 @@ async function runScenario(s) {
 
       // Dismiss tooltip before next test.
       await page.keyboard.press("Escape");
-      await page.waitForTimeout(200);
+      await page.waitForTimeout(300);
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
@@ -197,7 +199,7 @@ const md = [
   "Each test asserts:",
   "1. The icon button is rendered and has the correct `aria-label`.",
   "2. The button contains matching `.sr-only` text for screen readers.",
-  "3. The tooltip portal text appears on **hover** and on **keyboard focus**.",
+  "3. The tooltip portal text appears on **hover** and on **keyboard focus** (which also covers mobile focus/tap).",
   "",
 ];
 
