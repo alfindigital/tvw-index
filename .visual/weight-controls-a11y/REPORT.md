@@ -20,9 +20,14 @@ Each test asserts:
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
-| Save watchlist | — | — | — | — | ❌ |
-| Refresh prices | — | — | — | — | ❌ |
-| Sort watchlist | — | — | — | — | ❌ |
+| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Save watchlist | Refresh prices | ❌ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Refresh prices | Sort watchlist | ❌ |
+
+**Screenshots**
+- save: ![save](desktop-dark-save.png)
+- refresh: ![refresh](desktop-dark-refresh.png)
+- sort: ![sort](desktop-dark-sort.png)
 
 ## mobile-light ❌
 
@@ -36,6 +41,11 @@ Each test asserts:
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
-| Save watchlist | — | — | — | — | ❌ |
-| Refresh prices | — | — | — | — | ❌ |
-| Sort watchlist | — | — | — | — | ❌ |
+| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Save watchlist | Refresh prices | ❌ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Refresh prices | Sort watchlist | ❌ |
+
+**Screenshots**
+- save: ![save](mobile-dark-save.png)
+- refresh: ![refresh](mobile-dark-refresh.png)
+- sort: ![sort](mobile-dark-sort.png)
