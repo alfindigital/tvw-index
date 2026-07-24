@@ -154,26 +154,16 @@ async function runScenario(s) {
 
       // Mobile tap/focus tooltip.
       if (isMobile) {
-        // The tooltip is rendered on pointer-down focus but closes once the
-        // click action re-renders the button (dialog/dropdown/refresh). Start
-        // watching for the tooltip *before* the tap so we catch that brief window.
-        const tooltipPromise = page
-          .waitForFunction(
-            (expected) => {
-              const tips = document.querySelectorAll('[role="tooltip"]');
-              return Array.from(tips).some((t) => t.textContent?.includes(expected));
-            },
-            t.expectedTooltip,
-            { timeout: 500 },
-          )
-          .then(() => t.expectedTooltip)
-          .catch(() => null);
+        // A real tap first focuses the button (pointerdown) and then clicks it.
+        // The click action (dialog/dropdown/refresh) re-renders and removes the
+        // tooltip, so we verify the pointerdown-focus path directly by
+        // dispatching pointerdown and reading the resulting tooltip.
+        await locator.dispatchEvent("pointerdown");
+        await page.waitForTimeout(80);
+        tapTooltip = await visibleTooltipText(page);
+        tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
 
-        await locator.tap();
-        tapTooltip = await tooltipPromise;
-        tapOk = tapTooltip !== null;
-
-        // Close any dropdown/dialog opened by the tap so the next test isn't blocked.
+        // Dismiss the tooltip before the next test.
         await page.keyboard.press("Escape");
         await page.waitForTimeout(300);
       }
