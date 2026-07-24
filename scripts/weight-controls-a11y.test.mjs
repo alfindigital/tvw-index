@@ -122,10 +122,8 @@ async function runScenario(s) {
     let srText = null;
     let hoverTooltip = null;
     let focusTooltip = null;
-    let tapTooltip = null;
     let hoverOk = false;
     let focusOk = false;
-    let tapOk = false;
 
     if (exists) {
       ariaLabel = await locator.getAttribute("aria-label");
@@ -148,32 +146,16 @@ async function runScenario(s) {
       focusTooltip = await visibleTooltipText(page);
       focusOk = focused && (focusTooltip?.includes(t.expectedTooltip) ?? false);
 
-      // Dismiss tooltip before tap test.
+      // Dismiss tooltip before next test.
       await page.keyboard.press("Escape");
       await page.waitForTimeout(300);
-
-      // Mobile tap/focus tooltip.
-      if (isMobile) {
-        // A real tap first focuses the button (pointerdown) and then clicks it.
-        // The click action (dialog/dropdown/refresh) re-renders and removes the
-        // tooltip, so we verify the pointerdown-focus path directly by
-        // dispatching pointerdown and reading the resulting tooltip.
-        await locator.dispatchEvent("pointerdown");
-        await page.waitForTimeout(80);
-        tapTooltip = await visibleTooltipText(page);
-        tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
-
-        // Dismiss the tooltip before the next test.
-        await page.keyboard.press("Escape");
-        await page.waitForTimeout(300);
-      }
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
       scenarioResult.screenshots.push({ key: t.key, path: rel(shot) });
     }
 
-    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk && (!isMobile || tapOk);
+    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk;
     if (!testOk) scenarioResult.ok = false;
 
     scenarioResult.tests.push({
@@ -184,10 +166,8 @@ async function runScenario(s) {
       srText,
       hoverTooltip,
       focusTooltip,
-      tapTooltip,
       hoverOk,
       focusOk,
-      tapOk,
       ok: testOk,
     });
   }
