@@ -12,17 +12,22 @@ Each test asserts:
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
-| Save watchlist | — | — | — | — | ❌ |
-| Refresh prices | — | — | — | — | ❌ |
-| Sort watchlist | — | — | — | — | ❌ |
+| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Refresh prices | Refresh prices | ✅ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | ✅ |
+
+**Screenshots**
+- save: ![save](desktop-light-save.png)
+- refresh: ![refresh](desktop-light-refresh.png)
+- sort: ![sort](desktop-light-sort.png)
 
 ## desktop-dark ❌
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
-| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
-| Refresh prices | Refresh prices | Refresh prices | Save watchlist | Refresh prices | ❌ |
-| Sort watchlist | Sort watchlist | Sort watchlist | Refresh prices | Sort watchlist | ❌ |
+| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | — | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Refresh prices | Refresh prices | ✅ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | ✅ |
 
 **Screenshots**
 - save: ![save](desktop-dark-save.png)
@@ -33,17 +38,22 @@ Each test asserts:
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
-| Save watchlist | — | — | — | — | ❌ |
-| Refresh prices | — | — | — | — | ❌ |
-| Sort watchlist | — | — | — | — | ❌ |
+| Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Refresh prices | — | ❌ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | ✅ |
+
+**Screenshots**
+- save: ![save](mobile-light-save.png)
+- refresh: ![refresh](mobile-light-refresh.png)
+- sort: ![sort](mobile-light-sort.png)
 
 ## mobile-dark ❌
 
 | Button | aria-label | sr-only | Hover tooltip | Focus tooltip | Status |
 | --- | --- | --- | --- | --- | --- |
 | Save watchlist | Save watchlist as template | Save watchlist as template | Save watchlist | Save watchlist | ❌ |
-| Refresh prices | Refresh prices | Refresh prices | Save watchlist | Refresh prices | ❌ |
-| Sort watchlist | Sort watchlist | Sort watchlist | Refresh prices | Sort watchlist | ❌ |
+| Refresh prices | Refresh prices | Refresh prices | Refresh prices | — | ❌ |
+| Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | Sort watchlist | ✅ |
 
 **Screenshots**
 - save: ![save](mobile-dark-save.png)
