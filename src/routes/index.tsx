@@ -21,6 +21,7 @@ import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header
 import { DynamicFooter } from "@/components/DynamicFooter";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
 import {
   loadBasket,
