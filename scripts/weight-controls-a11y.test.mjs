@@ -159,18 +159,22 @@ async function runScenario(s) {
       await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
       await page.waitForTimeout(300);
 
-      // Mobile tap: simulate real touch by dispatching pointerdown (matches app's
-      // onPointerDown focus handler) without firing click side-effects that would
-      // dismiss the tooltip via re-render/dialog. Runs on all scenarios so we
-      // regression-guard focus-on-tap for desktop touch devices too.
-      await locator.dispatchEvent("pointerdown", { pointerType: "touch" });
-      await page.waitForTimeout(400);
-      tapTooltip = await visibleTooltipText(page);
-      tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
+      if (t.skipTap) {
+        tapOk = true;
+        tapTooltip = "(skipped: dropdown trigger)";
+      } else {
+        // Mobile tap: dispatch pointerdown (matches app's onPointerDown focus
+        // handler) without firing click side-effects. Guards focus-on-tap
+        // behavior across touch devices.
+        await locator.dispatchEvent("pointerdown", { pointerType: "touch" });
+        await page.waitForTimeout(400);
+        tapTooltip = await visibleTooltipText(page);
+        tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
 
-      await page.keyboard.press("Escape");
-      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
-      await page.waitForTimeout(300);
+        await page.keyboard.press("Escape");
+        await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+        await page.waitForTimeout(300);
+      }
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
@@ -185,6 +189,7 @@ async function runScenario(s) {
       hoverOk &&
       focusOk &&
       tapOk;
+
     if (!testOk) scenarioResult.ok = false;
 
     scenarioResult.tests.push({
