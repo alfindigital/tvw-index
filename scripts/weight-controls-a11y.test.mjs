@@ -206,8 +206,9 @@ async function runScenario(s) {
     `${tag} ${s.name} — ${scenarioResult.tests.filter((x) => x.ok).length}/${scenarioResult.tests.length} tests passed`,
   );
   for (const t of scenarioResult.tests.filter((x) => !x.ok)) {
-    console.error(`   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" hover="${t.hoverTooltip}" focus="${t.focusTooltip}"`);
+    console.error(`   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" iconHidden=${t.iconHidden} hover="${t.hoverTooltip}" focus="${t.focusTooltip}" tap="${t.tapTooltip}"`);
   }
+
 }
 
 try {
