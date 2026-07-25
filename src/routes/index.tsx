@@ -899,6 +899,7 @@ function IndexPage() {
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
 
   const hasRows = enriched.rows.length > 0;
+  const isMobile = useIsMobile();
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
