@@ -27,7 +27,10 @@ type Props = {
 };
 
 const MODE_BTN =
-  "flex h-full flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-semibold leading-none transition-colors sm:flex-none";
+  "flex h-full flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-semibold leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex-none";
+
+const ICON_BTN =
+  "h-9 w-9 shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
 
 
@@ -89,7 +92,7 @@ export function WeightControls({
                   onClick={onSaveWatchlist}
                   onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                   aria-label="Save watchlist as template"
-                  className="h-9 w-9 shrink-0 rounded-lg"
+                  className={ICON_BTN}
                 >
                   <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
                   <span className="sr-only">Save watchlist as template</span>
@@ -108,7 +111,7 @@ export function WeightControls({
                 onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                 disabled={refreshing}
                 aria-label="Refresh prices"
-                className="h-9 w-9 shrink-0 rounded-lg"
+                className={ICON_BTN}
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
                 <span className="sr-only">Refresh prices</span>
@@ -126,7 +129,7 @@ export function WeightControls({
                     size="icon"
                     onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                     aria-label="Sort watchlist"
-                    className="h-9 w-9 shrink-0 rounded-lg"
+                    className={ICON_BTN}
                   >
                     <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
                     <span className="sr-only">Sort watchlist</span>
