@@ -39,8 +39,11 @@ const TESTS = [
     label: "Sort watchlist",
     selector: "button[aria-label='Sort watchlist']",
     expectedTooltip: "Sort watchlist",
+    // Sort is a DropdownMenu trigger: a real tap opens the menu (expected UX)
+    // which dismisses the tooltip. Hover + keyboard focus still expose it.
+    skipTap: true,
   },
-];
+
 
 const browser = await chromium.launch({
   executablePath: process.env.PW_CHROMIUM_PATH ?? "/chromium-1194/chrome-linux/chrome",
