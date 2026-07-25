@@ -901,7 +901,14 @@ function IndexPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
-      <Toaster position="top-center" richColors />
+      <Toaster
+        position={isMobile ? "bottom-center" : "top-center"}
+        richColors
+        closeButton
+        duration={isMobile ? 3500 : 3000}
+        mobileOffset={{ bottom: "16px", left: "12px", right: "12px" }}
+        toastOptions={{ className: "text-sm" }}
+      />
       <AppHeader
         actions={
           <>
