@@ -120,22 +120,25 @@ async function runScenario(s) {
     const exists = await locator.isVisible().catch(() => false);
     let ariaLabel = null;
     let srText = null;
+    let iconHidden = null;
     let hoverTooltip = null;
     let focusTooltip = null;
+    let tapTooltip = null;
     let hoverOk = false;
     let focusOk = false;
+    let tapOk = false;
 
     if (exists) {
       ariaLabel = await locator.getAttribute("aria-label");
       srText = await locator.locator(".sr-only").textContent().catch(() => null);
+      iconHidden = await locator.locator("svg").first().getAttribute("aria-hidden").catch(() => null);
 
       // Hover tooltip.
       await locator.hover();
-      await page.waitForTimeout(150); // delayDuration is 0; allow portal render.
+      await page.waitForTimeout(150);
       hoverTooltip = await visibleTooltipText(page);
       hoverOk = hoverTooltip?.includes(t.expectedTooltip) ?? false;
 
-      // Dismiss hover tooltip before focus test.
       await page.mouse.move(0, 0);
       await page.keyboard.press("Escape");
       await page.waitForTimeout(300);
@@ -146,8 +149,21 @@ async function runScenario(s) {
       focusTooltip = await visibleTooltipText(page);
       focusOk = focused && (focusTooltip?.includes(t.expectedTooltip) ?? false);
 
-      // Dismiss tooltip before next test.
       await page.keyboard.press("Escape");
+      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+      await page.waitForTimeout(300);
+
+      // Mobile tap: simulate real touch by dispatching pointerdown (matches app's
+      // onPointerDown focus handler) without firing click side-effects that would
+      // dismiss the tooltip via re-render/dialog. Runs on all scenarios so we
+      // regression-guard focus-on-tap for desktop touch devices too.
+      await locator.dispatchEvent("pointerdown", { pointerType: "touch" });
+      await page.waitForTimeout(400);
+      tapTooltip = await visibleTooltipText(page);
+      tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
+
+      await page.keyboard.press("Escape");
+      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
       await page.waitForTimeout(300);
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
@@ -155,7 +171,14 @@ async function runScenario(s) {
       scenarioResult.screenshots.push({ key: t.key, path: rel(shot) });
     }
 
-    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk;
+    const testOk =
+      exists &&
+      ariaLabel === t.label &&
+      srText === t.label &&
+      iconHidden === "true" &&
+      hoverOk &&
+      focusOk &&
+      tapOk;
     if (!testOk) scenarioResult.ok = false;
 
     scenarioResult.tests.push({
@@ -164,13 +187,17 @@ async function runScenario(s) {
       exists,
       ariaLabel,
       srText,
+      iconHidden,
       hoverTooltip,
       focusTooltip,
+      tapTooltip,
       hoverOk,
       focusOk,
+      tapOk,
       ok: testOk,
     });
   }
+
 
   await ctx.close();
   results.push(scenarioResult);
