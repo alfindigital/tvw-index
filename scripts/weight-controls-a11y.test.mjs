@@ -43,6 +43,9 @@ const TESTS = [
     // which dismisses the tooltip. Hover + keyboard focus still expose it.
     skipTap: true,
   },
+];
+
+
 
 
 const browser = await chromium.launch({
