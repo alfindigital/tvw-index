@@ -39,8 +39,14 @@ const TESTS = [
     label: "Sort watchlist",
     selector: "button[aria-label='Sort watchlist']",
     expectedTooltip: "Sort watchlist",
+    // Sort is a DropdownMenu trigger: a real tap opens the menu (expected UX)
+    // which dismisses the tooltip. Hover + keyboard focus still expose it.
+    skipTap: true,
   },
 ];
+
+
+
 
 const browser = await chromium.launch({
   executablePath: process.env.PW_CHROMIUM_PATH ?? "/chromium-1194/chrome-linux/chrome",
@@ -120,22 +126,25 @@ async function runScenario(s) {
     const exists = await locator.isVisible().catch(() => false);
     let ariaLabel = null;
     let srText = null;
+    let iconHidden = null;
     let hoverTooltip = null;
     let focusTooltip = null;
+    let tapTooltip = null;
     let hoverOk = false;
     let focusOk = false;
+    let tapOk = false;
 
     if (exists) {
       ariaLabel = await locator.getAttribute("aria-label");
       srText = await locator.locator(".sr-only").textContent().catch(() => null);
+      iconHidden = await locator.locator("svg").first().getAttribute("aria-hidden").catch(() => null);
 
       // Hover tooltip.
       await locator.hover();
-      await page.waitForTimeout(150); // delayDuration is 0; allow portal render.
+      await page.waitForTimeout(150);
       hoverTooltip = await visibleTooltipText(page);
       hoverOk = hoverTooltip?.includes(t.expectedTooltip) ?? false;
 
-      // Dismiss hover tooltip before focus test.
       await page.mouse.move(0, 0);
       await page.keyboard.press("Escape");
       await page.waitForTimeout(300);
@@ -146,16 +155,41 @@ async function runScenario(s) {
       focusTooltip = await visibleTooltipText(page);
       focusOk = focused && (focusTooltip?.includes(t.expectedTooltip) ?? false);
 
-      // Dismiss tooltip before next test.
       await page.keyboard.press("Escape");
+      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
       await page.waitForTimeout(300);
+
+      if (t.skipTap) {
+        tapOk = true;
+        tapTooltip = "(skipped: dropdown trigger)";
+      } else {
+        // Mobile tap: dispatch pointerdown (matches app's onPointerDown focus
+        // handler) without firing click side-effects. Guards focus-on-tap
+        // behavior across touch devices.
+        await locator.dispatchEvent("pointerdown", { pointerType: "touch" });
+        await page.waitForTimeout(400);
+        tapTooltip = await visibleTooltipText(page);
+        tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
+
+        await page.keyboard.press("Escape");
+        await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+        await page.waitForTimeout(300);
+      }
 
       const shot = `${OUT}/${s.name}-${t.key}.png`;
       await locator.screenshot({ path: shot });
       scenarioResult.screenshots.push({ key: t.key, path: rel(shot) });
     }
 
-    const testOk = exists && ariaLabel === t.label && srText === t.label && hoverOk && focusOk;
+    const testOk =
+      exists &&
+      ariaLabel === t.label &&
+      srText === t.label &&
+      iconHidden === "true" &&
+      hoverOk &&
+      focusOk &&
+      tapOk;
+
     if (!testOk) scenarioResult.ok = false;
 
     scenarioResult.tests.push({
@@ -164,13 +198,17 @@ async function runScenario(s) {
       exists,
       ariaLabel,
       srText,
+      iconHidden,
       hoverTooltip,
       focusTooltip,
+      tapTooltip,
       hoverOk,
       focusOk,
+      tapOk,
       ok: testOk,
     });
   }
+
 
   await ctx.close();
   results.push(scenarioResult);
@@ -179,8 +217,9 @@ async function runScenario(s) {
     `${tag} ${s.name} — ${scenarioResult.tests.filter((x) => x.ok).length}/${scenarioResult.tests.length} tests passed`,
   );
   for (const t of scenarioResult.tests.filter((x) => !x.ok)) {
-    console.error(`   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" hover="${t.hoverTooltip}" focus="${t.focusTooltip}"`);
+    console.error(`   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" iconHidden=${t.iconHidden} hover="${t.hoverTooltip}" focus="${t.focusTooltip}" tap="${t.tapTooltip}"`);
   }
+
 }
 
 try {
