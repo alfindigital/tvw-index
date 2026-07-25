@@ -21,6 +21,7 @@ import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header
 import { DynamicFooter } from "@/components/DynamicFooter";
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { WATCHLIST_NO_TICKER_TOAST } from "@/lib/copy";
 import {
   loadBasket,
@@ -898,10 +899,18 @@ function IndexPage() {
   const setSort = useCallback((sort: SortKey) => setSettings((s) => ({ ...s, sort })), []);
 
   const hasRows = enriched.rows.length > 0;
+  const isMobile = useIsMobile();
 
   return (
     <div className="relative flex min-h-screen flex-col bg-background text-foreground">
-      <Toaster position="top-center" richColors />
+      <Toaster
+        position={isMobile ? "bottom-center" : "top-center"}
+        richColors
+        closeButton
+        duration={isMobile ? 3500 : 3000}
+        mobileOffset={{ bottom: "16px", left: "12px", right: "12px" }}
+        toastOptions={{ className: "text-sm" }}
+      />
       <AppHeader
         actions={
           <>
