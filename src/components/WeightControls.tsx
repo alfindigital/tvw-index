@@ -92,7 +92,7 @@ export function WeightControls({
                   onClick={onSaveWatchlist}
                   onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                   aria-label="Save watchlist as template"
-                  className="h-9 w-9 shrink-0 rounded-lg"
+                  className={ICON_BTN}
                 >
                   <Bookmark className="h-3.5 w-3.5" aria-hidden="true" />
                   <span className="sr-only">Save watchlist as template</span>
@@ -111,7 +111,7 @@ export function WeightControls({
                 onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                 disabled={refreshing}
                 aria-label="Refresh prices"
-                className="h-9 w-9 shrink-0 rounded-lg"
+                className={ICON_BTN}
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
                 <span className="sr-only">Refresh prices</span>
@@ -129,7 +129,7 @@ export function WeightControls({
                     size="icon"
                     onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                     aria-label="Sort watchlist"
-                    className="h-9 w-9 shrink-0 rounded-lg"
+                    className={ICON_BTN}
                   >
                     <ArrowUpDown className="h-3.5 w-3.5" aria-hidden="true" />
                     <span className="sr-only">Sort watchlist</span>
