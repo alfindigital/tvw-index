@@ -56,8 +56,13 @@ const describedBy = (page, sel) =>
   }, sel);
 
 async function focusByTab(page, selector) {
-  await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
-  for (let i = 0; i < 40; i++) {
+  // Reset the sequential-focus starting point so Tab always walks from the top.
+  await page.evaluate(() => {
+    if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+    document.body.tabIndex = -1;
+    document.body.focus();
+  });
+  for (let i = 0; i < 60; i++) {
     await page.keyboard.press("Tab");
     const hit = await page.evaluate((sel) => document.querySelector(sel) === document.activeElement, selector);
     if (hit) return true;
@@ -124,7 +129,10 @@ async function runScenario(s) {
   for (const b of BUTTONS) {
     const sel = `button[aria-label='${b.label}']`;
     const locator = page.locator(sel);
-    const exists = await locator.isVisible().catch(() => false);
+    const exists = await locator
+      .waitFor({ state: "visible", timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
     check(`${b.key}: button visible`, exists);
     if (!exists) continue;
 
