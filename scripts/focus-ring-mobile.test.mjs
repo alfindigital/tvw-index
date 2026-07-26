@@ -25,7 +25,9 @@ const SCENARIOS = [
 const BUTTONS = [
   { key: "save", label: "Save watchlist as template" },
   { key: "refresh", label: "Refresh prices" },
-  { key: "sort", label: "Sort watchlist" },
+  // Sort opens a dropdown on pointerdown: Radix moves focus into the menu,
+  // so only the keyboard-focus ring is asserted for it.
+  { key: "sort", label: "Sort watchlist", skipTap: true },
 ];
 
 const browser = await chromium.launch({
@@ -140,6 +142,13 @@ async function runScenario(s) {
     const kbPath = `${OUT}/${s.name}-${b.key}-tab.png`;
     await locator.screenshot({ path: kbPath });
     r.screenshots.push({ key: `${b.key} tab`, path: rel(kbPath) });
+
+    if (b.skipTap) {
+      await page.keyboard.press("Escape");
+      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+      await page.waitForTimeout(200);
+      continue;
+    }
 
     // Reset focus, then tap (pointerdown handler forces focus).
     await page.keyboard.press("Escape");
