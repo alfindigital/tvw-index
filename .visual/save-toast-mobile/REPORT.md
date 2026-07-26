@@ -1,7 +1,7 @@
 # Save watchlist — mobile toast E2E
 
 - Scenarios: 3
-- Failing scenarios: **1**
+- Failing scenarios: **0**
 
 ## mobile-light ✅
 
@@ -11,7 +11,7 @@
 | Save dialog opens on tap | ✅ | — |
 | Success toast appears | ✅ | — |
 | Toast text mentions saved template name | ✅ | Watchlist saved as "E2E Mobile Toast"2 stocks |
-| Toast shows stock count | ✅ | Watchlist saved as "E2E Mobile Toast"2 stocks |
+| Toast shows stock count matching watchlist | ✅ | expected 2 stocks — Watchlist saved as "E2E Mobile Toast"2 stocks |
 | Toaster anchored bottom | ✅ | y=bottom x=center |
 | Toast has close button | ✅ | — |
 | Close button dismisses toast | ✅ | — |
@@ -23,15 +23,15 @@
 - 3-after-close: ![3-after-close](mobile-light-3-after-close.png)
 - 4-duplicate-toast: ![4-duplicate-toast](mobile-light-4-duplicate-toast.png)
 
-## mobile-dark ❌
+## mobile-dark ✅
 
 | Check | Status | Detail |
 | --- | --- | --- |
 | Save button visible | ✅ | — |
 | Save dialog opens on tap | ✅ | — |
 | Success toast appears | ✅ | — |
-| Toast text mentions saved template name | ✅ | Watchlist saved as "E2E Mobile Toast"10 stocks |
-| Toast shows stock count | ❌ | Watchlist saved as "E2E Mobile Toast"10 stocks |
+| Toast text mentions saved template name | ✅ | Watchlist saved as "E2E Mobile Toast"2 stocks |
+| Toast shows stock count matching watchlist | ✅ | expected 2 stocks — Watchlist saved as "E2E Mobile Toast"2 stocks |
 | Toaster anchored bottom | ✅ | y=bottom x=center |
 | Toast has close button | ✅ | — |
 | Close button dismisses toast | ✅ | — |
@@ -51,7 +51,7 @@
 | Save dialog opens on tap | ✅ | — |
 | Success toast appears | ✅ | — |
 | Toast text mentions saved template name | ✅ | Watchlist saved as "E2E Mobile Toast"2 stocks |
-| Toast shows stock count | ✅ | Watchlist saved as "E2E Mobile Toast"2 stocks |
+| Toast shows stock count matching watchlist | ✅ | expected 2 stocks — Watchlist saved as "E2E Mobile Toast"2 stocks |
 | Toaster anchored bottom | ✅ | y=bottom x=center |
 | Toast has close button | ✅ | — |
 | Close button dismisses toast | ✅ | — |

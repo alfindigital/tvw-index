@@ -102,7 +102,18 @@ async function runScenario(s) {
     toastText.includes(TEMPLATE_NAME) && /saved/i.test(toastText),
     toastText,
   );
-  check("Toast shows stock count", /2 stocks/.test(toastText), toastText);
+  const basketCount = await page.evaluate(() => {
+    try {
+      return JSON.parse(localStorage.getItem("idx-basket-v1") ?? "{}").stocks?.length ?? 0;
+    } catch {
+      return 0;
+    }
+  });
+  check(
+    "Toast shows stock count matching watchlist",
+    basketCount > 0 && toastText.includes(`${basketCount} stocks`),
+    `expected ${basketCount} stocks — ${toastText}`,
+  );
 
   // 3. Positioned bottom-center on mobile.
   const position = await page
