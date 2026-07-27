@@ -81,30 +81,38 @@ async function runScenario(s) {
   const page = await ctx.newPage();
   page.on("pageerror", (e) => console.error("pageerror:", String(e).slice(0,200)));
 
+  const seed = () =>
+    page.evaluate(() => {
+      localStorage.setItem(
+        "idx-basket-v1",
+        JSON.stringify({
+          stocks: [
+            { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+            { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          ],
+          lastRefresh: null,
+        }),
+      );
+    });
+
   await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
-  // Cold dev-server starts can take a while to compile; wait for hydration
-  // (any aria-labelled button) instead of a fixed delay.
-  await page
-    .locator("button[aria-label]")
-    .first()
-    .waitFor({ state: "attached", timeout: 60000 })
-    .catch(() => {});
-  await page.waitForTimeout(900);
-  await page.evaluate(() => {
-    localStorage.setItem(
-      "idx-basket-v1",
-      JSON.stringify({
-        stocks: [
-          { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-        ],
-        lastRefresh: null,
-      }),
-    );
-  });
-  await page.reload({ waitUntil: "domcontentloaded" });
-  if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
-  await page.waitForTimeout(1200);
+  // Let the app hydrate fully before seeding: it persists its own default
+  // basket on mount and would otherwise overwrite the seed (flaky cold starts).
+  await page.waitForTimeout(2500);
+
+  // Seed a watchlist so WeightControls renders, retrying if the app raced us.
+  for (let attempt = 0; attempt < 3; attempt++) {
+    await seed();
+    await page.reload({ waitUntil: "domcontentloaded" });
+    if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
+    const ready = await page
+      .locator("button[aria-label='Refresh prices']")
+      .waitFor({ state: "visible", timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
+    if (ready) break;
+  }
+  await page.waitForTimeout(800);
 
   const r = { scenario: s.name, ok: true, checks: [] };
   const check = (label, pass, detail = "") => {
