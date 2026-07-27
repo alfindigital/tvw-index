@@ -1,0 +1,10 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ executablePath: "/chromium-1194/chrome-linux/chrome" });
+const p = await (await b.newContext({viewport:{width:1280,height:900}})).newPage();
+p.on("request", r => { if (r.method()==="POST") console.log("POST", r.url()); });
+await p.goto("http://localhost:8080/", {waitUntil:"domcontentloaded"});
+await p.waitForTimeout(3000);
+await p.locator("button[aria-label='Refresh prices']").click().catch(e=>console.log("no btn"));
+await p.waitForTimeout(4000);
+console.log(await p.evaluate(()=>Array.from(document.querySelectorAll("div")).map(d=>d.textContent.trim()).filter(t=>/^\d+(\.\d+)?\s*%$/.test(t)).slice(0,6)));
+await b.close();
