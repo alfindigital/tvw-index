@@ -191,7 +191,7 @@ async function runScenario(s) {
 }
 
 try {
-  for (const s of SCENARIOS.filter(x=>x.name===process.env.SC||!process.env.SC)) await runScenario(s);
+  for (const s of SCENARIOS) await runScenario(s);
 } finally {
   await browser.close();
 }
