@@ -1,0 +1,13 @@
+import { chromium } from "playwright";
+const b = await chromium.launch({ executablePath: "/chromium-1194/chrome-linux/chrome" });
+const ctx = await b.newContext({ viewport:{width:1280,height:900} });
+const p = await ctx.newPage();
+p.on("console", m => console.log("console:", m.type(), m.text().slice(0,200)));
+p.on("pageerror", e => console.log("pageerror:", String(e).slice(0,300)));
+await p.goto("http://localhost:8080/", {waitUntil:"domcontentloaded"});
+await p.waitForTimeout(900);
+await p.evaluate(()=>localStorage.setItem("idx-basket-v1", JSON.stringify({stocks:[{id:"t1",ticker:"BBCA",shares:100,price:0,manualShares:false,manualPrice:false,freeFloat:null}],lastRefresh:null})));
+await p.reload({waitUntil:"domcontentloaded"});
+await p.waitForTimeout(2000);
+console.log("btns:", await p.locator("button[aria-label]").evaluateAll(n=>n.map(x=>x.getAttribute("aria-label"))));
+await b.close();
