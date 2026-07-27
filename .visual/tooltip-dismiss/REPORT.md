@@ -1,9 +1,9 @@
 # Tooltip show/dismiss E2E
 
-- Scenarios: 3
-- Failing scenarios: **2**
+- Scenarios: 1
+- Failing scenarios: **0**
 
-## mobile-light ✅
+## mobile-dark ✅
 
 | Check | Status | Detail |
 | --- | --- | --- |
@@ -34,19 +34,3 @@
 | save: tooltip hidden after outside click | ✅ | text="null" |
 | save: tooltip re-opens on focus | ✅ | text="Save watchlist" |
 | save: tooltip hidden after Escape | ✅ | text="null" |
-
-## mobile-dark ❌
-
-| Check | Status | Detail |
-| --- | --- | --- |
-| refresh: button visible | ❌ | — |
-| sort: button visible | ❌ | — |
-| save: button visible | ❌ | — |
-
-## desktop-light ❌
-
-| Check | Status | Detail |
-| --- | --- | --- |
-| refresh: button visible | ❌ | — |
-| sort: button visible | ❌ | — |
-| save: button visible | ❌ | — |

@@ -79,6 +79,7 @@ async function runScenario(s) {
     deviceScaleFactor: s.mobile ? 2 : 1,
   });
   const page = await ctx.newPage();
+  page.on("pageerror", (e) => console.error("pageerror:", String(e).slice(0,200)));
 
   await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(900);
@@ -175,7 +176,7 @@ async function runScenario(s) {
 }
 
 try {
-  for (const s of SCENARIOS) await runScenario(s);
+  for (const s of SCENARIOS.filter(x=>x.name===process.env.SC||!process.env.SC)) await runScenario(s);
 } finally {
   await browser.close();
 }
