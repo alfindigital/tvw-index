@@ -82,6 +82,13 @@ async function runScenario(s) {
   page.on("pageerror", (e) => console.error("pageerror:", String(e).slice(0,200)));
 
   await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
+  // Cold dev-server starts can take a while to compile; wait for hydration
+  // (any aria-labelled button) instead of a fixed delay.
+  await page
+    .locator("button[aria-label]")
+    .first()
+    .waitFor({ state: "attached", timeout: 60000 })
+    .catch(() => {});
   await page.waitForTimeout(900);
   await page.evaluate(() => {
     localStorage.setItem(
@@ -109,7 +116,7 @@ async function runScenario(s) {
     const sel = `button[aria-label='${b.label}']`;
     const locator = page.locator(sel);
     const exists = await locator
-      .waitFor({ state: "visible", timeout: 15000 })
+      .waitFor({ state: "visible", timeout: 30000 })
       .then(() => true)
       .catch(() => false);
     check(`${b.key}: button visible`, exists);
