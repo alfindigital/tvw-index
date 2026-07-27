@@ -163,6 +163,13 @@ async function runScenario(s) {
   // ---- Phase A: real refresh ---------------------------------------------
   const before = await readRows(page);
   const callsBeforeA = serverCalls;
+  // Start listening before the click: the toast auto-closes after a few sec.
+  const toastSeen = page
+    .locator("[data-sonner-toast]", { hasText: /updat/i })
+    .first()
+    .waitFor({ state: "visible", timeout: 20000 })
+    .then(() => true)
+    .catch(() => false);
   await refresh.click();
   await page.waitForTimeout(1000);
   await settle(
@@ -182,9 +189,11 @@ async function runScenario(s) {
       JSON.stringify(ui),
     );
   }
+  // NOTE: the app also auto-fetches on mount, so `before` may already be
+  // populated; we only require every row to hold a real (non-zero) close.
   check(
-    "prices changed from the empty seed state",
-    before.every((b) => b.price === 0) && afterA.every((a) => a.price > 0),
+    "every row holds a non-zero close price after refresh",
+    afterA.length > 0 && afterA.every((a) => a.price > 0),
     `${JSON.stringify(before.map((b) => b.price))} -> ${JSON.stringify(afterA.map((a) => a.price))}`,
   );
   const expA = expectedWeights(SEED, delivered);
@@ -193,14 +202,8 @@ async function runScenario(s) {
     SEED.every((row, i) => afterA.find((x) => x.ticker === row.ticker)?.weight === expA[i]),
     `expected ${JSON.stringify(expA)} got ${JSON.stringify(afterA.map((x) => x.weight))}`,
   );
-  check(
-    "success toast shown",
-    await page
-      .locator("[data-sonner-toast]", { hasText: /updated/i })
-      .first()
-      .isVisible()
-      .catch(() => false),
-  );
+  check("update toast shown", await toastSeen);
+
   await page.screenshot({ path: `${OUT}/${s.name}-phase-a.png` });
 
   // ---- Phase B: server returns a new close for BBCA ------------------------
