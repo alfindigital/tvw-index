@@ -138,25 +138,28 @@ async function runScenario(s) {
       check(`${b.key}: tooltip visible on tap`, !!tip && b.tip.test(tip), `text="${tip}"`);
     }
 
-    // 5. Escape hides tooltip
+    // 5. Outside click hides tooltip
     if (b.skipTap) {
       await focusByTab(page, sel);
       await page.waitForTimeout(300);
+      tip = await visibleTooltip(page);
+      check(`${b.key}: tooltip visible before outside click`, !!tip && b.tip.test(tip), `text="${tip}"`);
     }
-    await page.keyboard.press("Escape");
-    await page.waitForTimeout(350);
-    tip = await visibleTooltip(page);
-    check(`${b.key}: tooltip hidden after Escape`, tip === null, `text="${tip}"`);
-
-    // 6. Outside click hides tooltip
-    await focusByTab(page, sel);
-    await page.waitForTimeout(300);
-    tip = await visibleTooltip(page);
-    check(`${b.key}: tooltip re-opens on focus`, !!tip && b.tip.test(tip), `text="${tip}"`);
     await page.mouse.click(5, 5);
     await page.waitForTimeout(400);
     tip = await visibleTooltip(page);
     check(`${b.key}: tooltip hidden after outside click`, tip === null, `text="${tip}"`);
+
+    // 6. Escape hides tooltip
+    await blurAll(page);
+    await focusByTab(page, sel);
+    await page.waitForTimeout(300);
+    tip = await visibleTooltip(page);
+    check(`${b.key}: tooltip re-opens on focus`, !!tip && b.tip.test(tip), `text="${tip}"`);
+    await page.keyboard.press("Escape");
+    await page.waitForTimeout(350);
+    tip = await visibleTooltip(page);
+    check(`${b.key}: tooltip hidden after Escape`, tip === null, `text="${tip}"`);
 
     await page.keyboard.press("Escape").catch(() => {});
     await blurAll(page);

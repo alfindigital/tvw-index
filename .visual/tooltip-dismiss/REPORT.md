@@ -1,9 +1,9 @@
 # Tooltip show/dismiss E2E
 
 - Scenarios: 3
-- Failing scenarios: **3**
+- Failing scenarios: **2**
 
-## mobile-light ❌
+## mobile-light ✅
 
 | Check | Status | Detail |
 | --- | --- | --- |
@@ -13,26 +13,27 @@
 | refresh: tooltip visible on focus | ✅ | text="Refresh prices" |
 | refresh: tooltip hidden after blur | ✅ | text="null" |
 | refresh: tooltip visible on tap | ✅ | text="Refresh prices" |
-| refresh: tooltip hidden after Escape | ✅ | text="null" |
-| refresh: tooltip re-opens on focus | ❌ | text="null" |
 | refresh: tooltip hidden after outside click | ✅ | text="null" |
+| refresh: tooltip re-opens on focus | ✅ | text="Refresh prices" |
+| refresh: tooltip hidden after Escape | ✅ | text="null" |
 | sort: button visible | ✅ | — |
 | sort: no tooltip at idle | ✅ | — |
 | sort: reachable via Tab | ✅ | — |
 | sort: tooltip visible on focus | ✅ | text="Sort watchlist" |
 | sort: tooltip hidden after blur | ✅ | text="null" |
-| sort: tooltip hidden after Escape | ✅ | text="null" |
-| sort: tooltip re-opens on focus | ✅ | text="Sort watchlist" |
+| sort: tooltip visible before outside click | ✅ | text="Sort watchlist" |
 | sort: tooltip hidden after outside click | ✅ | text="null" |
+| sort: tooltip re-opens on focus | ✅ | text="Sort watchlist" |
+| sort: tooltip hidden after Escape | ✅ | text="null" |
 | save: button visible | ✅ | — |
 | save: no tooltip at idle | ✅ | — |
 | save: reachable via Tab | ✅ | — |
 | save: tooltip visible on focus | ✅ | text="Save watchlist" |
 | save: tooltip hidden after blur | ✅ | text="null" |
 | save: tooltip visible on tap | ✅ | text="Save watchlist" |
-| save: tooltip hidden after Escape | ✅ | text="null" |
-| save: tooltip re-opens on focus | ❌ | text="null" |
 | save: tooltip hidden after outside click | ✅ | text="null" |
+| save: tooltip re-opens on focus | ✅ | text="Save watchlist" |
+| save: tooltip hidden after Escape | ✅ | text="null" |
 
 ## mobile-dark ❌
 
