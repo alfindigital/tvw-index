@@ -108,6 +108,11 @@ async function runScenario(s) {
   // ---- Refresh ----
   const refresh = page.locator(REFRESH);
   await refresh.waitFor({ state: "visible", timeout: 5000 });
+  // Wait out the automatic on-load quote fetch before asserting the idle state.
+  for (let i = 0; i < 120; i++) {
+    if ((await refresh.getAttribute("aria-busy")) === null && (await refresh.isEnabled())) break;
+    await page.waitForTimeout(100);
+  }
   check("Refresh idle: enabled", await refresh.isEnabled());
   check("Refresh idle: no aria-busy", (await refresh.getAttribute("aria-busy")) === null);
 
@@ -205,7 +210,12 @@ async function runScenario(s) {
   check("Exactly one template saved (no double submit)", matches.length === 1, `count=${matches.length}`);
 
   const toast = page.locator("[data-sonner-toast]").first();
-  check("Success toast shown", await toast.isVisible().catch(() => false));
+  const toastVisible = await toast
+    .waitFor({ state: "visible", timeout: 4000 })
+    .then(() => true)
+    .catch(() => false);
+  const toastText = toastVisible ? await toast.innerText() : "";
+  check("Success toast shown", toastVisible && /saved/i.test(toastText), toastText);
   await shot("4-after-save");
 
   await ctx.close();

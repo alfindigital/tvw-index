@@ -2,12 +2,12 @@
 
 ## mobile-light — FAIL
 
-- ❌ Refresh idle: enabled
-- ❌ Refresh idle: no aria-busy
+- ✅ Refresh idle: enabled
+- ✅ Refresh idle: no aria-busy
 - ✅ Refresh shows aria-busy=true while loading
 - ✅ Refresh is disabled while loading
 - ✅ Refresh icon spins while loading — svg.animate-spin=1
-- ✅ Double click while busy does not fire a 2nd quote request — calls=10 (was 10)
+- ✅ Double click while busy does not fire a 2nd quote request — calls=2 (was 2)
 - ✅ Refresh returns to normal after load
 - ✅ Refresh spinner removed after load
 - ✅ Save dialog opens
@@ -26,8 +26,8 @@
 
 ## mobile-dark — FAIL
 
-- ❌ Refresh idle: enabled
-- ❌ Refresh idle: no aria-busy
+- ✅ Refresh idle: enabled
+- ✅ Refresh idle: no aria-busy
 - ✅ Refresh shows aria-busy=true while loading
 - ✅ Refresh is disabled while loading
 - ✅ Refresh icon spins while loading — svg.animate-spin=1
@@ -50,12 +50,12 @@
 
 ## desktop-light — FAIL
 
-- ❌ Refresh idle: enabled
-- ❌ Refresh idle: no aria-busy
+- ✅ Refresh idle: enabled
+- ✅ Refresh idle: no aria-busy
 - ✅ Refresh shows aria-busy=true while loading
 - ✅ Refresh is disabled while loading
 - ✅ Refresh icon spins while loading — svg.animate-spin=1
-- ✅ Double click while busy does not fire a 2nd quote request — calls=2 (was 2)
+- ✅ Double click while busy does not fire a 2nd quote request — calls=10 (was 10)
 - ✅ Refresh returns to normal after load
 - ✅ Refresh spinner removed after load
 - ✅ Save dialog opens
