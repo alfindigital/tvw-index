@@ -185,11 +185,11 @@ async function runScenario(s) {
   const inputs = page.locator("input[aria-label^='Price IDR']");
   await inputs.nth(0).click();
   await inputs.nth(0).fill("");
-  await inputs.nth(0).type("9750", { delay: 30 });
+  await inputs.nth(0).fill("9750");
   await inputs.nth(0).press("Enter");
   await inputs.nth(1).click();
   await inputs.nth(1).fill("");
-  await inputs.nth(1).type("4500", { delay: 30 });
+  await inputs.nth(1).fill("4500");
   await inputs.nth(1).press("Enter");
   await page.waitForTimeout(800);
 
