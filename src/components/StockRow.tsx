@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { Loader2, Trash2, AlertCircle, Hand, Zap } from "lucide-react";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { formatCompact, formatPct } from "@/lib/format";
