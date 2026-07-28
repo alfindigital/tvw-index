@@ -46,8 +46,9 @@ async function runScenario(s) {
   // Count + slow down quote server-fn calls so the busy state is observable.
   let quoteCalls = 0;
   await page.route("**/_serverFn/**", async (route) => {
-    const url = route.request().url();
-    if (/quote/i.test(url)) {
+    // server-fn ids are base64 in the URL; count every POST call and slow it
+    // down so the busy state is observable.
+    if (route.request().method() === "POST") {
       quoteCalls += 1;
       await new Promise((r) => setTimeout(r, 1500));
     }
@@ -71,7 +72,26 @@ async function runScenario(s) {
   });
   await page.reload({ waitUntil: "domcontentloaded" });
   if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
-  await page.waitForTimeout(1200);
+  await page.waitForTimeout(1500);
+  // The app may race to overwrite the seed on hydration; retry if needed.
+  for (let i = 0; i < 3; i++) {
+    if (await page.locator(REFRESH).count()) break;
+    await page.evaluate(() => {
+      localStorage.setItem(
+        "idx-basket-v1",
+        JSON.stringify({
+          stocks: [
+            { id: "b1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+            { id: "b2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          ],
+          lastRefresh: null,
+        }),
+      );
+    });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
+    await page.waitForTimeout(1500);
+  }
 
   const r = { scenario: s.name, ok: true, checks: [], screenshots: [] };
   const check = (label, pass, detail = "") => {
@@ -95,16 +115,19 @@ async function runScenario(s) {
   await activate(refresh);
 
   // Busy state should appear quickly.
-  let busy = false;
-  for (let i = 0; i < 30; i++) {
-    busy = (await refresh.getAttribute("aria-busy")) === "true";
-    if (busy) break;
-    await page.waitForTimeout(100);
+  let snap = { busy: false, disabled: false, spin: 0 };
+  for (let i = 0; i < 40; i++) {
+    snap = await refresh.evaluate((el) => ({
+      busy: el.getAttribute("aria-busy") === "true",
+      disabled: el.hasAttribute("disabled"),
+      spin: el.querySelectorAll("svg.animate-spin").length,
+    }));
+    if (snap.busy) break;
+    await page.waitForTimeout(50);
   }
-  check("Refresh shows aria-busy=true while loading", busy);
-  check("Refresh is disabled while loading", await refresh.isDisabled());
-  const spinning = await refresh.locator("svg.animate-spin").count();
-  check("Refresh icon spins while loading", spinning === 1, `svg.animate-spin=${spinning}`);
+  check("Refresh shows aria-busy=true while loading", snap.busy);
+  check("Refresh is disabled while loading", snap.disabled);
+  check("Refresh icon spins while loading", snap.spin === 1, `svg.animate-spin=${snap.spin}`);
   await shot("1-refresh-busy", refresh);
 
   // Double activation while busy must not fire another request.
