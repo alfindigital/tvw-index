@@ -144,7 +144,7 @@ async function runScenario(s) {
   const closeBtn = badToast.locator("[data-close-button]").first();
   const hasClose = badVisible && (await closeBtn.count()) > 0;
   if (hasClose) {
-    await closeBtn.click({ force: true });
+    await closeBtn.dispatchEvent("click");
     const gone = await badToast
       .waitFor({ state: "hidden", timeout: 8000 })
       .then(() => true)
@@ -167,7 +167,7 @@ async function runScenario(s) {
   if (emptyVisible) {
     const c = emptyToast.locator("[data-close-button]").first();
     if ((await c.count()) > 0) {
-      await c.click({ force: true });
+      await c.dispatchEvent("click");
       const gone = await emptyToast
         .waitFor({ state: "hidden", timeout: 8000 })
         .then(() => true)
