@@ -116,7 +116,8 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     }
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (saving) return;
     if (currentStocks.length === 0) {
       toast.error(WATCHLIST_EMPTY_TOAST);
       return;
@@ -127,6 +128,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
       toast.error(result.message);
       return;
     }
+    setSaving(true);
+    // Let the busy state paint before the (synchronous) write.
+    await new Promise((r) => setTimeout(r, 150));
     const next: Template = {
       id: crypto.randomUUID(),
       name: result.value,
@@ -138,11 +142,13 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setTemplates(list);
     setName("");
     setNameError(null);
+    setSaving(false);
     setSaveOpen(false);
     toast.success(WATCHLIST_SAVED_TOAST(result.value), {
       description: `${currentStocks.length} stocks`,
     });
   }
+
 
   function handleLoad(t: Template) {
     const cloned = t.stocks.map((s) => ({ ...s, id: crypto.randomUUID(), error: null }));
