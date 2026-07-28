@@ -193,8 +193,12 @@ async function runScenario(s) {
   check("Dialog Save disabled while saving", busyDisabled);
   if (savingVisible) await shot("3-save-busy", dialog);
 
-  await page.locator("[role='dialog'] button[aria-busy='true']").click({ force: true }).catch(() => {});
-  await page.waitForTimeout(1000);
+  // Second click while busy must be a no-op (button is disabled).
+  await page
+    .locator("[role='dialog'] button[aria-busy='true']")
+    .click({ force: true, timeout: 500 })
+    .catch(() => {});
+  await page.waitForTimeout(600);
 
   const dialogClosed = (await dialog.count()) === 0 || !(await dialog.first().isVisible());
   check("Dialog closes after save completes", dialogClosed);
