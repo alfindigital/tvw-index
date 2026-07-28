@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bookmark, BookmarkPlus, Trash2, AlertCircle } from "lucide-react";
+import { Bookmark, BookmarkPlus, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -73,6 +73,8 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   const [saveOpen, setSaveOpen] = useState(false);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     setTemplates(loadTemplates());
@@ -116,7 +118,8 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     }
   }
 
-  function handleSave() {
+  async function handleSave() {
+    if (saving) return;
     if (currentStocks.length === 0) {
       toast.error(WATCHLIST_EMPTY_TOAST);
       return;
@@ -127,6 +130,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
       toast.error(result.message);
       return;
     }
+    setSaving(true);
+    // Let the busy state paint before the (synchronous) write.
+    await new Promise((r) => setTimeout(r, 150));
     const next: Template = {
       id: crypto.randomUUID(),
       name: result.value,
@@ -138,11 +144,13 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setTemplates(list);
     setName("");
     setNameError(null);
+    setSaving(false);
     setSaveOpen(false);
     toast.success(WATCHLIST_SAVED_TOAST(result.value), {
       description: `${currentStocks.length} stocks`,
     });
   }
+
 
   function handleLoad(t: Template) {
     const cloned = t.stocks.map((s) => ({ ...s, id: crypto.randomUUID(), error: null }));
@@ -274,11 +282,26 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
             )}
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setSaveOpen(false)}>
+            <Button variant="ghost" disabled={saving} onClick={() => setSaveOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              aria-busy={saving ? true : undefined}
+              data-busy={saving ? "true" : undefined}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  Saving…
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
           </DialogFooter>
+
         </DialogContent>
       </Dialog>
     </>

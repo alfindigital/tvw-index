@@ -110,8 +110,11 @@ export function WeightControls({
                 onClick={onRefresh}
                 onPointerDown={(e) => (e.currentTarget as HTMLButtonElement).focus()}
                 disabled={refreshing}
+                aria-busy={refreshing ? true : undefined}
+                data-busy={refreshing ? "true" : undefined}
                 aria-label="Refresh prices"
                 className={ICON_BTN}
+
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
                 <span className="sr-only">Refresh prices</span>
