@@ -182,9 +182,17 @@ function StockRowImpl({
                 ref={priceRef}
                 type="text"
                 inputMode="numeric"
+                aria-label={`Price IDR ${stock.ticker}`}
                 value={stock.price ? stock.price.toLocaleString("en-US") : ""}
                 onChange={(e) => {
-                  const raw = e.target.value.replace(/\D/g, "");
+                  const input = e.target.value;
+                  const raw = input.replace(/\D/g, "");
+                  if (input.trim() !== "" && /[^\d.,\s]/.test(input)) {
+                    toast.error("Invalid price format — numbers only", {
+                      id: `price-format-${stock.id}`,
+                      description: `${stock.ticker || "This row"}: use digits only, e.g. 9750`,
+                    });
+                  }
                   const num = Math.min(Number(raw) || 0, 999999999999);
                   onChange({
                     price: num,
@@ -194,10 +202,18 @@ function StockRowImpl({
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
+                    if (!stock.price) {
+                      toast.error("Price cannot be empty", {
+                        id: `price-empty-${stock.id}`,
+                        description: `${stock.ticker || "This row"}: enter a close price above 0`,
+                      });
+                      return;
+                    }
                     (e.target as HTMLInputElement).blur();
                     onCommitPrice?.();
                   }
                 }}
+
                 placeholder="0"
                 title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
                 className={`${FIELD_CLS} pr-9`}
