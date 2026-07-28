@@ -73,6 +73,8 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   const [saveOpen, setSaveOpen] = useState(false);
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     setTemplates(loadTemplates());
