@@ -282,11 +282,26 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
             )}
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setSaveOpen(false)}>
+            <Button variant="ghost" disabled={saving} onClick={() => setSaveOpen(false)}>
               Cancel
             </Button>
-            <Button onClick={handleSave}>Save</Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              aria-busy={saving ? true : undefined}
+              data-busy={saving ? "true" : undefined}
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+                  Saving…
+                </>
+              ) : (
+                "Save"
+              )}
+            </Button>
           </DialogFooter>
+
         </DialogContent>
       </Dialog>
     </>
