@@ -24,10 +24,16 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
         <span className="absolute inset-0 rounded-[inherit] ring-1 ring-inset ring-white/20" />
       </div>
       {showWord ? (
-        <span className="truncate pb-0.5 text-[15px] font-bold leading-[1.2] tracking-[-0.015em] text-foreground sm:text-base">
-          Stack<span className="text-primary">Cap</span>
+        <span className="flex min-w-0 flex-col">
+          <span className="truncate text-[15px] font-bold leading-[1.15] tracking-[-0.015em] text-foreground sm:text-base">
+            Stack<span className="text-primary">Cap</span>
+          </span>
+          <span className="truncate text-[10px] font-medium leading-[1.3] tracking-[0.01em] text-muted-foreground sm:text-[11px]">
+            by <span className="text-primary/80">@lotmetrik</span>
+          </span>
         </span>
       ) : null}
+
     </div>
   );
 }
