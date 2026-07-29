@@ -113,7 +113,7 @@ export function TelegramInvite() {
 
         <button
           type="button"
-          onClick={() => setOpen(false)}
+          onClick={() => close("button")}
           aria-label="Dismiss Telegram invite"
           className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
@@ -141,7 +141,7 @@ export function TelegramInvite() {
             href="https://t.me/lotmetrik"
             target="_blank"
             rel="noreferrer"
-            onClick={() => setOpen(false)}
+            onClick={handleCta}
             className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[oklch(0.45_0.2_278)] px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.45_0.2_278_/_0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_28px_-10px_oklch(0.45_0.2_278_/_0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
           >
             Join channel now
