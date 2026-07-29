@@ -1070,6 +1070,8 @@ function IndexPage() {
       </main>
 
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+      <TelegramInvite />
+
     </div>
   );
 }
