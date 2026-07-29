@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, ArrowRight, Zap } from "lucide-react";
 import { TelegramIcon } from "@/components/SocialIcons";
 
-const SEEN_KEY = "stackcap-tg-invite-v1";
+const SEEN_KEY = "stackcap-tg-invite-v2";
 const AUTO_HIDE_MS = 5000;
 
 /**
- * First-visit invite to the Telegram channel.
- * Auto-hides after 5s, dismissible via the close button, shown once per browser.
+ * Center-screen, high-intent Telegram invite.
+ * Shows once per browser. 5s countdown bar, dismissible.
  */
 export function TelegramInvite() {
   const [open, setOpen] = useState(false);
+  const [progress, setProgress] = useState(100);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -20,14 +21,30 @@ export function TelegramInvite() {
     } catch {
       // ignore storage errors — still show once this session
     }
-    const show = window.setTimeout(() => setOpen(true), 600);
+    const show = window.setTimeout(() => setOpen(true), 400);
     return () => window.clearTimeout(show);
   }, []);
 
   useEffect(() => {
     if (!open) return;
+    const start = performance.now();
+    let raf = 0;
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const remaining = Math.max(0, AUTO_HIDE_MS - elapsed);
+      setProgress((remaining / AUTO_HIDE_MS) * 100);
+      if (remaining > 0) {
+        raf = requestAnimationFrame(tick);
+      }
+    };
+    raf = requestAnimationFrame(tick);
+
     const t = window.setTimeout(() => setOpen(false), AUTO_HIDE_MS);
-    return () => window.clearTimeout(t);
+    return () => {
+      window.clearTimeout(t);
+      cancelAnimationFrame(raf);
+    };
   }, [open]);
 
   if (!open) return null;
@@ -36,33 +53,69 @@ export function TelegramInvite() {
     <div
       role="dialog"
       aria-label="Join the StackCap Telegram channel"
-      className="fixed bottom-4 left-1/2 z-50 w-[min(22rem,calc(100vw-1.5rem))] -translate-x-1/2 animate-in fade-in slide-in-from-bottom-3 duration-300 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0"
+      aria-live="polite"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm animate-in fade-in duration-300"
     >
-      <div className="relative flex items-center gap-3 rounded-2xl border border-primary/25 bg-card/95 px-4 py-3 shadow-[0_16px_40px_-16px_oklch(0.52_0.22_277_/_0.55)] backdrop-blur-md">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-[oklch(0.42_0.18_278)] text-primary-foreground">
-          <TelegramIcon className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[13px] font-semibold leading-tight text-foreground">
-            Join <span className="text-primary">@lotmetrik</span> on Telegram
-          </p>
-          <a
-            href="https://t.me/lotmetrik"
-            target="_blank"
-            rel="noreferrer"
-            className="text-[11px] font-medium text-muted-foreground underline-offset-2 hover:text-primary hover:underline"
-          >
-            IDX index ideas & updates →
-          </a>
-        </div>
+      <div className="relative w-full max-w-[22rem] overflow-hidden rounded-3xl border border-primary/30 bg-card/95 shadow-[0_24px_60px_-20px_oklch(0.35_0.18_278_/_0.65)] backdrop-blur-xl animate-in zoom-in-95 slide-in-from-bottom-6 duration-300">
+        {/* Glow orb */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/20 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-8 -left-8 h-28 w-28 rounded-full bg-[oklch(0.55_0.22_278)]/15 blur-2xl" />
+
         <button
           type="button"
           onClick={() => setOpen(false)}
           aria-label="Dismiss Telegram invite"
-          className="absolute right-1.5 top-1.5 flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="absolute right-3 top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-muted/60 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <X className="h-3.5 w-3.5" aria-hidden="true" />
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
+
+        <div className="relative px-6 pb-5 pt-8 text-center">
+          <span className="mx-auto mb-4 flex h-14 w-14 animate-pulse items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-[oklch(0.42_0.18_278)] text-primary-foreground shadow-lg shadow-primary/25">
+            <TelegramIcon className="h-7 w-7" />
+          </span>
+
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary">
+            <Zap className="h-3 w-3 fill-current" aria-hidden="true" />
+            Free for first 500
+          </div>
+
+          <h3 className="mb-1 text-lg font-bold leading-tight text-foreground">
+            Get the index signal first
+          </h3>
+          <p className="mb-5 text-sm leading-relaxed text-muted-foreground">
+            Join <span className="font-semibold text-primary">@lotmetrik</span> on Telegram and catch IDX moves before the crowd.
+          </p>
+
+          <a
+            href="https://t.me/lotmetrik"
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => setOpen(false)}
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-[oklch(0.45_0.2_278)] px-5 py-3 text-sm font-bold text-primary-foreground shadow-[0_8px_24px_-8px_oklch(0.45_0.2_278_/_0.6)] transition-all hover:scale-[1.02] hover:shadow-[0_12px_28px_-10px_oklch(0.45_0.2_278_/_0.7)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring active:scale-[0.98]"
+          >
+            Join channel now
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+          </a>
+
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            Disappears in {" "}
+            <span className="font-semibold tabular-nums text-foreground">
+              {Math.ceil((progress / 100) * 5)}s
+            </span>
+          </p>
+        </div>
+
+        {/* Countdown progress bar */}
+        <div className="h-1 w-full bg-muted" aria-hidden="true">
+          <div
+            className="h-full bg-gradient-to-r from-primary to-[oklch(0.55_0.22_278)] transition-[width] ease-linear"
+            style={{
+              width: `${progress}%`,
+              transitionDuration: progress === 100 ? "0ms" : "100ms",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
