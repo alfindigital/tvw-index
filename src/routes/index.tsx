@@ -19,6 +19,8 @@ import { EmptyWatchlist } from "@/components/EmptyWatchlist";
 import { Button } from "@/components/ui/button";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "@/components/header-actions";
 import { DynamicFooter } from "@/components/DynamicFooter";
+import { TelegramInvite } from "@/components/TelegramInvite";
+
 
 import { useShortcuts } from "@/hooks/use-shortcuts";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -1070,6 +1072,8 @@ function IndexPage() {
       </main>
 
       <ShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
+      <TelegramInvite />
+
     </div>
   );
 }
