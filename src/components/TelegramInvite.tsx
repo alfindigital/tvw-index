@@ -1,32 +1,56 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X, ArrowRight, Zap } from "lucide-react";
 import { TelegramIcon } from "@/components/SocialIcons";
+import { trackTelegramPopup } from "@/lib/analytics";
 
 const SEEN_KEY = "stackcap-tg-invite-v2";
+const PENDING_JOIN_KEY = "stackcap-tg-pending-join";
 const AUTO_HIDE_MS = 5000;
 
 /**
  * Center-screen, high-intent Telegram invite.
  * Shows once per browser. 5s countdown bar, dismissible.
+ * Funnel events (impression → view → click/close → join success) go to Clarity.
  */
 export function TelegramInvite() {
   const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(100);
+  const closedRef = useRef(false);
+
+  const close = useCallback((reason: "button" | "auto") => {
+    if (closedRef.current) return;
+    closedRef.current = true;
+    trackTelegramPopup("close", { tg_popup_close_reason: reason });
+    setOpen(false);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // A pending join from a previous session means the user actually left for Telegram.
+    try {
+      if (sessionStorage.getItem(PENDING_JOIN_KEY)) {
+        sessionStorage.removeItem(PENDING_JOIN_KEY);
+        trackTelegramPopup("joinSuccess");
+      }
+    } catch {
+      // ignore storage errors
+    }
+
     try {
       if (localStorage.getItem(SEEN_KEY)) return;
       localStorage.setItem(SEEN_KEY, "1");
     } catch {
       // ignore storage errors — still show once this session
     }
+    trackTelegramPopup("impression");
     const show = window.setTimeout(() => setOpen(true), 400);
     return () => window.clearTimeout(show);
   }, []);
 
   useEffect(() => {
     if (!open) return;
+    trackTelegramPopup("view");
     const start = performance.now();
     let raf = 0;
 
@@ -40,14 +64,40 @@ export function TelegramInvite() {
     };
     raf = requestAnimationFrame(tick);
 
-    const t = window.setTimeout(() => setOpen(false), AUTO_HIDE_MS);
+    const t = window.setTimeout(() => close("auto"), AUTO_HIDE_MS);
     return () => {
       window.clearTimeout(t);
       cancelAnimationFrame(raf);
     };
-  }, [open]);
+  }, [open, close]);
+
+  const handleCta = useCallback(() => {
+    closedRef.current = true;
+    trackTelegramPopup("clickCta");
+    try {
+      sessionStorage.setItem(PENDING_JOIN_KEY, "1");
+    } catch {
+      // ignore
+    }
+    // If the tab is hidden shortly after the click, the user reached Telegram.
+    const onHide = () => {
+      if (document.visibilityState === "hidden") {
+        trackTelegramPopup("joinSuccess");
+        try {
+          sessionStorage.removeItem(PENDING_JOIN_KEY);
+        } catch {
+          // ignore
+        }
+        document.removeEventListener("visibilitychange", onHide);
+      }
+    };
+    document.addEventListener("visibilitychange", onHide);
+    window.setTimeout(() => document.removeEventListener("visibilitychange", onHide), 10000);
+    setOpen(false);
+  }, []);
 
   if (!open) return null;
+
 
   return (
     <div
