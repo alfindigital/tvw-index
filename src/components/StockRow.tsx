@@ -59,17 +59,6 @@ function StockRowImpl({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
-  const renderCountRef = useRef(0);
-  renderCountRef.current += 1;
-  useEffect(() => {
-    if (import.meta.env.DEV) {
-      console.debug(`[StockRow re-render] ${stock.ticker || stock.id} #${renderCountRef.current}`, {
-        price: stock.price,
-        shares: stock.shares,
-        loading,
-      });
-    }
-  });
 
   function handleTickerChange(v: string) {
     setTickerDraft(v.toUpperCase().slice(0, 8));
