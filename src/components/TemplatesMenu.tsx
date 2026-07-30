@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bookmark, BookmarkPlus, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,7 @@ import {
   type Stock,
   type Template,
 } from "@/lib/storage";
+import { cn } from "@/lib/utils";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
