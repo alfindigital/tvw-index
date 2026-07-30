@@ -87,12 +87,16 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
       it(`${vp.name} (${vp.width}px) · ${mode} — icon button has aria-label`, () => {
         setViewport(vp.width);
         setDarkMode(dark);
-        const { getByLabelText } = renderRow();
+        const { getAllByLabelText } = renderRow();
         // aria-label is specific to the row's ticker for clearer SR output.
-        const removeBtn = getByLabelText("Remove BBCA") as HTMLButtonElement;
-        expect(removeBtn.tagName).toBe("BUTTON");
-        // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
-        expect(removeBtn.className).toMatch(/h-10|h-9/);
+        // Rendered once per responsive layout (mobile + desktop).
+        const removeBtns = getAllByLabelText("Remove BBCA") as HTMLButtonElement[];
+        expect(removeBtns.length).toBeGreaterThanOrEqual(1);
+        for (const removeBtn of removeBtns) {
+          expect(removeBtn.tagName).toBe("BUTTON");
+          // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
+          expect(removeBtn.className).toMatch(/h-10|h-9/);
+        }
       });
 
       it(`${vp.name} (${vp.width}px) · ${mode} — long numeric values get tooltip via title`, () => {
@@ -123,12 +127,14 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
         const [first] = focusable;
         expect(first?.tagName).toBe("INPUT");
         expect((first as HTMLInputElement | undefined)?.value).toBe("BBCA");
-        // Exactly 3 inputs (ticker, shares, price) + 1 remove button.
+        // Exactly 3 inputs (ticker, shares, price). The remove button is
+        // rendered once per responsive layout (mobile + desktop), so allow
+        // more than one — but every button must be the remove action.
         const inputs = focusable.filter((el) => el.tagName === "INPUT");
         const buttons = focusable.filter((el) => el.tagName === "BUTTON");
         expect(inputs).toHaveLength(3);
-        expect(buttons).toHaveLength(1);
-        expect(buttons[0]?.getAttribute("aria-label")).toBe("Remove BBCA");
+        expect(buttons.length).toBeGreaterThanOrEqual(1);
+        for (const b of buttons) expect(b.getAttribute("aria-label")).toBe("Remove BBCA");
         // No positive tabindex (would break natural order)
         for (const el of focusable) {
           const ti = el.getAttribute("tabindex");

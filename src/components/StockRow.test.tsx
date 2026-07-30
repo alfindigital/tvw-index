@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { useCallback, useRef, useState } from "react";
 import { render, act } from "@testing-library/react";
-import { StockRow } from "./StockRow";
+import { StockRow, __renderCounts } from "./StockRow";
 import type { Stock } from "@/lib/storage";
 
 function makeStock(over: Partial<Stock> = {}): Stock {
@@ -84,25 +84,17 @@ function Harness({
   );
 }
 
-function renderLogsByTicker(spy: ReturnType<typeof vi.spyOn>): Record<string, number> {
-  const counts: Record<string, number> = {};
-  for (const call of spy.mock.calls) {
-    const msg = String(call[0] ?? "");
-    const m = msg.match(/\[StockRow re-render\] (\S+) #(\d+)/);
-    if (m && m[1]) counts[m[1]] = (counts[m[1]] ?? 0) + 1;
-  }
-  return counts;
+function snapshotCounts(): Record<string, number> {
+  return { ...__renderCounts };
+}
+
+function resetCounts() {
+  for (const k of Object.keys(__renderCounts)) delete __renderCounts[k];
 }
 
 describe("StockRow memoization", () => {
-  let spy: ReturnType<typeof vi.spyOn>;
-
   beforeEach(() => {
-    spy = vi.spyOn(console, "debug").mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    spy.mockRestore();
+    resetCounts();
   });
 
   it("only re-renders the row whose stock data actually changed", () => {
@@ -113,12 +105,12 @@ describe("StockRow memoization", () => {
     render(<Harness initial={[a, b, c]} />);
 
     // Each row renders exactly once on mount
-    const initial = renderLogsByTicker(spy);
+    const initial = snapshotCounts();
     expect(initial.BBCA).toBe(1);
     expect(initial.BBRI).toBe(1);
     expect(initial.TLKM).toBe(1);
 
-    spy.mockClear();
+    resetCounts();
 
     // Change ONLY BBRI's price via its memoized handler
     act(() => {
@@ -127,7 +119,7 @@ describe("StockRow memoization", () => {
       );
     });
 
-    const after = renderLogsByTicker(spy);
+    const after = snapshotCounts();
     expect(after.BBRI).toBe(1);
     expect(after.BBCA ?? 0).toBe(0);
     expect(after.TLKM ?? 0).toBe(0);
@@ -138,7 +130,7 @@ describe("StockRow memoization", () => {
     const b = makeStock({ ticker: "BBRI" });
 
     render(<Harness initial={[a, b]} />);
-    spy.mockClear();
+    resetCounts();
 
     act(() => {
       (Harness as any)._setStocks((prev: Stock[]) => [
@@ -147,7 +139,7 @@ describe("StockRow memoization", () => {
       ]);
     });
 
-    const after = renderLogsByTicker(spy);
+    const after = snapshotCounts();
     expect(after.ASII).toBe(1);
     expect(after.BBCA ?? 0).toBe(0);
     expect(after.BBRI ?? 0).toBe(0);
@@ -159,7 +151,7 @@ describe("StockRow memoization", () => {
     const c = makeStock({ ticker: "TLKM" });
 
     render(<Harness initial={[a, b, c]} />);
-    spy.mockClear();
+    resetCounts();
 
     act(() => {
       (Harness as any)._setStocks((prev: Stock[]) =>
@@ -167,7 +159,7 @@ describe("StockRow memoization", () => {
       );
     });
 
-    const after = renderLogsByTicker(spy);
+    const after = snapshotCounts();
     expect(after.BBCA ?? 0).toBe(0);
     expect(after.TLKM ?? 0).toBe(0);
   });
