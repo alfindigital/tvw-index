@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bookmark, BookmarkPlus, Trash2, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +27,7 @@ import {
   type Stock,
   type Template,
 } from "@/lib/storage";
+import { cn } from "@/lib/utils";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
@@ -74,7 +75,25 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  function clearPendingDelete() {
+    if (deleteTimerRef.current) {
+      clearTimeout(deleteTimerRef.current);
+      deleteTimerRef.current = null;
+    }
+    setPendingDeleteId(null);
+  }
+
+  function armDeleteConfirm(id: string) {
+    clearPendingDelete();
+    setPendingDeleteId(id);
+    deleteTimerRef.current = setTimeout(() => {
+      setPendingDeleteId(null);
+      deleteTimerRef.current = null;
+    }, 4000);
+  }
 
   useEffect(() => {
     setTemplates(loadTemplates());
@@ -158,17 +177,21 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     toast.success(`Template "${t.name}" loaded`);
   }
 
-  function handleDelete(t: Template) {
-    if (!confirm(`Delete template "${t.name}"?`)) return;
-    const list = loadTemplates().filter((x) => x.id !== t.id);
-    saveTemplates(list);
-    setTemplates(list);
-    toast.success("Template deleted");
+  function handleDeleteClick(t: Template) {
+    if (pendingDeleteId === t.id) {
+      clearPendingDelete();
+      const list = loadTemplates().filter((x) => x.id !== t.id);
+      saveTemplates(list);
+      setTemplates(list);
+      toast.success("Template deleted");
+    } else {
+      armDeleteConfirm(t.id);
+    }
   }
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu onOpenChange={(open) => { if (!open) clearPendingDelete(); }}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -207,9 +230,17 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(t)}
-                    className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    aria-label="Delete template"
+                    onClick={() => handleDeleteClick(t)}
+                    className={cn(
+                      "rounded p-1 transition-colors",
+                      pendingDeleteId === t.id
+                        ? "bg-destructive/10 text-destructive"
+                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    )}
+                    aria-label={
+                      pendingDeleteId === t.id ? "Confirm delete template" : "Delete template"
+                    }
+                    aria-pressed={pendingDeleteId === t.id ? true : undefined}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
