@@ -87,12 +87,16 @@ describe("StockRow accessibility (responsive + dark mode)", () => {
       it(`${vp.name} (${vp.width}px) · ${mode} — icon button has aria-label`, () => {
         setViewport(vp.width);
         setDarkMode(dark);
-        const { getByLabelText } = renderRow();
+        const { getAllByLabelText } = renderRow();
         // aria-label is specific to the row's ticker for clearer SR output.
-        const removeBtn = getByLabelText("Remove BBCA") as HTMLButtonElement;
-        expect(removeBtn.tagName).toBe("BUTTON");
-        // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
-        expect(removeBtn.className).toMatch(/h-10|h-9/);
+        // Rendered once per responsive layout (mobile + desktop).
+        const removeBtns = getAllByLabelText("Remove BBCA") as HTMLButtonElement[];
+        expect(removeBtns.length).toBeGreaterThanOrEqual(1);
+        for (const removeBtn of removeBtns) {
+          expect(removeBtn.tagName).toBe("BUTTON");
+          // Tap-target classes encode the minimum size (h-10 = 40px mobile, h-9 sm+)
+          expect(removeBtn.className).toMatch(/h-10|h-9/);
+        }
       });
 
       it(`${vp.name} (${vp.width}px) · ${mode} — long numeric values get tooltip via title`, () => {
