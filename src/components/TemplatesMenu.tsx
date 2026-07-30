@@ -191,7 +191,7 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu onOpenChange={(open) => { if (!open) clearPendingDelete(); }}>
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -230,9 +230,17 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleDelete(t)}
-                    className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-                    aria-label="Delete template"
+                    onClick={() => handleDeleteClick(t)}
+                    className={cn(
+                      "rounded p-1 transition-colors",
+                      pendingDeleteId === t.id
+                        ? "bg-destructive/10 text-destructive"
+                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                    )}
+                    aria-label={
+                      pendingDeleteId === t.id ? "Confirm delete template" : "Delete template"
+                    }
+                    aria-pressed={pendingDeleteId === t.id ? true : undefined}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
