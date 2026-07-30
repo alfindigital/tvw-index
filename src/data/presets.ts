@@ -30,10 +30,10 @@ const RAW_PRESETS: Preset[] = [
     tickers: ["ADRO", "PTBA", "ITMG", "INDY", "HRUM"],
   },
   {
-    id: "consumer",
-    name: "Consumer",
-    desc: "ICBP · INDF · UNVR · MYOR · AMRT",
-    tickers: ["ICBP", "INDF", "UNVR", "MYOR", "AMRT"],
+    id: "pak-pp",
+    name: "Pak PP",
+    desc: "BREN · BRPT · CUAN · TPIA · PTRO · CDIA",
+    tickers: ["BREN", "BRPT", "CUAN", "TPIA", "PTRO", "CDIA"],
   },
 ];
 
