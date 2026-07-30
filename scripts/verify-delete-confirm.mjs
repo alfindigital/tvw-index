@@ -47,7 +47,7 @@ if (!isVisible || !hasRed) {
 await confirmBtn.click();
 await page.waitForTimeout(400);
 
-const emptyText = await page.locator("text=No saved templates"").isVisible().catch(() => false);
+const emptyText = await page.locator("text=No saved templates").isVisible().catch(() => false);
 const templateText = await page.locator("text=Test Template").isVisible().catch(() => false);
 console.log("empty visible:", emptyText, "template still visible:", templateText);
 
