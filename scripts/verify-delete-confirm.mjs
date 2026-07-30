@@ -1,7 +1,7 @@
 import { chromium } from "playwright";
 
 const browser = await chromium.launch({
-  executablePath: process.env.PW_CHROMIUM_PATH ?? "/chromium-1194/chrome-linux/chrome",
+  executablePath: "/opt/ms-playwright/chromium-1194/chrome-linux/chrome",
   headless: true,
 });
 const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
