@@ -75,7 +75,25 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  function clearPendingDelete() {
+    if (deleteTimerRef.current) {
+      clearTimeout(deleteTimerRef.current);
+      deleteTimerRef.current = null;
+    }
+    setPendingDeleteId(null);
+  }
+
+  function armDeleteConfirm(id: string) {
+    clearPendingDelete();
+    setPendingDeleteId(id);
+    deleteTimerRef.current = setTimeout(() => {
+      setPendingDeleteId(null);
+      deleteTimerRef.current = null;
+    }, 4000);
+  }
 
   useEffect(() => {
     setTemplates(loadTemplates());
