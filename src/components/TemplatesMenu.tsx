@@ -177,12 +177,16 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     toast.success(`Template "${t.name}" loaded`);
   }
 
-  function handleDelete(t: Template) {
-    if (!confirm(`Delete template "${t.name}"?`)) return;
-    const list = loadTemplates().filter((x) => x.id !== t.id);
-    saveTemplates(list);
-    setTemplates(list);
-    toast.success("Template deleted");
+  function handleDeleteClick(t: Template) {
+    if (pendingDeleteId === t.id) {
+      clearPendingDelete();
+      const list = loadTemplates().filter((x) => x.id !== t.id);
+      saveTemplates(list);
+      setTemplates(list);
+      toast.success("Template deleted");
+    } else {
+      armDeleteConfirm(t.id);
+    }
   }
 
   return (
