@@ -42,6 +42,9 @@ const FIELD_CLS = "h-9 w-full min-w-0 font-mono text-sm leading-5 tabular-nums";
 const SUFFIX_CLS =
   "pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground";
 
+/** DEV-only render counter (see StockRow.test.tsx). */
+export const __renderCounts: Record<string, number> = {};
+
 function StockRowImpl({
   stock,
   marketCap,
@@ -59,6 +62,11 @@ function StockRowImpl({
 }: Props) {
   const priceRef = useRef<HTMLInputElement>(null);
   const [tickerDraft, setTickerDraft] = useState(stock.ticker);
+  if (import.meta.env.DEV) {
+    // Silent render counter used by the memoization tests. No console noise.
+    const key = stock.ticker || stock.id;
+    __renderCounts[key] = (__renderCounts[key] ?? 0) + 1;
+  }
 
   function handleTickerChange(v: string) {
     setTickerDraft(v.toUpperCase().slice(0, 8));
