@@ -132,10 +132,7 @@ describe("StockRow memoization", () => {
     resetCounts();
 
     act(() => {
-      setStocksRef!((prev: Stock[]) => [
-        ...prev,
-        makeStock({ ticker: "ASII", price: 5200 }),
-      ]);
+      setStocksRef!((prev: Stock[]) => [...prev, makeStock({ ticker: "ASII", price: 5200 })]);
     });
 
     const after = snapshotCounts();
