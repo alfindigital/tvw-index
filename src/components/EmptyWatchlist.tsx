@@ -24,8 +24,8 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
           Bikin index kustom IDX & pantau di TradingView
         </h2>
         <p className="mx-auto mt-1.5 max-w-md text-[13px] leading-relaxed text-muted-foreground">
-          Klik salah satu starter pack di bawah — harga, bobot, dan formula
-          TradingView terisi otomatis.
+          Klik salah satu starter pack di bawah — harga, bobot, dan formula TradingView terisi
+          otomatis.
         </p>
       </div>
 
@@ -69,14 +69,15 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
           ·
         </span>
         <span className="text-[11px] text-muted-foreground">
-          Ketik di kolom atas (mis. <span className="font-mono font-semibold text-foreground">BBCA</span>) → Enter
+          Ketik di kolom atas (mis.{" "}
+          <span className="font-mono font-semibold text-foreground">BBCA</span>) → Enter
         </span>
       </div>
 
       {/* "How it works" — demoted to fine print caption */}
       <p className="mx-auto mt-3 max-w-lg text-center text-[10.5px] leading-relaxed text-muted-foreground/80">
-        Add ticker → auto-fetch harga Yahoo → copy formula tertimbang market cap →
-        paste ke TradingView jadi 1 chart index.
+        Add ticker → auto-fetch harga Yahoo → copy formula tertimbang market cap → paste ke
+        TradingView jadi 1 chart index.
       </p>
     </div>
   );

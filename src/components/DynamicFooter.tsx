@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type ReactNode,
+} from "react";
 import { TelegramIcon, InstagramIcon, TikTokIcon, XIcon } from "./SocialIcons";
 
 type Social = {
@@ -10,8 +17,18 @@ type Social = {
 
 const SOCIALS: Social[] = [
   { href: "https://t.me/lotmetrik", label: "Telegram", handle: "@lotmetrik", Icon: TelegramIcon },
-  { href: "https://instagram.com/lotmetrik", label: "Instagram", handle: "@lotmetrik", Icon: InstagramIcon },
-  { href: "https://tiktok.com/@lotmetrik", label: "TikTok", handle: "@lotmetrik", Icon: TikTokIcon },
+  {
+    href: "https://instagram.com/lotmetrik",
+    label: "Instagram",
+    handle: "@lotmetrik",
+    Icon: InstagramIcon,
+  },
+  {
+    href: "https://tiktok.com/@lotmetrik",
+    label: "TikTok",
+    handle: "@lotmetrik",
+    Icon: TikTokIcon,
+  },
   { href: "https://x.com/lotmetrik", label: "X", handle: "@lotmetrik", Icon: XIcon },
 ];
 
@@ -167,7 +184,9 @@ export function DynamicFooter() {
         style={{ borderLeft: "2px solid var(--primary)", paddingLeft: 8 }}
       >
         <span className="mr-0.5">©</span>
-        <b className="truncate text-primary">{new Date().getFullYear()}&nbsp;Lotmetrik{"\n"}</b>
+        <b className="truncate text-primary">
+          {new Date().getFullYear()}&nbsp;Lotmetrik{"\n"}
+        </b>
         <span className="afd-caret" aria-hidden />
       </span>
 

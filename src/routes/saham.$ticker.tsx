@@ -14,9 +14,10 @@ function buildFaqs(t: string, sharesM: number | null) {
   return [
     {
       q: `Berapa jumlah saham beredar ${t}?`,
-      a: sharesM != null
-        ? `${t} memiliki sekitar ${formatCompact(sharesM * 1_000_000)} lembar saham beredar (per ${SHARES_AS_OF}, sumber data IDX). Angka ini dapat berubah karena aksi korporasi (stock split, rights issue, buyback).`
-        : `Data jumlah saham beredar ${t} belum tersedia di database ${SITE_NAME}. Silakan cek langsung ke laman resmi IDX.`,
+      a:
+        sharesM != null
+          ? `${t} memiliki sekitar ${formatCompact(sharesM * 1_000_000)} lembar saham beredar (per ${SHARES_AS_OF}, sumber data IDX). Angka ini dapat berubah karena aksi korporasi (stock split, rights issue, buyback).`
+          : `Data jumlah saham beredar ${t} belum tersedia di database ${SITE_NAME}. Silakan cek langsung ke laman resmi IDX.`,
     },
     {
       q: `Bagaimana cara menghitung market cap ${t}?`,
@@ -88,7 +89,6 @@ export const Route = createFileRoute("/saham/$ticker")({
   component: EmitenPage,
 });
 
-
 function EmitenPage() {
   const { ticker } = Route.useParams();
   const t = ticker.toUpperCase().replace(/\.JK$/i, "");
@@ -135,8 +135,7 @@ function EmitenPage() {
     if (sharesM == null) return [];
     // Pick 6 tickers with the closest shares-outstanding count as "related" —
     // gives internal linking + long-tail crawl paths without extra data.
-    const sorted = IDX_TICKERS
-      .filter((x) => x !== t && IDX_SHARES[x] != null)
+    const sorted = IDX_TICKERS.filter((x) => x !== t && IDX_SHARES[x] != null)
       .map((x) => ({ x, diff: Math.abs(Math.log(IDX_SHARES[x]!) - Math.log(sharesM)) }))
       .sort((a, b) => a.diff - b.diff)
       .slice(0, 6)
@@ -157,9 +156,7 @@ function EmitenPage() {
         </Link>
 
         <header className="mt-6">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            {t}
-          </h1>
+          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">{t}</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Indonesia Stock Exchange (IDX) · TradingView symbol{" "}
             <span className="font-mono text-foreground">IDX:{t}</span>
@@ -217,21 +214,22 @@ function EmitenPage() {
             About {t} on {SITE_NAME}
           </h2>
           <p>
-            {SITE_NAME} helps you build an IDX stock watchlist weighted by
-            market cap (or free-float adjusted), then generates a ready-to-use TradingView
-            formula. Add {t} along with other issuers to build your own custom index
-            and chart it on TradingView.
+            {SITE_NAME} helps you build an IDX stock watchlist weighted by market cap (or free-float
+            adjusted), then generates a ready-to-use TradingView formula. Add {t} along with other
+            issuers to build your own custom index and chart it on TradingView.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            Note: shares outstanding are sourced from IDX data (as of {SHARES_AS_OF}) and may
-            change due to corporate actions. Prices come from Yahoo Finance and are
-            delayed/closing, not real-time. Not investment advice.
+            Note: shares outstanding are sourced from IDX data (as of {SHARES_AS_OF}) and may change
+            due to corporate actions. Prices come from Yahoo Finance and are delayed/closing, not
+            real-time. Not investment advice.
           </p>
         </section>
 
         {related.length > 0 ? (
           <section className="mt-10">
-            <h2 className="text-base font-semibold text-foreground">Saham lain dengan ukuran serupa</h2>
+            <h2 className="text-base font-semibold text-foreground">
+              Saham lain dengan ukuran serupa
+            </h2>
             <div className="mt-3 flex flex-wrap gap-2">
               {related.map((r) => (
                 <Link
@@ -265,4 +263,3 @@ function EmitenPage() {
     </div>
   );
 }
-

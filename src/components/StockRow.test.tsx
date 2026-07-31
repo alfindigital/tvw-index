@@ -17,15 +17,14 @@ function makeStock(over: Partial<Stock> = {}): Stock {
   };
 }
 
+type SetStocks = React.Dispatch<React.SetStateAction<Stock[]>>;
+let setStocksRef: SetStocks | null = null;
+
 /**
  * Mirrors the stable per-row handler cache used in src/routes/index.tsx so
  * tests reflect production memoization behavior.
  */
-function Harness({
-  initial,
-}: {
-  initial: Stock[];
-}) {
+function Harness({ initial }: { initial: Stock[] }) {
   const [stocks, setStocks] = useState(initial);
   const handlersRef = useRef(
     new Map<
@@ -57,8 +56,8 @@ function Harness({
     return h;
   };
 
-  // Expose mutators on window for tests
-  (Harness as any)._setStocks = setStocks;
+  // Expose the state setter so tests can mutate rows from outside.
+  setStocksRef = setStocks;
 
   return (
     <div>
@@ -114,7 +113,7 @@ describe("StockRow memoization", () => {
 
     // Change ONLY BBRI's price via its memoized handler
     act(() => {
-      (Harness as any)._setStocks((prev: Stock[]) =>
+      setStocksRef!((prev: Stock[]) =>
         prev.map((s) => (s.ticker === "BBRI" ? { ...s, price: 5000 } : s)),
       );
     });
@@ -133,10 +132,7 @@ describe("StockRow memoization", () => {
     resetCounts();
 
     act(() => {
-      (Harness as any)._setStocks((prev: Stock[]) => [
-        ...prev,
-        makeStock({ ticker: "ASII", price: 5200 }),
-      ]);
+      setStocksRef!((prev: Stock[]) => [...prev, makeStock({ ticker: "ASII", price: 5200 })]);
     });
 
     const after = snapshotCounts();
@@ -154,9 +150,7 @@ describe("StockRow memoization", () => {
     resetCounts();
 
     act(() => {
-      (Harness as any)._setStocks((prev: Stock[]) =>
-        prev.filter((s) => s.ticker !== "BBRI"),
-      );
+      setStocksRef!((prev: Stock[]) => prev.filter((s) => s.ticker !== "BBRI"));
     });
 
     const after = snapshotCounts();

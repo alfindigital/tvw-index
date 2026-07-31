@@ -123,7 +123,6 @@ export function getCachedQuote(ticker: string): CachedQuote | null {
   return cache[key] ?? null;
 }
 
-
 // ---------- App settings (weighting / display preferences) ----------
 
 export type WeightModeSetting = "mcap" | "freefloat";
@@ -153,7 +152,6 @@ export function loadSettings(): AppSettings {
       sort: (["manual", "weight", "mcap", "ticker"] as const).includes(p.sort) ? p.sort : "manual",
       prefix: (["IDX:", "BINANCE:", ""] as const).includes(p.prefix) ? p.prefix : "IDX:",
     };
-
   } catch {
     return { ...DEFAULT_SETTINGS };
   }
@@ -392,8 +390,7 @@ export function loadResetHistory(): ResetHistory {
       if (Number.isFinite(at) && now - at < RESET_HISTORY_TTL_MS && stocks.length > 0) {
         undo = {
           stocks,
-          lastRefresh:
-            raw.lastRefresh == null ? null : Number(raw.lastRefresh) || null,
+          lastRefresh: raw.lastRefresh == null ? null : Number(raw.lastRefresh) || null,
           fetchedAt: normalizeNumRecord(raw.fetchedAt),
           dailyChanges: normalizeNumRecord(raw.dailyChanges),
           count: Number(raw.count) || stocks.length,

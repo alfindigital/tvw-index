@@ -55,9 +55,15 @@ function validateName(
 }
 
 function findIdenticalTemplate(stocks: Stock[], templates: Template[]): Template | undefined {
-  const current = stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+  const current = stocks
+    .map((s) => normalizeTickerKey(s.ticker))
+    .sort()
+    .join(",");
   return templates.find((t) => {
-    const theirs = t.stocks.map((s) => normalizeTickerKey(s.ticker)).sort().join(",");
+    const theirs = t.stocks
+      .map((s) => normalizeTickerKey(s.ticker))
+      .sort()
+      .join(",");
     return theirs === current;
   });
 }
@@ -170,7 +176,6 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     });
   }
 
-
   function handleLoad(t: Template) {
     const cloned = t.stocks.map((s) => ({ ...s, id: crypto.randomUUID(), error: null }));
     onLoadTemplate(cloned);
@@ -191,7 +196,11 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
 
   return (
     <>
-      <DropdownMenu onOpenChange={(open) => { if (!open) clearPendingDelete(); }}>
+      <DropdownMenu
+        onOpenChange={(open) => {
+          if (!open) clearPendingDelete();
+        }}
+      >
         <DropdownMenuTrigger asChild>
           <Button
             type="button"
@@ -226,7 +235,9 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
                     className="min-w-0 flex-1 text-left"
                   >
                     <div className="truncate text-sm font-medium">{t.name}</div>
-                    <div className="text-[10px] text-muted-foreground">{t.stocks.length} stocks</div>
+                    <div className="text-[10px] text-muted-foreground">
+                      {t.stocks.length} stocks
+                    </div>
                   </button>
                   <button
                     type="button"
@@ -235,7 +246,7 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
                       "rounded p-1 transition-colors",
                       pendingDeleteId === t.id
                         ? "bg-destructive/10 text-destructive"
-                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+                        : "text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
                     )}
                     aria-label={
                       pendingDeleteId === t.id ? "Confirm delete template" : "Delete template"
@@ -332,7 +343,6 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
               )}
             </Button>
           </DialogFooter>
-
         </DialogContent>
       </Dialog>
     </>

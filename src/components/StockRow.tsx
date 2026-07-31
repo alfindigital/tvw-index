@@ -89,11 +89,7 @@ function StockRowImpl({
   return (
     <div
       className={`relative rounded-xl border border-border bg-card p-2.5 transition-colors hover:border-ring/40 sm:p-4 [content-visibility:auto] [contain-intrinsic-size:160px]${
-        flash === "restored"
-          ? " lm-flash-restored"
-          : flash === "removed"
-            ? " lm-flash-removed"
-            : ""
+        flash === "restored" ? " lm-flash-restored" : flash === "removed" ? " lm-flash-removed" : ""
       }`}
     >
       {/* Mobile: ticker on row 1; shares | price | delete on row 2.
@@ -167,7 +163,9 @@ function StockRowImpl({
                   }
                 }}
                 placeholder="0"
-                title={stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined}
+                title={
+                  stock.shares ? `${formatSharesInput(stock.shares)} million shares` : undefined
+                }
                 className={`${FIELD_CLS} pr-7`}
               />
               <span className={SUFFIX_CLS}>M{stock.manualShares ? "*" : ""}</span>
@@ -211,7 +209,6 @@ function StockRowImpl({
                     onCommitPrice?.();
                   }
                 }}
-
                 placeholder="0"
                 title={stock.price ? `Rp ${stock.price.toLocaleString("en-US")}` : undefined}
                 className={`${FIELD_CLS} pr-9`}
@@ -275,7 +272,7 @@ function StockRowImpl({
           <div className="flex items-center gap-1.5 font-mono text-sm font-medium text-foreground">
             <span>{formatCompact(marketCap)}</span>
             {dailyChange != null ? (
-            <span
+              <span
                 className={`inline-flex items-center gap-0.5 rounded px-1 py-0.5 text-[10px] font-semibold tabular-nums ${
                   dailyChange >= 0
                     ? "bg-primary/10 text-primary"

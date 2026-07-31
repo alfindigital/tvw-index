@@ -13,10 +13,42 @@ interface SitemapEntry {
 // Blue-chip / high-liquidity IDX names — get priority 0.8 in the sitemap so
 // crawlers prioritize crawling the emiten pages that actually get search traffic.
 const BLUE_CHIPS = new Set([
-  "BBCA", "BBRI", "BMRI", "BBNI", "TLKM", "ASII", "UNTR", "ICBP", "INDF",
-  "KLBF", "UNVR", "GOTO", "ADRO", "PTBA", "ITMG", "AMRT", "MYOR", "MDKA",
-  "ANTM", "INCO", "PGAS", "SMGR", "INTP", "JSMR", "EXCL", "ISAT", "TOWR",
-  "BRIS", "ARTO", "MEGA", "BBTN", "HRUM", "MEDC", "AKRA", "CPIN", "JPFA",
+  "BBCA",
+  "BBRI",
+  "BMRI",
+  "BBNI",
+  "TLKM",
+  "ASII",
+  "UNTR",
+  "ICBP",
+  "INDF",
+  "KLBF",
+  "UNVR",
+  "GOTO",
+  "ADRO",
+  "PTBA",
+  "ITMG",
+  "AMRT",
+  "MYOR",
+  "MDKA",
+  "ANTM",
+  "INCO",
+  "PGAS",
+  "SMGR",
+  "INTP",
+  "JSMR",
+  "EXCL",
+  "ISAT",
+  "TOWR",
+  "BRIS",
+  "ARTO",
+  "MEGA",
+  "BBTN",
+  "HRUM",
+  "MEDC",
+  "AKRA",
+  "CPIN",
+  "JPFA",
 ]);
 
 // Parse SHARES_AS_OF ("24 Apr 2026") into ISO for <lastmod>. Falls back to
@@ -73,4 +105,3 @@ export const Route = createFileRoute("/sitemap.xml")({
     },
   },
 });
-
