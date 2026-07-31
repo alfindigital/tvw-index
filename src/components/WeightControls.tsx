@@ -7,12 +7,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import type { WeightMode } from "@/lib/weight";
 import type { SortKey } from "@/lib/storage";
 
@@ -32,8 +27,6 @@ const MODE_BTN =
 const ICON_BTN =
   "h-9 w-9 shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
 
-
-
 export function WeightControls({
   mode,
   onModeChange,
@@ -48,7 +41,6 @@ export function WeightControls({
       {/* Weighting mode */}
       <div
         className="flex h-9 items-stretch rounded-lg border border-border bg-background p-0.5"
-
         role="group"
         aria-label="Weight mode"
       >
@@ -114,9 +106,11 @@ export function WeightControls({
                 data-busy={refreshing ? "true" : undefined}
                 aria-label="Refresh prices"
                 className={ICON_BTN}
-
               >
-                <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`} aria-hidden="true" />
+                <RefreshCw
+                  className={`h-3.5 w-3.5 ${refreshing ? "animate-spin" : ""}`}
+                  aria-hidden="true"
+                />
                 <span className="sr-only">Refresh prices</span>
               </Button>
             </TooltipTrigger>
@@ -142,7 +136,10 @@ export function WeightControls({
               <TooltipContent side="bottom">Sort watchlist</TooltipContent>
             </Tooltip>
             <DropdownMenuContent align="end">
-              <DropdownMenuRadioGroup value={sort} onValueChange={(v) => onSortChange(v as SortKey)}>
+              <DropdownMenuRadioGroup
+                value={sort}
+                onValueChange={(v) => onSortChange(v as SortKey)}
+              >
                 <DropdownMenuRadioItem value="manual">Input order</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="weight">Weight ↓</DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="mcap">Market cap ↓</DropdownMenuRadioItem>
@@ -155,5 +152,3 @@ export function WeightControls({
     </div>
   );
 }
-
-

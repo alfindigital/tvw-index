@@ -20,7 +20,7 @@ const ROWS: { keys: string[]; label: string }[] = [
   { keys: ["Shift", "F"], label: "Toggle weight mode (Market Cap / Free-float)" },
   { keys: ["Shift", "S"], label: "Save watchlist as template" },
   { keys: ["Shift", "C"], label: "Copy TradingView formula" },
-  
+
   { keys: ["Ctrl/⌘", "Z"], label: "Undo last watchlist reset" },
   { keys: ["?"], label: "Open this shortcut list" },
   { keys: ["Esc"], label: "Close dialog / menu" },

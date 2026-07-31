@@ -8,12 +8,11 @@ export type QuoteResult = {
   error?: string;
 };
 
-
 const TIMEOUT_MS = 8000;
 // TTLs are computed dynamically from IDX market hours (see marketState()).
 // Fallbacks used only when the market-state computation fails.
-const CACHE_TTL_OPEN_S = 45;         // hot path during trading
-const CACHE_TTL_CLOSED_MIN_S = 300;  // never cache < 5m outside hours
+const CACHE_TTL_OPEN_S = 45; // hot path during trading
+const CACHE_TTL_CLOSED_MIN_S = 300; // never cache < 5m outside hours
 const CACHE_TTL_CLOSED_MAX_S = 12 * 60 * 60; // …and never > 12h
 const STALE_TTL_S = 60 * 60 * 24; // long fallback if Yahoo is failing (24h)
 const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
@@ -26,7 +25,11 @@ const MAX_CONCURRENCY = 6; // never hammer Yahoo with N parallel requests
 //   YAHOO_RETRY_BASE_MS      — base backoff before jitter. Default 250.
 //   YAHOO_RETRY_MAX_BACKOFF_MS — cap on any single backoff. Default 2000.
 //   YAHOO_RETRY_JITTER       — ± jitter fraction (0..1). Default 0.25.
-function envNum(name: string, fallback: number, { min = 0, max = Number.POSITIVE_INFINITY } = {}): number {
+function envNum(
+  name: string,
+  fallback: number,
+  { min = 0, max = Number.POSITIVE_INFINITY } = {},
+): number {
   const raw =
     (typeof process !== "undefined" ? process.env?.[name] : undefined) ??
     (typeof globalThis !== "undefined"
@@ -48,8 +51,6 @@ const MAX_RETRIES = Math.floor(envNum("YAHOO_MAX_RETRIES", 3, { min: 1, max: 10 
 const RETRY_BASE_MS = envNum("YAHOO_RETRY_BASE_MS", 250, { min: 0, max: 60_000 });
 const RETRY_MAX_BACKOFF_MS = envNum("YAHOO_RETRY_MAX_BACKOFF_MS", 2000, { min: 0, max: 60_000 });
 const RETRY_JITTER = envNum("YAHOO_RETRY_JITTER", 0.25, { min: 0, max: 1 });
-
-
 
 // --- IDX market hours (Asia/Jakarta, WIB, UTC+7, no DST) ---
 // Trading Mon–Fri, 09:00 → 16:00 local. We treat the whole 09:00–16:00
@@ -78,7 +79,7 @@ function marketState(now = new Date()): MarketState {
   } else {
     // After close today, weekend, etc. Walk forward to next weekday.
     addDays = 1;
-    while (((wd + addDays) % 7) === 0 || ((wd + addDays) % 7) === 6) addDays++;
+    while ((wd + addDays) % 7 === 0 || (wd + addDays) % 7 === 6) addDays++;
   }
   const nextOpenJk = new Date(jk);
   nextOpenJk.setUTCDate(jk.getUTCDate() + addDays);
@@ -145,8 +146,7 @@ async function fetchQuoteOnce(symbol: string): Promise<QuoteResult> {
     const result = data?.chart?.result?.[0];
     const meta = result?.meta;
     const price = meta?.regularMarketPrice ?? meta?.previousClose ?? null;
-    const previousClose =
-      meta?.chartPreviousClose ?? meta?.previousClose ?? null;
+    const previousClose = meta?.chartPreviousClose ?? meta?.previousClose ?? null;
     const currency = meta?.currency ?? null;
 
     if (price == null) {
@@ -191,7 +191,6 @@ function backoffDelayMs(attempt: number): number {
   const base = Math.min(RETRY_MAX_BACKOFF_MS, RETRY_BASE_MS * 2 ** attempt);
   const jitter = base * (1 - RETRY_JITTER + Math.random() * (2 * RETRY_JITTER));
   return Math.round(jitter);
-
 }
 
 async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
@@ -205,7 +204,9 @@ async function fetchQuoteRaw(symbol: string): Promise<QuoteResult> {
       await new Promise((r) => setTimeout(r, backoffDelayMs(attempt)));
     }
   }
-  return last ?? { symbol, price: null, previousClose: null, currency: null, error: "fetch failed" };
+  return (
+    last ?? { symbol, price: null, previousClose: null, currency: null, error: "fetch failed" }
+  );
 }
 
 // Cloudflare edge cache (caches.default) is available in the Worker runtime but
@@ -231,9 +232,7 @@ async function fetchQuoteCached(symbol: string): Promise<QuoteResult> {
   const state = marketState();
   const raw = await fetchQuoteRaw(symbol);
   const result: QuoteResult =
-    raw.price != null
-      ? { ...raw, marketOpen: state.open, asOf: Date.now() }
-      : raw;
+    raw.price != null ? { ...raw, marketOpen: state.open, asOf: Date.now() } : raw;
 
   if (cache && result.price != null) {
     // Fresh TTL is dynamic: 45s while IDX is open, up to the next market

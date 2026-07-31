@@ -1,12 +1,5 @@
 import { useRef } from "react";
-import {
-  Download,
-  Upload,
-  Settings as SettingsIcon,
-  Sun,
-  Moon,
-  Keyboard,
-} from "lucide-react";
+import { Download, Upload, Settings as SettingsIcon, Sun, Moon, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,

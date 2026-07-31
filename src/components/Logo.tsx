@@ -33,7 +33,6 @@ export function Logo({ size = "md", showWord = true, className = "" }: Props) {
           </span>
         </span>
       ) : null}
-
     </div>
   );
 }

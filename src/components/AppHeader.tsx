@@ -12,9 +12,7 @@ export function AppHeader({ actions }: Props) {
         <div className="flex min-w-0 flex-1 items-center">
           <Logo />
         </div>
-        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-          {actions}
-        </div>
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">{actions}</div>
       </div>
     </header>
   );

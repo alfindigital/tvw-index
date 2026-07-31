@@ -5,9 +5,7 @@
 
 const TICKER_RE = /^[A-Z]{3,5}(?:\.JK)?$/;
 
-export type TickerValidation =
-  | { ok: true; ticker: string }
-  | { ok: false; error: string };
+export type TickerValidation = { ok: true; ticker: string } | { ok: false; error: string };
 
 export function normalizeTicker(raw: string): string {
   return raw.trim().toUpperCase();

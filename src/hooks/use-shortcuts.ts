@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 export type Shortcut = {
-  key: string; // single char (case-insensitive) or "?" 
+  key: string; // single char (case-insensitive) or "?"
   shift?: boolean;
   ctrlOrMeta?: boolean;
   allowInInput?: boolean;
@@ -25,8 +25,7 @@ export function useShortcuts(shortcuts: Shortcut[], enabled = true) {
       const inEditable = isEditable(e.target);
       for (const s of shortcuts) {
         const keyMatch =
-          e.key.toLowerCase() === s.key.toLowerCase() ||
-          (s.key === "?" && e.key === "?");
+          e.key.toLowerCase() === s.key.toLowerCase() || (s.key === "?" && e.key === "?");
         if (!keyMatch) continue;
         if (!!s.shift !== e.shiftKey) continue;
         if (s.ctrlOrMeta && !(e.ctrlKey || e.metaKey)) continue;

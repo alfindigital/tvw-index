@@ -37,9 +37,7 @@ export function StatCard({ label, value, sub, icon: Icon }: Props) {
         <div className="mt-0.5 truncate font-mono text-base font-semibold tracking-tight text-foreground sm:text-lg">
           {value}
         </div>
-        {sub ? (
-          <div className="truncate text-[11px] text-muted-foreground">{sub}</div>
-        ) : null}
+        {sub ? <div className="truncate text-[11px] text-muted-foreground">{sub}</div> : null}
       </div>
 
       {/* Mobile: value on the right */}

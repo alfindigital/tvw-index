@@ -21,11 +21,7 @@ function makeStock(over: Partial<Stock> = {}): Stock {
  * Mirrors the stable per-row handler cache used in src/routes/index.tsx so
  * tests reflect production memoization behavior.
  */
-function Harness({
-  initial,
-}: {
-  initial: Stock[];
-}) {
+function Harness({ initial }: { initial: Stock[] }) {
   const [stocks, setStocks] = useState(initial);
   const handlersRef = useRef(
     new Map<
@@ -154,9 +150,7 @@ describe("StockRow memoization", () => {
     resetCounts();
 
     act(() => {
-      (Harness as any)._setStocks((prev: Stock[]) =>
-        prev.filter((s) => s.ticker !== "BBRI"),
-      );
+      (Harness as any)._setStocks((prev: Stock[]) => prev.filter((s) => s.ticker !== "BBRI"));
     });
 
     const after = snapshotCounts();
