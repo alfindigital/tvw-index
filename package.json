@@ -76,18 +76,22 @@
     "undici": "^8.5.0",
     "ws": "^8.21.0",
     "postcss": "^8.5.6",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "seroval": "^1.6.0",
+    "seroval-plugins": "^1.6.0"
   },
   "resolutions": {
     "undici": "^8.5.0",
     "ws": "^8.21.0",
     "postcss": "^8.5.6",
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "seroval": "^1.6.0",
+    "seroval-plugins": "^1.6.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^9.32.0",
-    "@lovable.dev/vite-tanstack-config": "2.7.7",
+    "@lovable.dev/vite-tanstack-config": "2.8.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^22.16.5",
