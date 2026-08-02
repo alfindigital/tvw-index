@@ -37,6 +37,10 @@ export const Route = createRootRoute({
       { title: `${SITE_NAME} — IDX Stock Watchlist Market Cap Weighted` },
       { name: "description", content: SITE_DESC },
       { name: "author", content: SITE_NAME },
+      {
+        name: "google-site-verification",
+        content: "J-Czc4w4Dto_XXTUZfW8lAMoT45CpTWqZ72Nt91yFbw",
+      },
       { name: "application-name", content: SITE_NAME },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: SITE_NAME },
