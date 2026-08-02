@@ -1,6 +1,6 @@
 // Centralized site identity + runtime config.
 // Swap the production domain anytime via the VITE_SITE_URL env var — no code change.
-const DEFAULT_URL = "https://tvx.alfidx.my.id";
+const DEFAULT_URL = "https://tv-weight-index.lovable.app";
 
 export const SITE_URL = (import.meta.env.VITE_SITE_URL || DEFAULT_URL).replace(/\/+$/, "");
 
