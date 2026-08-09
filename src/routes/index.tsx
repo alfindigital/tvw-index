@@ -47,7 +47,7 @@ import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, SITE_NAME, SITE_DESC } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
@@ -71,6 +71,53 @@ export const Route = createFileRoute("/")({
       { property: "og:url", content: `${SITE_URL}/` },
     ],
     links: [{ rel: "canonical", href: `${SITE_URL}/` }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          name: SITE_NAME,
+          url: `${SITE_URL}/`,
+          inLanguage: "id-ID",
+          description: SITE_DESC,
+          publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "HowTo",
+          name: "Cara membuat index kustom IDX untuk TradingView",
+          inLanguage: "id-ID",
+          totalTime: "PT1M",
+          step: [
+            {
+              "@type": "HowToStep",
+              position: 1,
+              name: "Tambahkan ticker",
+              text: "Ketik kode emiten IDX (misal BBCA) di kolom Quick Add, atau pilih salah satu starter pack.",
+              url: `${SITE_URL}/`,
+            },
+            {
+              "@type": "HowToStep",
+              position: 2,
+              name: "Pilih metode bobot",
+              text: "Pilih Market cap atau Free Float untuk menentukan bobot tiap saham dalam index.",
+              url: `${SITE_URL}/`,
+            },
+            {
+              "@type": "HowToStep",
+              position: 3,
+              name: "Salin rumus TradingView",
+              text: "Salin formula yang dihasilkan dan tempel sebagai simbol di TradingView untuk melihat chart index kustom Anda.",
+              url: `${SITE_URL}/`,
+            },
+          ],
+        }),
+      },
+    ],
   }),
   component: IndexPage,
   errorComponent: IndexErrorBoundary,
