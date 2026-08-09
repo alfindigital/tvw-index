@@ -83,6 +83,38 @@ export const Route = createFileRoute("/saham/$ticker")({
             })),
           }),
         },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            name: `${t} — Saham Beredar & Market Cap IDX`,
+            url,
+            inLanguage: "id-ID",
+            description: desc,
+            isPartOf: { "@type": "WebSite", name: SITE_NAME, url: `${SITE_URL}/` },
+            about: {
+              "@type": "Corporation",
+              name: t,
+              tickerSymbol: `IDX:${t}`,
+              identifier: t,
+              url: `https://www.idx.co.id/id/perusahaan-tercatat/profil-perusahaan-tercatat/${t}`,
+            },
+            ...(shares
+              ? {
+                  mainEntity: {
+                    "@type": "Dataset",
+                    name: `Jumlah saham beredar ${t}`,
+                    description: `Jumlah saham beredar ${t} per ${SHARES_AS_OF}: ${formatCompact(
+                      shares * 1_000_000,
+                    )} lembar.`,
+                    temporalCoverage: SHARES_AS_OF,
+                    creator: { "@type": "Organization", name: "Bursa Efek Indonesia" },
+                  },
+                }
+              : {}),
+          }),
+        },
       ],
     };
   },
