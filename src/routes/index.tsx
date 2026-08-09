@@ -47,6 +47,7 @@ import { enrichStocks, buildFormula, buildPineScript, type WeightMode } from "@/
 import { getQuotes } from "@/lib/quotes.functions";
 import { validateTicker } from "@/lib/ticker";
 import { parseWatchlistParam, buildShareUrl } from "@/lib/share";
+import { SITE_URL } from "@/lib/site";
 
 export const Route = createFileRoute("/")({
   validateSearch: (search: Record<string, unknown>): { list?: string } => ({
@@ -66,7 +67,10 @@ export const Route = createFileRoute("/")({
         content:
           "Klik starter pack atau ketik ticker → dapat market cap, bobot, dan formula TradingView instan. Tool indie untuk investor IDX.",
       },
+      // Self-referencing: ?list=... share links must not create duplicates.
+      { property: "og:url", content: `${SITE_URL}/` },
     ],
+    links: [{ rel: "canonical", href: `${SITE_URL}/` }],
   }),
   component: IndexPage,
   errorComponent: IndexErrorBoundary,
