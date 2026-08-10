@@ -7,7 +7,7 @@ import { IDX_SHARES, IDX_TICKERS } from "@/data/idx-shares";
 import { formatCompact, formatIDR } from "@/lib/format";
 import { validateTicker } from "@/lib/ticker";
 import { getQuotes } from "@/lib/quotes.functions";
-import { SITE_NAME, SITE_URL, SHARES_AS_OF } from "@/lib/site";
+import { SITE_NAME, SITE_URL, SHARES_AS_OF, OG_IMAGE } from "@/lib/site";
 import { getCachedQuote, putQuoteCache } from "@/lib/storage";
 
 function buildFaqs(t: string, sharesM: number | null) {
@@ -56,6 +56,14 @@ export const Route = createFileRoute("/saham/$ticker")({
         { property: "og:description", content: desc },
         { property: "og:url", content: url },
         { property: "og:type", content: "article" },
+        { property: "og:image", content: OG_IMAGE },
+        { property: "og:image:width", content: "1200" },
+        { property: "og:image:height", content: "630" },
+        { property: "og:image:alt", content: `${t} — market cap & saham beredar di ${SITE_NAME}` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `${t} — Saham IDX | ${SITE_NAME}` },
+        { name: "twitter:description", content: desc },
+        { name: "twitter:image", content: OG_IMAGE },
       ],
       links: [{ rel: "canonical", href: url }],
       scripts: [

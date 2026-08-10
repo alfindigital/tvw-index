@@ -2,7 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
-import { SITE_NAME, SITE_URL, SITE_DESC, OG_IMAGE } from "@/lib/site";
+import { SITE_NAME, SITE_URL, SITE_DESC } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
