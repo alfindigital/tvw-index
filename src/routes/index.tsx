@@ -69,7 +69,21 @@ export const Route = createFileRoute("/")({
       },
       // Self-referencing: ?list=... share links must not create duplicates.
       { property: "og:url", content: `${SITE_URL}/` },
+      { property: "og:type", content: "website" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: `${SITE_NAME} — IDX stock index weight calculator` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "StackCap — Custom IDX Index for TradingView" },
+      {
+        name: "twitter:description",
+        content:
+          "Klik starter pack atau ketik ticker → dapat market cap, bobot, dan formula TradingView instan.",
+      },
+      { name: "twitter:image", content: OG_IMAGE },
     ],
+
     links: [{ rel: "canonical", href: `${SITE_URL}/` }],
     scripts: [
       {
