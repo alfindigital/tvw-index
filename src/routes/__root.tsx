@@ -2,7 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
-import { SITE_NAME, SITE_URL, SITE_DESC, OG_IMAGE } from "@/lib/site";
+import { SITE_NAME, SITE_URL, SITE_DESC } from "@/lib/site";
 
 function NotFoundComponent() {
   return (
@@ -46,23 +46,21 @@ export const Route = createRootRoute({
       { name: "apple-mobile-web-app-title", content: SITE_NAME },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "mobile-web-app-capable", content: "yes" },
-      // Open Graph
+      // Open Graph (sitewide defaults only — page-specific tags live on leaf routes)
       { property: "og:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
       { property: "og:description", content: SITE_DESC },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: SITE_NAME },
       { property: "og:url", content: SITE_URL },
-      { property: "og:image", content: OG_IMAGE },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: `${SITE_NAME} — IDX stock index weight calculator` },
       { property: "og:locale", content: "id_ID" },
       { property: "og:locale:alternate", content: "en_US" },
       // Twitter
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:site", content: "@lotmetrik" },
+      { name: "twitter:creator", content: "@lotmetrik" },
       { name: "twitter:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
       { name: "twitter:description", content: SITE_DESC },
-      { name: "twitter:image", content: OG_IMAGE },
+
     ],
     links: [
       { rel: "stylesheet", href: appCss },
