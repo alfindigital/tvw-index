@@ -1,5 +1,6 @@
 import { Sparkles, ArrowRight } from "lucide-react";
 import { PRESETS } from "@/data/presets";
+import { trackActivation } from "@/lib/analytics";
 
 type Props = {
   onLoadPreset: (tickers: string[]) => void;
