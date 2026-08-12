@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Share2, Check, Copy, FileCode2 } from "lucide-react";
 import { toast } from "sonner";
+import { trackActivation } from "@/lib/analytics";
 
 type Props = {
   formula: string;
@@ -16,6 +17,7 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
     if (!text) return;
     navigator.clipboard.writeText(text).then(() => {
       setCopied(kind);
+      trackActivation("copyFormula", { copy_kind: kind });
       toast.success(`${label} copied`);
       setTimeout(() => setCopied(null), 1500);
     });
