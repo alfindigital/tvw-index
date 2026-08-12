@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TrendingUp, Layers, Crown, AlertTriangle, RefreshCw, Keyboard } from "lucide-react";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
+import { trackActivation } from "@/lib/analytics";
 import { AppHeader } from "@/components/AppHeader";
 import { StatCard } from "@/components/StatCard";
 import { StockRow } from "@/components/StockRow";
@@ -924,6 +925,7 @@ function IndexPage() {
       return;
     }
     const url = buildShareUrl(withTicker);
+    trackActivation("shareClicked", { watchlist_size: String(withTicker.length) });
     navigator.clipboard
       .writeText(url)
       .then(() => toast.success("Watchlist link copied", { description: url }))

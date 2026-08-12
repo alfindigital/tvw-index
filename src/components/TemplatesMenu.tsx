@@ -28,6 +28,7 @@ import {
   type Template,
 } from "@/lib/storage";
 import { cn } from "@/lib/utils";
+import { trackActivation } from "@/lib/analytics";
 import { HEADER_ICON_BUTTON_CLASS, HEADER_ICON_CLASS } from "./header-actions";
 import {
   TEMPLATES_EMPTY,
@@ -171,6 +172,7 @@ export function TemplatesMenu({ currentStocks, onLoadTemplate, saveDialogTrigger
     setNameError(null);
     setSaving(false);
     setSaveOpen(false);
+    trackActivation("saveWatchlist", { watchlist_size: String(currentStocks.length) });
     toast.success(WATCHLIST_SAVED_TOAST(result.value), {
       description: `${currentStocks.length} stocks`,
     });

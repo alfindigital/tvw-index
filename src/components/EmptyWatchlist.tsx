@@ -1,5 +1,6 @@
 import { Sparkles, ArrowRight } from "lucide-react";
 import { PRESETS } from "@/data/presets";
+import { trackActivation } from "@/lib/analytics";
 
 type Props = {
   onLoadPreset: (tickers: string[]) => void;
@@ -35,7 +36,13 @@ export function EmptyWatchlist({ onLoadPreset }: Props) {
           <button
             key={p.id}
             type="button"
-            onClick={() => onLoadPreset(p.tickers)}
+            onClick={() => {
+              trackActivation("presetLoaded", {
+                preset_id: p.id,
+                preset_size: String(p.tickers.length),
+              });
+              onLoadPreset(p.tickers);
+            }}
             className="group relative flex items-start justify-between gap-3 rounded-xl border border-border bg-background p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/[0.03] hover:shadow-[0_8px_24px_-12px_oklch(0.52_0.22_277_/_0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             <div className="min-w-0 flex-1">

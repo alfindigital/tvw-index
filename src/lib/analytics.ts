@@ -41,6 +41,31 @@ export function trackEvent(name: string, tags?: Record<string, string>) {
   }
 }
 
+/**
+ * Activation funnel events — the four actions that mark a user getting real
+ * value out of StackCap. Always tagged with device kind so the funnel can be
+ * split per form factor in Clarity.
+ */
+export const ACTIVATION_EVENTS = {
+  copyFormula: "act_copy_formula",
+  saveWatchlist: "act_save_watchlist",
+  presetLoaded: "act_preset_loaded",
+  shareClicked: "act_share_clicked",
+} as const;
+
+export function trackActivation(
+  step: keyof typeof ACTIVATION_EVENTS,
+  extra?: Record<string, string>,
+) {
+  const device = getDeviceKind();
+  trackEvent(ACTIVATION_EVENTS[step], {
+    device,
+    activation_step: step,
+    activation_device: `${step}:${device}`,
+    ...extra,
+  });
+}
+
 export const TELEGRAM_POPUP_EVENTS = {
   impression: "tg_popup_impression",
   view: "tg_popup_view",
