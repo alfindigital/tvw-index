@@ -64,13 +64,15 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const lastmod = sharesAsOfIso();
-        const today = new Date().toISOString().slice(0, 10);
+        // Crawl focus: only the homepage + blue chips are listed. The remaining
+        // ~900 thin emiten pages are intentionally excluded to avoid diluting
+        // crawl budget; they stay reachable via internal links.
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0", lastmod: today },
-          ...IDX_TICKERS.map((t) => ({
+          { path: "/", changefreq: "weekly", priority: "1.0" },
+          ...IDX_TICKERS.filter((t) => BLUE_CHIPS.has(t)).map((t) => ({
             path: `/saham/${t}`,
             changefreq: "weekly" as const,
-            priority: BLUE_CHIPS.has(t) ? "0.8" : "0.4",
+            priority: "0.8",
             lastmod,
           })),
         ];
