@@ -22,7 +22,7 @@ type Props = {
 };
 
 const MODE_BTN =
-  "flex h-full flex-1 items-center justify-center whitespace-nowrap rounded-md px-3 text-xs font-semibold leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex-none";
+  "flex h-full min-w-0 flex-1 items-center justify-center whitespace-nowrap rounded-md px-2 text-xs font-semibold leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:flex-none sm:px-3";
 
 const ICON_BTN =
   "h-9 w-9 shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background";
