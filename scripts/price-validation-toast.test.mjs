@@ -39,7 +39,9 @@ async function readRows(page) {
       let weight = "";
       for (let depth = 0; root && depth < 12; depth++, root = root.parentElement) {
         const label = Array.from(root.querySelectorAll("label")).find((l) =>
-          Array.from(l.querySelectorAll("span")).some((s) => s.textContent?.trim() === "Price (IDR)"),
+          Array.from(l.querySelectorAll("span")).some(
+            (s) => s.textContent?.trim() === "Price (IDR)",
+          ),
         );
         if (label) priceInput = label.querySelector("input");
         const w = Array.from(root.querySelectorAll("div"))
@@ -137,7 +139,10 @@ async function runScenario(s) {
     badVisible && (await badToast.getAttribute("data-type")) === "error",
     badVisible ? String(await badToast.getAttribute("data-type")) : "not shown",
   );
-  check("invalid characters are not written into the field", (await priceInput.inputValue()) === "");
+  check(
+    "invalid characters are not written into the field",
+    (await priceInput.inputValue()) === "",
+  );
   await page.screenshot({ path: `${OUT}/${s.name}-1-format-error.png` });
 
   // ---- 2. dismissible -----------------------------------------------------
@@ -206,8 +211,14 @@ async function runScenario(s) {
     SEED.every((row, i) => rows.find((x) => x.ticker === row.ticker)?.weight === exp[i]),
     `expected ${JSON.stringify(exp)} got ${JSON.stringify(rows.map((x) => x.weight))}`,
   );
-  const errorToastsLeft = await toasts.filter({ hasText: /Invalid price format|cannot be empty/i }).count();
-  check("no validation error toast remains after valid input", errorToastsLeft === 0, `${errorToastsLeft}`);
+  const errorToastsLeft = await toasts
+    .filter({ hasText: /Invalid price format|cannot be empty/i })
+    .count();
+  check(
+    "no validation error toast remains after valid input",
+    errorToastsLeft === 0,
+    `${errorToastsLeft}`,
+  );
   await page.screenshot({ path: `${OUT}/${s.name}-3-valid.png` });
 
   results.push(r);

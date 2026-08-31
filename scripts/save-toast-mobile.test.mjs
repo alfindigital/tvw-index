@@ -52,8 +52,24 @@ async function runScenario(s) {
       "idx-basket-v1",
       JSON.stringify({
         stocks: [
-          { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          {
+            id: "t1",
+            ticker: "BBCA",
+            shares: 100,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
+          {
+            id: "t2",
+            ticker: "BBRI",
+            shares: 200,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
         ],
         lastRefresh: null,
       }),
@@ -179,8 +195,14 @@ const md = [
   "",
 ];
 for (const r of results) {
-  md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`, "", "| Check | Status | Detail |", "| --- | --- | --- |");
-  for (const c of r.checks) md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
+  md.push(
+    `## ${r.scenario} ${r.ok ? "✅" : "❌"}`,
+    "",
+    "| Check | Status | Detail |",
+    "| --- | --- | --- |",
+  );
+  for (const c of r.checks)
+    md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
   md.push("");
   for (const sh of r.screenshots) md.push(`- ${sh.key}: ![${sh.key}](${sh.path})`);
   md.push("");

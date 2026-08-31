@@ -16,14 +16,35 @@ const OUT = resolve(".visual/rotator-e2e");
 await mkdir(OUT, { recursive: true });
 
 const SCENARIOS = [
-  { name: "hc-320-light",       width: 320,  height: 720, dark: false, forcedColors: "active", zoom: 1 },
-  { name: "hc-320-dark",        width: 320,  height: 720, dark: true,  forcedColors: "active", zoom: 1 },
-  { name: "hc-1280-light",      width: 1280, height: 900, dark: false, forcedColors: "active", zoom: 1 },
-  { name: "hc-1280-dark",       width: 1280, height: 900, dark: true,  forcedColors: "active", zoom: 1 },
-  { name: "zoom200-320-light",  width: 320,  height: 720, dark: false, forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-320-dark",   width: 320,  height: 720, dark: true,  forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-1280-light", width: 1280, height: 900, dark: false, forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-1280-dark",  width: 1280, height: 900, dark: true,  forcedColors: "none",   zoom: 2 },
+  { name: "hc-320-light", width: 320, height: 720, dark: false, forcedColors: "active", zoom: 1 },
+  { name: "hc-320-dark", width: 320, height: 720, dark: true, forcedColors: "active", zoom: 1 },
+  { name: "hc-1280-light", width: 1280, height: 900, dark: false, forcedColors: "active", zoom: 1 },
+  { name: "hc-1280-dark", width: 1280, height: 900, dark: true, forcedColors: "active", zoom: 1 },
+  {
+    name: "zoom200-320-light",
+    width: 320,
+    height: 720,
+    dark: false,
+    forcedColors: "none",
+    zoom: 2,
+  },
+  { name: "zoom200-320-dark", width: 320, height: 720, dark: true, forcedColors: "none", zoom: 2 },
+  {
+    name: "zoom200-1280-light",
+    width: 1280,
+    height: 900,
+    dark: false,
+    forcedColors: "none",
+    zoom: 2,
+  },
+  {
+    name: "zoom200-1280-dark",
+    width: 1280,
+    height: 900,
+    dark: true,
+    forcedColors: "none",
+    zoom: 2,
+  },
 ];
 
 const browser = await chromium.launch();
@@ -36,9 +57,7 @@ async function probe(page) {
     const activeCls = document.querySelector(".afd-rot .afd-item.active");
     const focused = document.activeElement;
     const idxOf = (el) =>
-      el && el.classList?.contains("afd-item")
-        ? Number(el.getAttribute("data-rotator-index"))
-        : -1;
+      el && el.classList?.contains("afd-item") ? Number(el.getAttribute("data-rotator-index")) : -1;
     return {
       activeIdx: idxOf(activeCls),
       focusedIdx: idxOf(focused),
@@ -58,7 +77,10 @@ async function runScenario(s) {
   const page = await ctx.newPage();
   await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
   if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
-  if (s.zoom !== 1) await page.evaluate((z) => { document.documentElement.style.zoom = String(z); }, s.zoom);
+  if (s.zoom !== 1)
+    await page.evaluate((z) => {
+      document.documentElement.style.zoom = String(z);
+    }, s.zoom);
   await page.waitForTimeout(400);
 
   // Enter the rotator via its current active link (simulates user Tab reaching
@@ -89,7 +111,7 @@ async function runScenario(s) {
 
   // 2) ArrowLeft cycle back the other way.
   for (let i = 1; i <= count; i++) {
-    const expected = ((startIdx - i) % count + count) % count;
+    const expected = (((startIdx - i) % count) + count) % count;
     const r = await step(`ArrowLeft×${i}`, ["ArrowLeft"]);
     if (r.activeIdx !== expected) r.ok = false;
   }

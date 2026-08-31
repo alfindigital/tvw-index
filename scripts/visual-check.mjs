@@ -34,14 +34,35 @@ const DEVICES = [
 
 // Extra a11y-critical scenarios: forced-colors + browser zoom 200%.
 const A11Y_SCENARIOS = [
-  { name: "hc-320-light",       width: 320,  height: 720, dark: false, forcedColors: "active", zoom: 1 },
-  { name: "hc-320-dark",        width: 320,  height: 720, dark: true,  forcedColors: "active", zoom: 1 },
-  { name: "hc-1280-light",      width: 1280, height: 900, dark: false, forcedColors: "active", zoom: 1 },
-  { name: "hc-1280-dark",       width: 1280, height: 900, dark: true,  forcedColors: "active", zoom: 1 },
-  { name: "zoom200-320-light",  width: 320,  height: 720, dark: false, forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-320-dark",   width: 320,  height: 720, dark: true,  forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-1280-light", width: 1280, height: 900, dark: false, forcedColors: "none",   zoom: 2 },
-  { name: "zoom200-1280-dark",  width: 1280, height: 900, dark: true,  forcedColors: "none",   zoom: 2 },
+  { name: "hc-320-light", width: 320, height: 720, dark: false, forcedColors: "active", zoom: 1 },
+  { name: "hc-320-dark", width: 320, height: 720, dark: true, forcedColors: "active", zoom: 1 },
+  { name: "hc-1280-light", width: 1280, height: 900, dark: false, forcedColors: "active", zoom: 1 },
+  { name: "hc-1280-dark", width: 1280, height: 900, dark: true, forcedColors: "active", zoom: 1 },
+  {
+    name: "zoom200-320-light",
+    width: 320,
+    height: 720,
+    dark: false,
+    forcedColors: "none",
+    zoom: 2,
+  },
+  { name: "zoom200-320-dark", width: 320, height: 720, dark: true, forcedColors: "none", zoom: 2 },
+  {
+    name: "zoom200-1280-light",
+    width: 1280,
+    height: 900,
+    dark: false,
+    forcedColors: "none",
+    zoom: 2,
+  },
+  {
+    name: "zoom200-1280-dark",
+    width: 1280,
+    height: 900,
+    dark: true,
+    forcedColors: "none",
+    zoom: 2,
+  },
 ];
 
 const TARGETS = [
@@ -103,8 +124,8 @@ async function rotatorCount(page) {
 async function focusRotator(page, targetIdx) {
   // Focus the currently-active link first.
   await page.locator(".afd-item.active").first().focus();
-  const startIdx = await page.evaluate(
-    () => Number(document.activeElement?.getAttribute("data-rotator-index") ?? 0),
+  const startIdx = await page.evaluate(() =>
+    Number(document.activeElement?.getAttribute("data-rotator-index") ?? 0),
   );
   const diff = targetIdx - startIdx;
   const key = diff >= 0 ? "ArrowRight" : "ArrowLeft";
@@ -140,7 +161,10 @@ async function runA11yScenarios() {
     const page = await ctx.newPage();
     await page.goto(URL_BASE, { waitUntil: "domcontentloaded" });
     if (s.dark) await page.evaluate(() => document.documentElement.classList.add("dark"));
-    if (s.zoom !== 1) await page.evaluate((z) => { document.documentElement.style.zoom = String(z); }, s.zoom);
+    if (s.zoom !== 1)
+      await page.evaluate((z) => {
+        document.documentElement.style.zoom = String(z);
+      }, s.zoom);
     await page.waitForTimeout(400);
 
     // 1. Footer must not wrap.
@@ -198,10 +222,7 @@ async function runA11yScenarios() {
     for (let idx = 0; idx < count; idx++) {
       const focus = await focusRotator(page, idx);
       const ok =
-        focus.ok &&
-        focus.idx === idx &&
-        focus.outlineWidth >= 1 &&
-        focus.outlineStyle !== "none";
+        focus.ok && focus.idx === idx && focus.outlineWidth >= 1 && focus.outlineStyle !== "none";
       const shot = `${OUT}/${s.name}-focus-${idx}.png`;
       await footer.screenshot({ path: shot });
       record({
@@ -210,7 +231,7 @@ async function runA11yScenarios() {
         status: ok ? "pass" : "fail",
         detail: focus.ok
           ? `outline=${focus.outlineWidth}px ${focus.outlineStyle} ${focus.outlineColor}`
-          : focus.reason ?? "unknown",
+          : (focus.reason ?? "unknown"),
         screenshot: rel(shot),
       });
     }
@@ -254,7 +275,9 @@ for (const [scenario, rows] of Object.entries(grouped)) {
 await writeFile(`${OUT}/REPORT.md`, lines.join("\n"), "utf8");
 
 if (failures.length > 0) {
-  console.error(`\n${failures.length} visual/a11y regression(s) detected — see ./.visual/REPORT.md`);
+  console.error(
+    `\n${failures.length} visual/a11y regression(s) detected — see ./.visual/REPORT.md`,
+  );
   process.exit(1);
 }
 console.log(`\nAll ${results.length} checks passed — summary at ./.visual/REPORT.md`);

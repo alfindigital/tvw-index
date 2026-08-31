@@ -1,7 +1,7 @@
 # Focus ring — mobile visual/assertion E2E
 
 - Scenarios: 3
-- Failing scenarios: **0**
+- Failing scenarios: **1**
 
 Each icon button is checked blurred, on keyboard Tab focus, and after a touch pointerdown.
 
@@ -65,32 +65,11 @@ Each icon button is checked blurred, on keyboard Tab focus, and after a touch po
 - sort blur: ![sort blur](mobile-dark-sort-blur.png)
 - sort tab: ![sort tab](mobile-dark-sort-tab.png)
 
-## mobile-xs-light ✅
+## mobile-xs-light ❌
 
 | Check | Status | Detail |
 | --- | --- | --- |
-| save: button visible | ✅ | — |
-| save: reachable via Tab | ✅ | — |
-| save: :focus-visible active on Tab | ✅ | {"outlineWidth":"0px","outlineStyle":"none","outlineColor":"rgb(229, 151, 0)","boxShadow":"rgba(0, 0, 0, 0) 0px 0px 0px  |
-| save: focus ring visible on Tab | ✅ | outline=0px none shadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0 |
-| save: focused after tap | ✅ | {"outlineWidth":"0px","outlineStyle":"none","outlineColor":"rgb(229, 151, 0)","boxShadow":"rgba(0, 0, 0, 0) 0px 0px 0px  |
-| save: focus ring visible on tap | ✅ | outline=0px none shadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0 |
-| refresh: button visible | ✅ | — |
-| refresh: reachable via Tab | ✅ | — |
-| refresh: :focus-visible active on Tab | ✅ | {"outlineWidth":"0px","outlineStyle":"none","outlineColor":"rgb(229, 151, 0)","boxShadow":"rgba(0, 0, 0, 0) 0px 0px 0px  |
-| refresh: focus ring visible on Tab | ✅ | outline=0px none shadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0 |
-| refresh: focused after tap | ✅ | {"outlineWidth":"0px","outlineStyle":"none","outlineColor":"rgb(229, 151, 0)","boxShadow":"rgba(0, 0, 0, 0) 0px 0px 0px  |
-| refresh: focus ring visible on tap | ✅ | outline=0px none shadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0 |
-| sort: button visible | ✅ | — |
-| sort: reachable via Tab | ✅ | — |
-| sort: :focus-visible active on Tab | ✅ | {"outlineWidth":"0px","outlineStyle":"none","outlineColor":"rgb(229, 151, 0)","boxShadow":"rgba(0, 0, 0, 0) 0px 0px 0px  |
-| sort: focus ring visible on Tab | ✅ | outline=0px none shadow=rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0 |
+| save: button visible | ❌ | — |
+| refresh: button visible | ❌ | — |
+| sort: button visible | ❌ | — |
 
-- save blur: ![save blur](mobile-xs-light-save-blur.png)
-- save tab: ![save tab](mobile-xs-light-save-tab.png)
-- save tap: ![save tap](mobile-xs-light-save-tap.png)
-- refresh blur: ![refresh blur](mobile-xs-light-refresh-blur.png)
-- refresh tab: ![refresh tab](mobile-xs-light-refresh-tab.png)
-- refresh tap: ![refresh tap](mobile-xs-light-refresh-tap.png)
-- sort blur: ![sort blur](mobile-xs-light-sort-blur.png)
-- sort tab: ![sort tab](mobile-xs-light-sort-tab.png)

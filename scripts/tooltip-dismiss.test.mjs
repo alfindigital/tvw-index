@@ -58,14 +58,19 @@ async function focusByTab(page, selector) {
   });
   for (let i = 0; i < 60; i++) {
     await page.keyboard.press("Tab");
-    const hit = await page.evaluate((sel) => document.querySelector(sel) === document.activeElement, selector);
+    const hit = await page.evaluate(
+      (sel) => document.querySelector(sel) === document.activeElement,
+      selector,
+    );
     if (hit) return true;
   }
   return false;
 }
 
 async function blurAll(page) {
-  await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
+  await page.evaluate(() =>
+    document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null,
+  );
   await page.mouse.move(2, 2);
   await page.waitForTimeout(400);
 }
@@ -79,7 +84,7 @@ async function runScenario(s) {
     deviceScaleFactor: s.mobile ? 2 : 1,
   });
   const page = await ctx.newPage();
-  page.on("pageerror", (e) => console.error("pageerror:", String(e).slice(0,200)));
+  page.on("pageerror", (e) => console.error("pageerror:", String(e).slice(0, 200)));
 
   const seed = () =>
     page.evaluate(() => {
@@ -87,8 +92,24 @@ async function runScenario(s) {
         "idx-basket-v1",
         JSON.stringify({
           stocks: [
-            { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-            { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+            {
+              id: "t1",
+              ticker: "BBCA",
+              shares: 100,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
+            {
+              id: "t2",
+              ticker: "BBRI",
+              shares: 200,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
           ],
           lastRefresh: null,
         }),
@@ -159,7 +180,11 @@ async function runScenario(s) {
       await focusByTab(page, sel);
       await page.waitForTimeout(300);
       tip = await visibleTooltip(page);
-      check(`${b.key}: tooltip visible before outside click`, !!tip && b.tip.test(tip), `text="${tip}"`);
+      check(
+        `${b.key}: tooltip visible before outside click`,
+        !!tip && b.tip.test(tip),
+        `text="${tip}"`,
+      );
     }
     await page.mouse.click(5, 5);
     await page.waitForTimeout(400);
@@ -187,7 +212,8 @@ async function runScenario(s) {
   console[r.ok ? "log" : "error"](
     `${r.ok ? "ok" : "FAIL"} ${s.name} — ${r.checks.length - failed.length}/${r.checks.length} checks passed`,
   );
-  for (const c of failed) console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 160)})` : ""}`);
+  for (const c of failed)
+    console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 160)})` : ""}`);
 }
 
 try {
@@ -197,10 +223,22 @@ try {
 }
 
 const fails = results.filter((r) => !r.ok).length;
-const md = ["# Tooltip show/dismiss E2E", "", `- Scenarios: ${results.length}`, `- Failing scenarios: **${fails}**`, ""];
+const md = [
+  "# Tooltip show/dismiss E2E",
+  "",
+  `- Scenarios: ${results.length}`,
+  `- Failing scenarios: **${fails}**`,
+  "",
+];
 for (const r of results) {
-  md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`, "", "| Check | Status | Detail |", "| --- | --- | --- |");
-  for (const c of r.checks) md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
+  md.push(
+    `## ${r.scenario} ${r.ok ? "✅" : "❌"}`,
+    "",
+    "| Check | Status | Detail |",
+    "| --- | --- | --- |",
+  );
+  for (const c of r.checks)
+    md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
   md.push("");
 }
 await writeFile(`${OUT}/REPORT.md`, md.join("\n"), "utf8");

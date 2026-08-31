@@ -56,7 +56,10 @@ async function focusByTab(page, selector) {
   });
   for (let i = 0; i < 60; i++) {
     await page.keyboard.press("Tab");
-    const hit = await page.evaluate((sel) => document.querySelector(sel) === document.activeElement, selector);
+    const hit = await page.evaluate(
+      (sel) => document.querySelector(sel) === document.activeElement,
+      selector,
+    );
     if (hit) return true;
   }
   return false;
@@ -79,8 +82,24 @@ async function runScenario(s) {
         "idx-basket-v1",
         JSON.stringify({
           stocks: [
-            { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-            { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+            {
+              id: "t1",
+              ticker: "BBCA",
+              shares: 100,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
+            {
+              id: "t2",
+              ticker: "BBRI",
+              shares: 200,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
           ],
           lastRefresh: null,
         }),
@@ -124,16 +143,31 @@ async function runScenario(s) {
     const ariaLabel = await locator.getAttribute("aria-label");
     check(`${b.key}: aria-label is "${b.label}"`, ariaLabel === b.label, `got="${ariaLabel}"`);
 
-    const iconHidden = await locator.locator("svg").first().getAttribute("aria-hidden").catch(() => null);
+    const iconHidden = await locator
+      .locator("svg")
+      .first()
+      .getAttribute("aria-hidden")
+      .catch(() => null);
     check(`${b.key}: icon is aria-hidden`, iconHidden === "true", `got="${iconHidden}"`);
 
-    const srText = await locator.locator(".sr-only").textContent().catch(() => null);
-    check(`${b.key}: sr-only fallback text matches`, (srText ?? "").trim() === b.label, `got="${srText}"`);
+    const srText = await locator
+      .locator(".sr-only")
+      .textContent()
+      .catch(() => null);
+    check(
+      `${b.key}: sr-only fallback text matches`,
+      (srText ?? "").trim() === b.label,
+      `got="${srText}"`,
+    );
 
     // Playwright's role-based query resolves the same accessible name a
     // screen reader would compute.
     const byRole = page.getByRole("button", { name: b.label, exact: true });
-    check(`${b.key}: resolvable by role+accessible name`, (await byRole.count()) === 1, `count=${await byRole.count()}`);
+    check(
+      `${b.key}: resolvable by role+accessible name`,
+      (await byRole.count()) === 1,
+      `count=${await byRole.count()}`,
+    );
 
     // Keyboard focus, then verify the a11y tree entry for the focused node.
     const tabbed = await focusByTab(page, sel);
@@ -142,7 +176,11 @@ async function runScenario(s) {
 
     const ax = await axInfo(page, locator);
     check(`${b.key}: a11y role is button when focused`, ax?.role === "button", `role=${ax?.role}`);
-    check(`${b.key}: announced name equals label when focused`, ax?.name === b.label, `name="${ax?.name}"`);
+    check(
+      `${b.key}: announced name equals label when focused`,
+      ax?.name === b.label,
+      `name="${ax?.name}"`,
+    );
 
     const activeName = await page.evaluate(() => {
       const el = document.activeElement;
@@ -150,12 +188,25 @@ async function runScenario(s) {
       const sr = el.querySelector(".sr-only");
       return el.getAttribute("aria-label") ?? (sr?.textContent ?? el.textContent ?? "").trim();
     });
-    check(`${b.key}: activeElement name matches label`, activeName === b.label, `active="${activeName}"`);
+    check(
+      `${b.key}: activeElement name matches label`,
+      activeName === b.label,
+      `active="${activeName}"`,
+    );
 
-    r.rows.push({ key: b.key, ariaLabel, srText: (srText ?? "").trim(), iconHidden, axRole: ax?.role, axName: ax?.name });
+    r.rows.push({
+      key: b.key,
+      ariaLabel,
+      srText: (srText ?? "").trim(),
+      iconHidden,
+      axRole: ax?.role,
+      axName: ax?.name,
+    });
 
     await page.keyboard.press("Escape").catch(() => {});
-    await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
+    await page.evaluate(() =>
+      document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null,
+    );
     await page.mouse.move(2, 2);
     await page.waitForTimeout(250);
   }
@@ -166,7 +217,8 @@ async function runScenario(s) {
   console[r.ok ? "log" : "error"](
     `${r.ok ? "ok" : "FAIL"} ${s.name} — ${r.checks.length - failed.length}/${r.checks.length} checks passed`,
   );
-  for (const c of failed) console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 160)})` : ""}`);
+  for (const c of failed)
+    console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 160)})` : ""}`);
 }
 
 try {
@@ -188,12 +240,20 @@ const md = [
   "",
 ];
 for (const r of results) {
-  md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`, "", "| Button | aria-label | sr-only | icon hidden | a11y role | announced name |", "| --- | --- | --- | --- | --- | --- |");
+  md.push(
+    `## ${r.scenario} ${r.ok ? "✅" : "❌"}`,
+    "",
+    "| Button | aria-label | sr-only | icon hidden | a11y role | announced name |",
+    "| --- | --- | --- | --- | --- | --- |",
+  );
   for (const row of r.rows) {
-    md.push(`| ${row.key} | ${row.ariaLabel ?? "—"} | ${row.srText || "—"} | ${row.iconHidden ?? "—"} | ${row.axRole ?? "—"} | ${row.axName ?? "—"} |`);
+    md.push(
+      `| ${row.key} | ${row.ariaLabel ?? "—"} | ${row.srText || "—"} | ${row.iconHidden ?? "—"} | ${row.axRole ?? "—"} | ${row.axName ?? "—"} |`,
+    );
   }
   md.push("", "| Check | Status | Detail |", "| --- | --- | --- |");
-  for (const c of r.checks) md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
+  for (const c of r.checks)
+    md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
   md.push("");
 }
 await writeFile(`${OUT}/REPORT.md`, md.join("\n"), "utf8");

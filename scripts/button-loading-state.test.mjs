@@ -63,8 +63,24 @@ async function runScenario(s) {
       "idx-basket-v1",
       JSON.stringify({
         stocks: [
-          { id: "b1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "b2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          {
+            id: "b1",
+            ticker: "BBCA",
+            shares: 100,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
+          {
+            id: "b2",
+            ticker: "BBRI",
+            shares: 200,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
         ],
         lastRefresh: null,
       }),
@@ -81,8 +97,24 @@ async function runScenario(s) {
         "idx-basket-v1",
         JSON.stringify({
           stocks: [
-            { id: "b1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-            { id: "b2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+            {
+              id: "b1",
+              ticker: "BBCA",
+              shares: 100,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
+            {
+              id: "b2",
+              ticker: "BBRI",
+              shares: 200,
+              price: 0,
+              manualShares: false,
+              manualPrice: false,
+              freeFloat: null,
+            },
           ],
           lastRefresh: null,
         }),
@@ -211,7 +243,11 @@ async function runScenario(s) {
     }
   });
   const matches = templates.filter((t) => t.name === TEMPLATE_NAME);
-  check("Exactly one template saved (no double submit)", matches.length === 1, `count=${matches.length}`);
+  check(
+    "Exactly one template saved (no double submit)",
+    matches.length === 1,
+    `count=${matches.length}`,
+  );
 
   const toast = page.locator("[data-sonner-toast]").first();
   const toastVisible = await toast
@@ -238,7 +274,8 @@ await browser.close();
 const lines = ["# Button loading state E2E", ""];
 for (const r of results) {
   lines.push(`## ${r.scenario} — ${r.ok ? "PASS" : "FAIL"}`, "");
-  for (const c of r.checks) lines.push(`- ${c.pass ? "✅" : "❌"} ${c.label}${c.detail ? ` — ${c.detail}` : ""}`);
+  for (const c of r.checks)
+    lines.push(`- ${c.pass ? "✅" : "❌"} ${c.label}${c.detail ? ` — ${c.detail}` : ""}`);
   lines.push("");
   for (const sc of r.screenshots) lines.push(`![${sc.key}](${sc.path})`);
   lines.push("");

@@ -60,7 +60,6 @@ export const Route = createRootRoute({
       { name: "twitter:creator", content: "@lotmetrik" },
       { name: "twitter:title", content: `${SITE_NAME} — IDX Stock Watchlist` },
       { name: "twitter:description", content: SITE_DESC },
-
     ],
     links: [
       { rel: "stylesheet", href: appCss },

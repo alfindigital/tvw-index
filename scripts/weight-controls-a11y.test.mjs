@@ -16,9 +16,9 @@ await mkdir(OUT, { recursive: true });
 
 const SCENARIOS = [
   { name: "desktop-light", width: 1280, height: 900, dark: false },
-  { name: "desktop-dark",  width: 1280, height: 900, dark: true },
-  { name: "mobile-light",  width: 375,  height: 812, dark: false },
-  { name: "mobile-dark",   width: 375,  height: 812, dark: true },
+  { name: "desktop-dark", width: 1280, height: 900, dark: true },
+  { name: "mobile-light", width: 375, height: 812, dark: false },
+  { name: "mobile-dark", width: 375, height: 812, dark: true },
 ];
 
 const TESTS = [
@@ -44,9 +44,6 @@ const TESTS = [
     skipTap: true,
   },
 ];
-
-
-
 
 const browser = await chromium.launch({
   executablePath: process.env.PW_CHROMIUM_PATH ?? "/chromium-1194/chrome-linux/chrome",
@@ -101,8 +98,24 @@ async function runScenario(s) {
       "idx-basket-v1",
       JSON.stringify({
         stocks: [
-          { id: "test-1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "test-2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          {
+            id: "test-1",
+            ticker: "BBCA",
+            shares: 100,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
+          {
+            id: "test-2",
+            ticker: "BBRI",
+            shares: 200,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
         ],
         lastRefresh: null,
       }),
@@ -136,8 +149,15 @@ async function runScenario(s) {
 
     if (exists) {
       ariaLabel = await locator.getAttribute("aria-label");
-      srText = await locator.locator(".sr-only").textContent().catch(() => null);
-      iconHidden = await locator.locator("svg").first().getAttribute("aria-hidden").catch(() => null);
+      srText = await locator
+        .locator(".sr-only")
+        .textContent()
+        .catch(() => null);
+      iconHidden = await locator
+        .locator("svg")
+        .first()
+        .getAttribute("aria-hidden")
+        .catch(() => null);
 
       // Hover tooltip.
       await locator.hover();
@@ -156,7 +176,9 @@ async function runScenario(s) {
       focusOk = focused && (focusTooltip?.includes(t.expectedTooltip) ?? false);
 
       await page.keyboard.press("Escape");
-      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+      await page.evaluate(
+        () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+      );
       await page.waitForTimeout(300);
 
       if (t.skipTap) {
@@ -172,7 +194,9 @@ async function runScenario(s) {
         tapOk = tapTooltip?.includes(t.expectedTooltip) ?? false;
 
         await page.keyboard.press("Escape");
-        await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+        await page.evaluate(
+          () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+        );
         await page.waitForTimeout(300);
       }
 
@@ -209,7 +233,6 @@ async function runScenario(s) {
     });
   }
 
-
   await ctx.close();
   results.push(scenarioResult);
   const tag = scenarioResult.ok ? "ok" : "FAIL";
@@ -217,9 +240,10 @@ async function runScenario(s) {
     `${tag} ${s.name} — ${scenarioResult.tests.filter((x) => x.ok).length}/${scenarioResult.tests.length} tests passed`,
   );
   for (const t of scenarioResult.tests.filter((x) => !x.ok)) {
-    console.error(`   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" iconHidden=${t.iconHidden} hover="${t.hoverTooltip}" focus="${t.focusTooltip}" tap="${t.tapTooltip}"`);
+    console.error(
+      `   ↳ ${t.label}: exists=${t.exists} aria="${t.ariaLabel}" sr="${t.srText}" iconHidden=${t.iconHidden} hover="${t.hoverTooltip}" focus="${t.focusTooltip}" tap="${t.tapTooltip}"`,
+    );
   }
-
 }
 
 try {
