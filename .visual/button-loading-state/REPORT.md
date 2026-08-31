@@ -7,7 +7,7 @@
 - ✅ Refresh shows aria-busy=true while loading
 - ✅ Refresh is disabled while loading
 - ✅ Refresh icon spins while loading — svg.animate-spin=1
-- ✅ Double click while busy does not fire a 2nd quote request — calls=10 (was 10)
+- ✅ Double click while busy does not fire a 2nd quote request — calls=2 (was 2)
 - ✅ Refresh returns to normal after load
 - ✅ Refresh spinner removed after load
 - ✅ Save dialog opens
@@ -18,7 +18,7 @@
 - ✅ Dialog closes after save completes
 - ✅ Exactly one template saved (no double submit) — count=1
 - ✅ Success toast shown — Watchlist saved as "E2E Loading State"
-10 stocks
+2 stocks
 
 ![1-refresh-busy](mobile-light-1-refresh-busy.png)
 ![2-refresh-idle](mobile-light-2-refresh-idle.png)
