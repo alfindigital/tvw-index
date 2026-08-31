@@ -153,19 +153,18 @@ function scheduleAudit() {
       return true;
     });
     if (unique.length === 0) return;
-    // eslint-disable-next-line no-console
+
     console.groupCollapsed(
       `%c[a11y] ${unique.length} contrast issue(s) below WCAG AA`,
       "color:#b45309;font-weight:600",
     );
     for (const i of unique) {
-      // eslint-disable-next-line no-console
       console.warn(
         `${i.ratio}:1 (need ${i.required}:1) — "${i.text}"\n  fg: ${i.fg}\n  bg: ${i.bg}`,
         i.element,
       );
     }
-    // eslint-disable-next-line no-console
+
     console.groupEnd();
   };
   if (typeof requestIdleCallback === "function") {

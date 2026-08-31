@@ -40,7 +40,11 @@ function importGuardPlugin(): Plugin {
       // Skip query/asset suffixes like ?url, ?raw, ?worker
       const cleanSource = source.split("?")[0] ?? source;
       // Skip CSS / asset imports — let Vite handle them
-      if (/\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i.test(cleanSource)) {
+      if (
+        /\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i.test(
+          cleanSource,
+        )
+      ) {
         return null;
       }
 
@@ -76,7 +80,8 @@ function startupImportScanPlugin(): Plugin {
     /(?:import\s+(?:[^"'`;]+?\s+from\s+)?|export\s+(?:\*|\{[^}]*\})\s+from\s+|import\s*\(\s*)["'`]([^"'`]+)["'`]/g;
   const SKIP_DIRS = new Set(["node_modules", "dist", "build", ".git", ".lovable", ".github"]);
   const CODE_EXT = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"]);
-  const ASSET_RE = /\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i;
+  const ASSET_RE =
+    /\.(css|scss|sass|less|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|mp3|mp4|webm)$/i;
 
   function walk(dir: string, out: string[] = []): string[] {
     let entries;

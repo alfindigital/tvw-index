@@ -5,7 +5,12 @@ const CACHE = "indexw-v1";
 const PRECACHE = ["/", "/favicon.svg", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(PRECACHE)).catch(() => {}));
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.addAll(PRECACHE))
+      .catch(() => {}),
+  );
   self.skipWaiting();
 });
 
@@ -29,7 +34,10 @@ self.addEventListener("fetch", (event) => {
     fetch(req)
       .then((res) => {
         const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+        caches
+          .open(CACHE)
+          .then((c) => c.put(req, copy))
+          .catch(() => {});
         return res;
       })
       .catch(() => caches.match(req).then((hit) => hit || caches.match("/"))),

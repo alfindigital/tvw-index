@@ -48,7 +48,9 @@ async function readRows(page) {
       let weight = "";
       for (let depth = 0; root && depth < 12; depth++, root = root.parentElement) {
         const label = Array.from(root.querySelectorAll("label")).find((l) =>
-          Array.from(l.querySelectorAll("span")).some((s) => s.textContent?.trim() === "Price (IDR)"),
+          Array.from(l.querySelectorAll("span")).some(
+            (s) => s.textContent?.trim() === "Price (IDR)",
+          ),
         );
         if (label) priceInput = label.querySelector("input");
         const w = Array.from(root.querySelectorAll("div"))
@@ -101,12 +103,19 @@ async function runScenario(s) {
       let price = Number(m[2]);
       if (doubleBBCA && ticker === "BBCA") {
         const next = price * 2;
-        body = body.replace(`{"t":1,"s":"${ticker}.JK"},{"t":0,"s":${m[2]}}`, `{"t":1,"s":"${ticker}.JK"},{"t":0,"s":${next}}`);
+        body = body.replace(
+          `{"t":1,"s":"${ticker}.JK"},{"t":0,"s":${m[2]}}`,
+          `{"t":1,"s":"${ticker}.JK"},{"t":0,"s":${next}}`,
+        );
         price = next;
       }
       delivered[ticker] = price;
     }
-    await route.fulfill({ response: res, body, headers: { ...res.headers(), "content-length": String(Buffer.byteLength(body)) } });
+    await route.fulfill({
+      response: res,
+      body,
+      headers: { ...res.headers(), "content-length": String(Buffer.byteLength(body)) },
+    });
   });
 
   const seed = () =>
@@ -115,7 +124,13 @@ async function runScenario(s) {
       localStorage.setItem(
         "idx-basket-v1",
         JSON.stringify({
-          stocks: rows.map((r) => ({ ...r, price: 0, manualShares: false, manualPrice: false, freeFloat: null })),
+          stocks: rows.map((r) => ({
+            ...r,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          })),
           lastRefresh: null,
         }),
       );
@@ -179,8 +194,16 @@ async function runScenario(s) {
   );
   const afterA = await readRows(page);
 
-  check("Refresh triggered quote server calls", serverCalls > callsBeforeA, `${callsBeforeA} -> ${serverCalls}`);
-  check("server returned a price for both tickers", Object.keys(delivered).length >= 2, JSON.stringify(delivered));
+  check(
+    "Refresh triggered quote server calls",
+    serverCalls > callsBeforeA,
+    `${callsBeforeA} -> ${serverCalls}`,
+  );
+  check(
+    "server returned a price for both tickers",
+    Object.keys(delivered).length >= 2,
+    JSON.stringify(delivered),
+  );
   for (const row of SEED) {
     const ui = afterA.find((x) => x.ticker === row.ticker);
     check(
@@ -215,7 +238,11 @@ async function runScenario(s) {
   await settle([(priceA.BBCA * 2).toLocaleString("en-US")]);
   const afterB = await readRows(page);
 
-  check("second Refresh re-fetched", serverCalls > callsBeforeB, `${callsBeforeB} -> ${serverCalls}`);
+  check(
+    "second Refresh re-fetched",
+    serverCalls > callsBeforeB,
+    `${callsBeforeB} -> ${serverCalls}`,
+  );
   check(
     `BBCA price field updated to the new close (${priceA.BBCA * 2})`,
     afterB.find((x) => x.ticker === "BBCA")?.price === priceA.BBCA * 2,

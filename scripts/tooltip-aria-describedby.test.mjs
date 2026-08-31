@@ -48,7 +48,9 @@ const describedBy = (page, sel) =>
         id,
         exists: !!t,
         role: t?.getAttribute("role") ?? null,
-        isPopper: !!t?.closest("[data-radix-popper-content-wrapper]") || t?.hasAttribute("data-radix-tooltip-content"),
+        isPopper:
+          !!t?.closest("[data-radix-popper-content-wrapper]") ||
+          t?.hasAttribute("data-radix-tooltip-content"),
         text: (t?.textContent ?? "").trim(),
       };
     });
@@ -64,7 +66,10 @@ async function focusByTab(page, selector) {
   });
   for (let i = 0; i < 60; i++) {
     await page.keyboard.press("Tab");
-    const hit = await page.evaluate((sel) => document.querySelector(sel) === document.activeElement, selector);
+    const hit = await page.evaluate(
+      (sel) => document.querySelector(sel) === document.activeElement,
+      selector,
+    );
     if (hit) return true;
   }
   return false;
@@ -72,7 +77,9 @@ async function focusByTab(page, selector) {
 
 async function clearFocus(page) {
   await page.keyboard.press("Escape").catch(() => {});
-  await page.evaluate(() => (document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null));
+  await page.evaluate(() =>
+    document.activeElement instanceof HTMLElement ? document.activeElement.blur() : null,
+  );
   await page.mouse.move(5, 5);
   await page.waitForTimeout(350);
 }
@@ -94,8 +101,24 @@ async function runScenario(s) {
       "idx-basket-v1",
       JSON.stringify({
         stocks: [
-          { id: "t1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "t2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          {
+            id: "t1",
+            ticker: "BBCA",
+            shares: 100,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
+          {
+            id: "t2",
+            ticker: "BBRI",
+            shares: 200,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
         ],
         lastRefresh: null,
       }),
@@ -116,14 +139,22 @@ async function runScenario(s) {
     check(`${b.key}: aria-describedby present on ${phase}`, ok, JSON.stringify(info));
     if (!ok) return;
     const target = info.targets.find((t) => t.exists);
-    check(`${b.key}: aria-describedby resolves to an element on ${phase}`, !!target, JSON.stringify(info.targets));
+    check(
+      `${b.key}: aria-describedby resolves to an element on ${phase}`,
+      !!target,
+      JSON.stringify(info.targets),
+    );
     if (!target) return;
     check(
       `${b.key}: described element is a tooltip on ${phase}`,
       target.role === "tooltip" || target.isPopper,
       `role=${target.role} popper=${target.isPopper}`,
     );
-    check(`${b.key}: tooltip text matches copy on ${phase}`, b.tip.test(target.text), `text="${target.text}"`);
+    check(
+      `${b.key}: tooltip text matches copy on ${phase}`,
+      b.tip.test(target.text),
+      `text="${target.text}"`,
+    );
   };
 
   for (const b of BUTTONS) {
@@ -175,7 +206,8 @@ async function runScenario(s) {
   console[r.ok ? "log" : "error"](
     `${r.ok ? "ok" : "FAIL"} ${s.name} — ${r.checks.length - failed.length}/${r.checks.length} checks passed`,
   );
-  for (const c of failed) console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 200)})` : ""}`);
+  for (const c of failed)
+    console.error(`   ↳ ${c.label} ${c.detail ? `(${c.detail.slice(0, 200)})` : ""}`);
 }
 
 try {
@@ -193,8 +225,14 @@ const md = [
   "",
 ];
 for (const r of results) {
-  md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`, "", "| Check | Status | Detail |", "| --- | --- | --- |");
-  for (const c of r.checks) md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
+  md.push(
+    `## ${r.scenario} ${r.ok ? "✅" : "❌"}`,
+    "",
+    "| Check | Status | Detail |",
+    "| --- | --- | --- |",
+  );
+  for (const c of r.checks)
+    md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
   md.push("");
 }
 await writeFile(`${OUT}/REPORT.md`, md.join("\n"), "utf8");

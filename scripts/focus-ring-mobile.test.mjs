@@ -96,8 +96,24 @@ async function runScenario(s) {
       "idx-basket-v1",
       JSON.stringify({
         stocks: [
-          { id: "f1", ticker: "BBCA", shares: 100, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
-          { id: "f2", ticker: "BBRI", shares: 200, price: 0, manualShares: false, manualPrice: false, freeFloat: null },
+          {
+            id: "f1",
+            ticker: "BBCA",
+            shares: 100,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
+          {
+            id: "f2",
+            ticker: "BBRI",
+            shares: 200,
+            price: 0,
+            manualShares: false,
+            manualPrice: false,
+            freeFloat: null,
+          },
         ],
         lastRefresh: null,
       }),
@@ -121,7 +137,9 @@ async function runScenario(s) {
     if (!exists) continue;
 
     // Baseline (blurred).
-    await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+    await page.evaluate(
+      () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+    );
     await page.waitForTimeout(150);
     const baseline = await ringInfo(page, sel);
     const basePath = `${OUT}/${s.name}-${b.key}-blur.png`;
@@ -145,14 +163,18 @@ async function runScenario(s) {
 
     if (b.skipTap) {
       await page.keyboard.press("Escape");
-      await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+      await page.evaluate(
+        () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+      );
       await page.waitForTimeout(200);
       continue;
     }
 
     // Reset focus, then tap (pointerdown handler forces focus).
     await page.keyboard.press("Escape");
-    await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+    await page.evaluate(
+      () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+    );
     await page.waitForTimeout(250);
 
     await locator.dispatchEvent("pointerdown", { pointerType: "touch" });
@@ -169,7 +191,9 @@ async function runScenario(s) {
     r.screenshots.push({ key: `${b.key} tap`, path: rel(tapPath) });
 
     await page.keyboard.press("Escape");
-    await page.evaluate(() => document.activeElement instanceof HTMLElement && document.activeElement.blur());
+    await page.evaluate(
+      () => document.activeElement instanceof HTMLElement && document.activeElement.blur(),
+    );
     await page.waitForTimeout(200);
   }
 
@@ -199,8 +223,14 @@ const md = [
   "",
 ];
 for (const r of results) {
-  md.push(`## ${r.scenario} ${r.ok ? "✅" : "❌"}`, "", "| Check | Status | Detail |", "| --- | --- | --- |");
-  for (const c of r.checks) md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
+  md.push(
+    `## ${r.scenario} ${r.ok ? "✅" : "❌"}`,
+    "",
+    "| Check | Status | Detail |",
+    "| --- | --- | --- |",
+  );
+  for (const c of r.checks)
+    md.push(`| ${c.label} | ${c.pass ? "✅" : "❌"} | ${(c.detail || "—").slice(0, 120)} |`);
   md.push("");
   for (const sh of r.screenshots) md.push(`- ${sh.key}: ![${sh.key}](${sh.path})`);
   md.push("");
