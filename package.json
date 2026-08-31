@@ -1,6 +1,7 @@
 {
-  "name": "tanstack_start_ts",
-  "private": true,
+  "name": "tvw-index",
+  "private": false,
+  "license": "MIT",
   "sideEffects": false,
   "type": "module",
   "scripts": {
@@ -111,3 +112,4 @@
     "xlsx": "^0.18.5"
   }
 }
+

@@ -1,26 +1,46 @@
-# .STACKCAP
+# TVW Index — TV Weight Index Kalkulator Saham IDX
 
-saya mau buat seperti ini https://konglo-index.lovable.app/ tapi lebih minimalis simpel mobile repsonsive, dan data shares sudah included tinggal input harga close, atau conect yahoo api finance shingga harga update tiap close market, gmn?? tlg rancangkan yg paling simpel dant idak ribet makasih
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript)](https://typescriptlang.org)
 
-This project was built with [Lovable](https://lovable.dev).
+Kalkulator TV (TradingView) Weight Index untuk saham-saham IDX/BEI. Input harga close per saham, lihat bobot dan posisi relatif antar saham dalam portofolio atau watchlist.
 
-**Live app**: https://tv-weight-index.lovable.app
+**Live:** https://tv-weight-index.lovable.app
 
-## Build with Lovable
+---
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/167bc982-761d-44b1-b99f-0eb5dd609db3).
+## Fitur
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+- 📊 **Index Calculator** — Hitung weighted index dari kumpulan saham IDX
+- 📱 **Mobile First** — Dioptimalkan untuk layar kecil
+- 💾 **Local Storage** — Data tersimpan di browser
+- 🌐 **No Backend** — Semua berjalan di browser
 
-## Development
+---
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+## Quick Start
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+```bash
+git clone https://github.com/alfindigital/tvw-index.git
+cd tvw-index
+npm install
 npm run dev
+npm run build
 ```
+
+---
+
+## Stack
+
+- TanStack Start + TypeScript 5
+- Tailwind CSS + shadcn/ui
+
+---
+
+## Kontribusi
+
+Lihat [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Lisensi
+
+[MIT](LICENSE)
