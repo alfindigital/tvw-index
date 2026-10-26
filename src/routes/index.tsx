@@ -138,7 +138,8 @@ export const Route = createFileRoute("/")({
   errorComponent: IndexErrorBoundary,
 });
 
-function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void }) {
+function IndexErrorBoundary({ error, reset }: { error: unknown; reset: () => void }) {
+  const errMsg = error instanceof Error ? error.message : String(error ?? "");
   const router = useRouter();
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -150,9 +151,9 @@ function IndexErrorBoundary({ error, reset }: { error: Error; reset: () => void 
         <p className="mt-2 text-sm text-muted-foreground">
           An error occurred while loading the watchlist. Try reloading the page.
         </p>
-        {import.meta.env.DEV && error?.message && (
+        {import.meta.env.DEV && errMsg && (
           <pre className="mt-4 max-h-40 overflow-auto rounded-md bg-muted p-3 text-left font-mono text-xs text-destructive">
-            {error.message}
+            {errMsg}
           </pre>
         )}
         <div className="mt-6 flex items-center justify-center gap-3">
