@@ -26,13 +26,13 @@ export function FloatingFormula({ formula, pineScript, onShare }: Props) {
   return (
     <div className="w-full">
       <div
-        className="relative flex w-full items-center gap-3 overflow-hidden rounded-2xl border border-primary/40 px-5 py-4 text-white shadow-[0_20px_50px_-20px_oklch(0.45_0.22_277_/_0.55)] sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-white/25"
+        className="relative flex w-full flex-col items-stretch gap-3 overflow-hidden sm:flex-row sm:items-center rounded-2xl border border-primary/40 px-5 py-4 text-white shadow-[0_20px_50px_-20px_oklch(0.45_0.22_277_/_0.55)] sm:gap-4 sm:px-6 sm:py-5 before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:h-[3px] before:bg-white/25"
         style={{
           backgroundColor: "var(--primary)",
           backgroundImage: "linear-gradient(135deg, var(--primary) 0%, var(--primary-glow) 100%)",
         }}
       >
-        <div className="min-w-0 flex-1 truncate font-mono text-base font-semibold leading-snug tracking-tight text-white sm:text-lg">
+        <div className="max-h-40 min-w-0 flex-1 overflow-y-auto break-words font-mono text-base font-semibold leading-snug tracking-tight text-white sm:text-lg">
           {formula || "Add stocks to generate formula"}
         </div>
         <div className="flex shrink-0 items-center justify-center gap-2 sm:justify-start">

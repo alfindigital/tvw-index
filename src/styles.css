@@ -266,3 +266,7 @@
   .lm-flash-restored, .lm-flash-removed { animation: none; }
 }
 
+/* Lovable hosting injects an "Edit with Lovable" badge into the served HTML; it covered the footer on phones. */
+#lovable-badge {
+  display: none !important;
+}

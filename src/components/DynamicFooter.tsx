@@ -16,7 +16,12 @@ type Social = {
 };
 
 const SOCIALS: Social[] = [
-  { href: "https://t.me/lotmetrik", label: "Telegram", handle: "@lotmetrik", Icon: TelegramIcon },
+  {
+    href: "https://t.me/lotmetrik?direct",
+    label: "Telegram",
+    handle: "@lotmetrik",
+    Icon: TelegramIcon,
+  },
   {
     href: "https://instagram.com/lotmetrik",
     label: "Instagram",
